@@ -53,7 +53,7 @@ let funciones = {
     shareApp:async()=>{
         const shareData = {
           title: 'MERCADOS EFECTIVOS',
-          text: `App para Vendedor (${versionapp})`,
+          text: `App para Ventas (${versionapp})`,
           url: window.location.origin
         }
 

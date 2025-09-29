@@ -1,4 +1,4 @@
-const DbName = "mercadosefectivosoffline10";
+const DbName = "mercadosefectivos_db_01";
 const DbName_old = "mercadosefectivosoffline7";
 
 var tblDocumentos = {
@@ -86,7 +86,8 @@ var tblClientes = {
         VISITA:{dataType: "string"},
         TELEFONO:{dataType: "string"},
         TIPONEGOCIO:{dataType:"string"},
-        NEGOCIO:{dataType:"string"}
+        NEGOCIO:{dataType:"string"},
+        CODRUTA:{dataType:"number"}
     }
 };
 

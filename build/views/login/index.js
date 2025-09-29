@@ -27,9 +27,9 @@ function getView(){
                         
                     </div>
                     <div class="card-body">
-                        <form class="" id="frmLogin" autocomplete="off">
+                        <form class="" id="" autocomplete="off">
                             <div class="form-group">
-                                <select class="negrita form-control border-secondary border-top-0 border-right-0 border-left-0" id="cmbSucursal">
+                                <select class="negrita form-control border-secondary border-top-0 border-right-0 border-left-0" id="cmbSucursal" disabled="true">
                                     
                                 </select>
                                 
@@ -61,10 +61,13 @@ function getView(){
                             <div class="form-group" align="center">
                                 <div class="row">
                                     
-                                    <div class="col-2">
-                                       
+                                    <div class="col-3">
+                                       <button class="btn btn-lg btn-circle btn-outline-secondary hand shadow"
+                                       onclick="funciones.shareAppWhatsapp()">
+                                            <i class="fal fa-share"></i>
+                                       </button>
                                     </div>  
-                                    <div class="col-10">
+                                    <div class="col-9">
                                         <button class="btn btn-secondary btn-lg shadow col-12 btn-rounded"  type="submit" id="btnIniciar">
                                             <i class="fal fa-unlock"></i>
                                             Ingresar
@@ -86,7 +89,7 @@ function getView(){
                             <div class="form-group" align="right">
                                 <br>
                                 <small>                             
-                                    <a href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos...%20">
+                                    <a href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos.2025...%20">
                                         por Alexis Burgos
                                     </a>
                                 </small>
@@ -114,16 +117,28 @@ function getView(){
 
 function addListeners(){
     
-    GlobalCodSucursal = '';
-    console.log('iniciando login... ' + GlobalCodSucursal);
-    
 
+    //carga las sucursales directamente desde código
+    document.getElementById('cmbSucursal').innerHTML = '<option value="" disabled selected hidden>Selecciona una sede</option>' + funciones.getComboSucursales();
+
+    GlobalCodSucursal = '';
+
+    get_sede()
+    .then((sede)=>{
+        document.getElementById('cmbSucursal').value = sede;
+    })
+    .catch(()=>{
+        document.getElementById('cmbSucursal').disabled = false;
+    })
+
+
+   
+   
     
-    let frmLogin = document.getElementById('frmLogin');
     let btnIniciar = document.getElementById('btnIniciar');
-    frmLogin.addEventListener('submit',(e)=>{
-        e.preventDefault();
-    
+
+    btnIniciar.addEventListener('click',()=>{
+      
        
         btnIniciar.innerHTML = '<i class="fal fa-unlock fa-spin"></i>';
         btnIniciar.disabled = true;
@@ -131,17 +146,13 @@ function addListeners(){
         let suc = document.getElementById('cmbSucursal').value;
         let usu = document.getElementById('txtUsr').value;
         let pas = document.getElementById('txtPass').value;
+       
         almacenarCredenciales()
-        //apigen.empleadosLogin(frmLogin.cmbSucursal.value,frmLogin.txtUser.value.trim(),frmLogin.txtPass.value.trim())
+       
         apigen.empleadosLogin(suc, usu.trim(), pas.trim())
         .then(()=>{
             
-            //almacenarCredenciales();
-
-
-            //document.body.requestFullscreen();
-            //por lo visto se deshabilitan las scroll bars en fullscreen
-            //selectDateDownload();
+           
         })
         .catch(()=>{
             btnIniciar.disabled = false;
@@ -150,16 +161,16 @@ function addListeners(){
     });
 
 
-    //carga las sucursales directamente desde código
-    document.getElementById('cmbSucursal').innerHTML = '<option value="" disabled selected hidden>Selecciona una sede</option>' + funciones.getComboSucursales();
 
     selectDateDownload() //carga la info inicial
     .then(()=>{
         try {
-            document.getElementById('cmbSucursal').value = GlobalCodSucursal;
-            console.log(GlobalCodSucursal);
+
+            //document.getElementById('cmbSucursal').value = GlobalCodSucursal;
+            //console.log(GlobalCodSucursal);
 
             deleteDateDownload();
+            
         } catch (error) {
             console.log('error al cargar sucursal')
             console.log(error)
@@ -171,6 +182,32 @@ function addListeners(){
     var parallax_logo = document.getElementById('parallax_logo');
     var parallaxInstance = new Parallax(parallax_logo);
    
+
+
+
+};
+
+function get_sede(){
+            
+    return new Promise((resolve,reject)=>{
+
+        axios.get('/sede')
+        .then((response) => {
+            let sede = response.data;
+            
+            console.log('sede:');
+            console.log(sede);
+
+            if(response=='error'){
+                reject();
+            }else{
+                resolve(sede);
+            }             
+        }, (error) => {
+            reject();
+        });
+
+    });
 
 };
 

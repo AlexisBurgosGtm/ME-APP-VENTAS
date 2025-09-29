@@ -7,21 +7,18 @@
 };
 
 const config = {
-	user: 'DB_A6478C_mercadosv2_admin',
-	password: 'razors1805',
-	server: 'sql5060.site4now.net',
-	database: 'DB_A6478C_mercadosv2',
-	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000}
+	user: process.env.DB_USER,
+	password: process.env.DB_PWD,
+	server: process.env.DB_HOST, 
+	database: process.env.DB_DB,
+	pool: {	
+		max: 100,	
+		min: 0,	
+		idleTimeoutMillis: 30000
+	}
 };
 
 
-const configX = {
-	user: 'sa',
-	password: 'aA1',
-	server: 'DESKTOP-E0KG096\\SQL17',
-	database: 'HOST_MERCADOS',
-	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000}
-};
 
 
 const sql = require('mssql');

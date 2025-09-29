@@ -1,5 +1,5 @@
 
-let versionapp = 'Mod:05.08.2025';
+let versionapp = 'Mod:29.09.2025';
 let GlobalServerUrl = '';
 let GlobalUrlServicePedidos = '';
 
@@ -49,6 +49,8 @@ let GlobalSelectedId;
 let GlobalSelectedCodigo;
 let GlobalSelectedFecha;
 let GlobalCoddoc = 'PED01';
+let GlobalCodRuta = 0;
+let GlobalTipoCatalogo =''; //0=TODOS, 1=CATALOGO 1, 2=CATALOGO 2
 let GlobalTotalDocumento = 0;
 let GlobalTotalCostoDocumento = 0;
 let GlobalCodBodega = '01';
