@@ -54,12 +54,16 @@ function getView(){
                                         <div class="row">
                                             <div class="col-6">
                                                 <label>Precios Descargados:</label>
-                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP"><i class="fal fa-download"></i></button>
+                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP">
+                                                    <i class="fal fa-download"></i>
+                                                </button>
                                                 <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
                                             </div>
                                             <div class="col-6">
                                                 <label>Clientes Descargados:</label>
-                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC"><i class="fal fa-download"></i></button>
+                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC">
+                                                    <i class="fal fa-download"></i>
+                                                </button>
                                                 <h5 class="negrita text-danger" id="lbTotalClientes">0</h5>
                                             </div>
                                         </div>
@@ -788,9 +792,6 @@ async function addListeners(){
 
     });
 
-
-
-
     document.getElementById('btnAceptarNuevoGps').addEventListener('click',()=>{
 
         document.getElementById('txtEditLatitud').value = GlobalSelectedLat;
@@ -798,7 +799,6 @@ async function addListeners(){
         $("#ModalGps").modal('hide');
 
     });
-
 
 
     let btnEnviarCambiosCliente = document.getElementById('btnEnviarCambiosCliente');
@@ -888,7 +888,9 @@ async function addListeners(){
 
                 downloadProductos()
                 .then((data)=>{
+
                     funciones.showToast(`Productos descargados, guardándolos localmente`);
+                    
                     deleteProductos()
                     .then(()=>{
                         let contador = 1;
@@ -1120,7 +1122,9 @@ async function addListeners(){
         //console.log('downloaded: ' + SelectedCodUpdate);
         //console.log('local: ' + SelectedLocalCodUpdate);
     })
-    .catch(()=>{SelectedCodUpdate='NOCODE'});
+    .catch(()=>{
+        SelectedCodUpdate='NOCODE';
+    });
     
 
     

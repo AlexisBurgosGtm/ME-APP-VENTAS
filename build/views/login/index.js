@@ -117,6 +117,7 @@ function getView(){
 
 function addListeners(){
     
+    document.getElementById('lbUsuarioData').innerText = '';
 
     //carga las sucursales directamente desde código
     document.getElementById('cmbSucursal').innerHTML = '<option value="" disabled selected hidden>Selecciona una sede</option>' + funciones.getComboSucursales();
@@ -136,28 +137,26 @@ function addListeners(){
    
     
     let btnIniciar = document.getElementById('btnIniciar');
-
     btnIniciar.addEventListener('click',()=>{
       
-       
-        btnIniciar.innerHTML = '<i class="fal fa-unlock fa-spin"></i>';
-        btnIniciar.disabled = true;
+            btnIniciar.innerHTML = '<i class="fal fa-unlock fa-spin"></i>';
+            btnIniciar.disabled = true;
 
-        let suc = document.getElementById('cmbSucursal').value;
-        let usu = document.getElementById('txtUsr').value;
-        let pas = document.getElementById('txtPass').value;
-       
-        almacenarCredenciales()
-       
-        apigen.empleadosLogin(suc, usu.trim(), pas.trim())
-        .then(()=>{
-            
-           
-        })
-        .catch(()=>{
-            btnIniciar.disabled = false;
-            btnIniciar.innerHTML = '<i class="fal fa-unlock"></i>Ingresar'
-        });
+            let suc = document.getElementById('cmbSucursal').value;
+            let usu = document.getElementById('txtUsr').value;
+            let pas = document.getElementById('txtPass').value;
+        
+            almacenarCredenciales()
+        
+            apigen.empleadosLogin(suc, usu.trim(), pas.trim())
+            .then(()=>{
+
+            })
+            .catch(()=>{
+                btnIniciar.disabled = false;
+                btnIniciar.innerHTML = '<i class="fal fa-unlock"></i>Ingresar'
+            });
+
     });
 
 

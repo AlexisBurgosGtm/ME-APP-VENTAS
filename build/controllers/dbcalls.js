@@ -344,11 +344,12 @@ function selectDateDownload() {
 };
 
 let update_cod_update = '';
-function downloadProductos (){
+function downloadProductos(){
 
     return new Promise((resolve,reject)=>{
 
-        axios.post('/ventas/buscarproductotodos', {sucursal:GlobalCodSucursal})  
+        axios.post('/ventas/descargar_catalogo', {sucursal:GlobalCodSucursal,
+                                                  codcatalogo:GlobalTipoCatalogo})  
         .then(async(response) => {
            
             const data = response.data;
@@ -411,38 +412,15 @@ function selectProducto(filtro) {
     });
 };
 
-function BACKUP_19_03_2023_selectProducto(filtro) {
-
-    return new Promise(async(resolve,reject)=>{
-        let f = new Date();
-        if(GlobalSelectedDiaUpdated.toString()==f.getDate().toString()){
-            var response = await connection.select({
-                from: "productos",
-                limit: 50,
-                where: {
-                    CODPROD: filtro,
-                    or: {
-                        DESPROD: {
-                            like: '%' + filtro + '%'
-                        }   
-                    }
-                }
-               
-            });
-            resolve(response)
-        }else{
-            reject('Debe actualizar su catálogo de productos...');
-        }
-        
-    });
-};
 
 function downloadClientes (){
+
     return new Promise((resolve,reject)=>{
 
-        axios.post('/clientes/listavendedortodos', {
+        axios.post('/clientes/descargar_clientes_ruta', {
             sucursal: GlobalCodSucursal,
-            codven:GlobalCodUsuario
+            codven: GlobalCodUsuario,
+            codruta: GlobalCodRuta
         })  
         .then(async(response) => {
             const data = response.data;
@@ -817,22 +795,7 @@ function insertVenta(datos){
 
 };
 
-function BACKUP_insertVenta(datos){
-    console.log('intentando ingresar en tabla documentos')
-    return new Promise((resolve,reject)=>{
-        connection.insert({
-            into: "documentos",
-            values: [datos], //you can insert multiple values at a time
-        })
-        .then(()=>{
-            resolve();
-        })
-        .catch(()=>{
-            reject();
-        })
-    }) 
 
-};
 
 //carga el json con la lista de pedidos pendientes
 function selectVentasPendientes(usuario) {

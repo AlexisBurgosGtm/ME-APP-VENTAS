@@ -25,7 +25,7 @@ let apigen = {
             
             return new Promise((resolve,reject)=>{
                 let total = '';
-                axios.get(`/ventas/online_productos_subidos?sucursal=${GlobalCodSucursal}`)
+                axios.get(`/ventas/online_productos_subidos?sucursal=${GlobalCodSucursal}&codtipocatalogo=${GlobalTipoCatalogo}`)
                 .then((response) => {
                     const data = response.data.recordset;
                     data.map((rows)=>{
@@ -42,7 +42,7 @@ let apigen = {
             
             return new Promise((resolve,reject)=>{
                 let total = '';
-                axios.get(`/ventas/online_clientes_subidos?sucursal=${GlobalCodSucursal}&codven=${GlobalCodUsuario}`)
+                axios.get(`/ventas/online_clientes_subidos?sucursal=${GlobalCodSucursal}&codven=${GlobalCodUsuario}&codruta=${GlobalCodRuta}`)
                 .then((response) => {
                     const data = response.data.recordset;
                     data.map((rows)=>{
@@ -92,8 +92,11 @@ let apigen = {
                                 GlobalSistema = sucursal;
                                 GlobalObjetivoVenta = Number(rows.OBJETIVO);
                                 GlobalSelectedDiaUpdated = Number(f.getDate());
-                                                   
+                                GlobalCodRuta = Number(rows.CODRUTA);
+                                GlobalTipoCatalogo = rows.CODCATALOGO;
                                 
+                                document.getElementById('lbUsuarioData').innerText = `${GlobalUsuario} - Catalogo ${GlobalTipoCatalogo}`;
+
                                 switch (GlobalTipoUsuario.toString()) {
                                     case 'VENDEDOR':
                                         classNavegar.inicioVendedor();    
@@ -105,8 +108,10 @@ let apigen = {
                                         classNavegar.inicio_repartidor();
                                         break;
                                 };
-                                
-                            }        
+
+
+                            };
+                                    
                         })
                         resolve();
                     }else{
@@ -116,6 +121,8 @@ let apigen = {
                         GlobalCoddoc= '';
                         GlobalObjetivoVenta =0;
                         GlobalSelectedDiaUpdated = 0;
+                        GlobalCodRuta = 0;
+                        GlobalTipoCatalogo = "";
                         funciones.AvisoError('Usuario o Contraseña incorrectos, intente seleccionando la sucursal a la que pertenece');
                         reject();
                     }
@@ -2910,8 +2917,6 @@ let apigen = {
             
         },
         digitadorDetallePedidoWhatsapp: async(fecha,coddoc,correlativo,numero)=>{
-
-
             
             let strEncabezado = `DISTRIBUIDORA ${GlobalEmpNombre} \n Recordatorio de Pedido \n --------------------------------- \n`;
 
@@ -3013,11 +3018,8 @@ let apigen = {
             })
         },
         digitadorQuitarRowPedido: async(item,coddoc,correlativo,totalprecio,totalcosto)=>{
-            console.log(item)
-            console.log(coddoc)
-            console.log(correlativo)
-            console.log(totalprecio)
-            console.log(totalcosto)
+           
+        
 
             return new Promise((resolve,reject)=>{
                 axios.put('/digitacion/pedidoquitaritem',{

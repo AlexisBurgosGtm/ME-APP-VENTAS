@@ -23,6 +23,20 @@ router.post("/get_codupdate", async(req,res)=>{
 
 router.get('/online_productos_subidos',async(req,res)=>{
 
+    const{sucursal,codtipocatalogo} = req.query;
+
+    let qry = `
+                SELECT COUNT(ME_Productos.CODPROD) AS PRODUCTOS 
+            FROM ME_Productos LEFT OUTER JOIN
+                ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA LEFT OUTER JOIN
+                ME_Precios ON ME_Productos.CODSUCURSAL = ME_Precios.CODSUCURSAL AND ME_Productos.CODPROD = ME_Precios.CODPROD
+            WHERE (ME_Productos.CODSUCURSAL = '${sucursal}') AND (ME_Productos.CODCLATRES='${codtipocatalogo}')
+    `;
+
+    execute.Query(res,qry);
+});
+router.get('/BACKUP_online_productos_subidos',async(req,res)=>{
+
     const{sucursal} = req.query;
 
     let qry = `
@@ -38,6 +52,16 @@ router.get('/online_productos_subidos',async(req,res)=>{
 
 
 router.get('/online_clientes_subidos',async(req,res)=>{
+
+    const{sucursal,codven,codruta} = req.query;
+
+    let qry = `
+        SELECT COUNT(NITCLIE) AS CLIENTES FROM ME_CLIENTES WHERE CODSUCURSAL='${sucursal}' AND CODRUTA=${codruta}
+    `;
+
+    execute.Query(res,qry);
+});
+router.get('/BACKUP_online_clientes_subidos',async(req,res)=>{
 
     const{sucursal,codven} = req.query;
 
@@ -234,6 +258,45 @@ router.post("/buscarproductotodos", async(req,res)=>{
     execute.Query(res,qry);
 
 })
+
+router.post("/descargar_catalogo", async(req,res)=>{
+    
+    const {sucursal,codcatalogo} = req.body;
+   
+    let qry ='';
+    qry = `SELECT 
+                ME_Productos.CODSUCURSAL, 
+                ME_Productos.CODPROD, 
+                ME_Productos.DESPROD, 
+                ME_Precios.CODMEDIDA, 
+                ME_Precios.EQUIVALE, 
+                ME_Precios.COSTO, 
+                ME_PRECIOS.PRECIO AS PRECIO,
+                ME_PRECIOS.OFERTA AS PRECIOA,
+                ME_PRECIOS.ESCALA AS PRECIOB,
+                ME_PRECIOS.MAYORISTA AS PRECIOC,
+                0.01 AS CAMBIO, 
+                ME_Marcas.DESMARCA, 
+                0 AS EXENTO, 
+                ISNULL(ME_PRODUCTOS.EXISTENCIA,0) AS EXISTENCIA,
+                ME_Productos.DESPROD3,
+                ISNULL(ME_Productos.CODUPDATE,'NOCODE') AS CODUPDATE
+            FROM ME_Productos LEFT OUTER JOIN
+                ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND 
+                ME_Productos.CODMARCA = ME_Marcas.CODMARCA LEFT OUTER JOIN
+                ME_Precios ON ME_Productos.CODSUCURSAL = ME_Precios.CODSUCURSAL AND 
+                ME_Productos.CODPROD = ME_Precios.CODPROD
+            WHERE (ME_Productos.CODSUCURSAL = '${sucursal}') AND 
+                (ME_Productos.CODCLATRES='${codcatalogo}') 
+            ORDER BY ME_Precios.CODPROD, ME_Precios.CODMEDIDA; ` 
+
+        
+            
+    execute.Query(res,qry);
+
+
+})
+
 
 
 // obtiene el total de temp ventas según sea el usuario
@@ -631,33 +694,6 @@ router.post("/listapedidos", async(req,res)=>{
     execute.Query(res,qry);
 });
 
-router.post("/BACKUP_listapedidos", async(req,res)=>{
-    const {sucursal,codven,fecha}  = req.body;
-    
-    let qry = '';
-    qry = `SELECT  ME_Documentos.CODDOC, ME_Documentos.DOC_NUMERO AS CORRELATIVO, 
-                    ME_Documentos.NITCLIE AS CODCLIE, 
-                    ME_Clientes.NOMFAC AS NEGOCIO, 
-                    ME_Documentos.DOC_NOMREF AS NOMCLIE, 
-                    ME_Documentos.DOC_DIRENTREGA AS DIRCLIE, '' AS DESMUNI, 
-                    ISNULL(ME_Documentos.DOC_TOTALVENTA, 0) AS IMPORTE, 
-                    ME_Documentos.DOC_FECHA AS FECHA, 
-                    ME_Documentos.LAT, 
-                    ME_Documentos.LONG, 
-                    ME_Documentos.DOC_OBS AS OBS, 
-                    ME_Documentos.DOC_MATSOLI AS DIRENTREGA, 
-                    ME_Documentos.DOC_ESTATUS AS ST,
-                    ME_Documentos.DOC_HORA AS HORA
-    FROM            ME_Documentos LEFT OUTER JOIN
-                             ME_Clientes ON ME_Documentos.NITCLIE = ME_Clientes.NITCLIE AND ME_Documentos.CODSUCURSAL = ME_Clientes.CODSUCURSAL
-    WHERE        (ME_Documentos.CODSUCURSAL = '${sucursal}') 
-                AND (ME_Documentos.DOC_FECHA = '${fecha}') AND (ME_Documentos.CODVEN = ${codven}) 
-                AND (ME_Documentos.DOC_ESTATUS <> 'A')
-    ORDER BY ME_Documentos.DOC_NUMERO`
-
-    
-    execute.Query(res,qry);
-});
 
 router.post("/corregir_detalle", async(req,res)=>{
 
@@ -851,9 +887,11 @@ router.post('/reportelocaciones',async(req,res)=>{
 });
 
 
+
 //******************************* */
-// REPORTES DE GERENCIA
+//     REPORTES DE GERENCIA         
 //******************************* */
+
 
 // reporte de sucursales ventas
 router.post('/rptsucursalesventas',async(req,res)=>{
@@ -901,6 +939,7 @@ router.post('/rptsucursalesventassucursales',async(req,res)=>{
     execute.Query(res,qry);
 
 });
+
 // ranking de vendedores / datos de la sucursal
 router.post('/rptrankingvendedoressucursal', async(req,res)=>{
     const {anio,mes} = req.body;

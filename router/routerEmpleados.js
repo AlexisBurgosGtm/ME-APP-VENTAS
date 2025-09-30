@@ -8,6 +8,35 @@ router.get("/login",async(req,res)=>{
 
     
     let qry ='';
+    qry = `SELECT 
+                CODUSUARIO AS CODIGO, 
+                NOMBRE AS USUARIO, 
+                TIPO, 
+                CODDOC, 
+                CODSUCURSAL, 
+                ISNULL(OBJETIVOMES,100000) AS OBJETIVO,
+                ISNULL(CODRUTA,0) AS CODRUTA,
+                ISNULL(CODCATALOGO,'0') AS CODCATALOGO
+            FROM ME_USUARIOS 
+            WHERE 
+                CODSUCURSAL='${codsucursal}' 
+                AND NOMBRE='${user}' 
+                AND PASS='${pass}' 
+            OR 
+                CODSUCURSAL='TODOS' 
+                AND NOMBRE='${user}' 
+                AND PASS='${pass}'; `;
+    
+    execute.Query(res,qry);
+
+});
+
+router.get("/BACKUP_login",async(req,res)=>{
+
+    const {codsucursal,user,pass} = req.query;
+
+    
+    let qry ='';
     qry = `SELECT CODUSUARIO AS CODIGO, NOMBRE AS USUARIO, TIPO, CODDOC, CODSUCURSAL, ISNULL(OBJETIVOMES,100000) AS OBJETIVO 
             FROM ME_USUARIOS 
             WHERE CODSUCURSAL='${codsucursal}' AND NOMBRE='${user}' AND PASS='${pass}' 
