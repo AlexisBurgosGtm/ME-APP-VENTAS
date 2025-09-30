@@ -21,7 +21,7 @@ function getView(){
                                                             
                             </div>  
                              <div id="parallax_logo" class="col-4">
-                                <img data-depth="1.0" src="./img/logoag.png" width="70" height="70">                            
+                                <img data-depth="1.0" src="./img/mercados.png" width="70" height="70">                            
                             </div>    
                         </div>
                         

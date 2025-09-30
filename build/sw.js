@@ -24,6 +24,7 @@ const precacheAssets = [
     './controllers/classDb.js',
     './controllers/apicallsx.js',
     './img/logoag.png',
+    './img/mercados.png',
     './img/usericon.png',
     './img/logo.png',
     './img/cog.png',
