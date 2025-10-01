@@ -18,7 +18,7 @@ let classNavegar = {
                 if(historial=='SI'){
 
                 }else{
-                    window.history.pushState({"page":0}, "login", GlobalUrl + '/login')
+                    //window.history.pushState({"page":0}, "login", GlobalUrl + '/login')
                 }
 
                 document.getElementById('btnPedidosPend').style="visibility:hidden";

@@ -27,7 +27,7 @@ function getView(){
                         
                     </div>
                     <div class="card-body">
-                        <form class="" id="" autocomplete="off">
+                        <div class="" id="" autocomplete="off">
                             <div class="form-group">
                                 <select class="negrita form-control border-secondary border-top-0 border-right-0 border-left-0" id="cmbSucursal" disabled="true">
                                     
@@ -94,7 +94,7 @@ function getView(){
                                     </a>
                                 </small>
                             </div>
-                        </form>
+                        </div>
                     </div>
 
                 </div>
@@ -262,7 +262,7 @@ function getCredenciales(){
   navigator.credentials.get({password: true})
   .then(function(creds) {
 
-      console.log(creds);
+    
     //Do something with the credentials.
     document.getElementById('txtUser').value = creds.id;
     document.getElementById('cmbSucursal').value = creds.name;

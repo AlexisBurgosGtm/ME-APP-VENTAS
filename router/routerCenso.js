@@ -20,6 +20,24 @@ router.post("/nuevocliente", async(req,res)=>{
      
 });
 
+router.post("/BACKUP_nuevocliente", async(req,res)=>{
+
+    const{sucursal,codven,fecha,codclie,nitclie,tiponegocio,negocio,nomclie,dirclie,codmun,coddepto,referencia,obs,telefono,visita,lat,long,sector} = req.body;
+
+    let qry = `INSERT INTO ME_CENSO (
+            CODSUCURSAL,CODVEN,FECHA,CODCLIE,NITCLIE,
+            TIPONEGOCIO,NEGOCIO,NOMCLIE,
+            DIRCLIE,REFERENCIA,CODMUN,
+            CODDEPTO,OBS,VISITA,LAT,
+            LONG,TELEFONO, STATUS, SECTOR)
+    VALUES ('${sucursal}',${codven},'${fecha}',0,'${nitclie}','${tiponegocio}','${negocio}','${nomclie}','${dirclie}','${referencia}','${codmun}','${coddepto}','${obs}','${visita}',${lat},${long},'${telefono}','PENDIENTE','${sector}');`
+    
+    console.log(qry);
+    
+     execute.Query(res,qry);
+     
+});
+
 
 router.post('/resumenclientes',async(req,res)=>{
     const {sucursal,codven} = req.body;
