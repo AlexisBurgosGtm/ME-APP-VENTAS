@@ -264,7 +264,40 @@ router.post("/descargar_catalogo", async(req,res)=>{
     const {sucursal,codcatalogo} = req.body;
    
     let qry ='';
+
+    if(codcatalogo.toString()=='0'){
+
+        
     qry = `SELECT 
+                ME_Productos.CODSUCURSAL, 
+                ME_Productos.CODPROD, 
+                ME_Productos.DESPROD, 
+                ME_Precios.CODMEDIDA, 
+                ME_Precios.EQUIVALE, 
+                ME_Precios.COSTO, 
+                ME_PRECIOS.PRECIO AS PRECIO,
+                ME_PRECIOS.OFERTA AS PRECIOA,
+                ME_PRECIOS.ESCALA AS PRECIOB,
+                ME_PRECIOS.MAYORISTA AS PRECIOC,
+                0.01 AS CAMBIO, 
+                ME_Marcas.DESMARCA, 
+                0 AS EXENTO, 
+                ISNULL(ME_PRODUCTOS.EXISTENCIA,0) AS EXISTENCIA,
+                ME_Productos.DESPROD3,
+                ISNULL(ME_Productos.CODUPDATE,'NOCODE') AS CODUPDATE
+            FROM ME_Productos LEFT OUTER JOIN
+                ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND 
+                ME_Productos.CODMARCA = ME_Marcas.CODMARCA LEFT OUTER JOIN
+                ME_Precios ON ME_Productos.CODSUCURSAL = ME_Precios.CODSUCURSAL AND 
+                ME_Productos.CODPROD = ME_Precios.CODPROD
+            WHERE (ME_Productos.CODSUCURSAL = '${sucursal}')
+            ORDER BY ME_Precios.CODPROD, ME_Precios.CODMEDIDA; ` 
+
+
+    }else{
+
+        
+        qry = `SELECT 
                 ME_Productos.CODSUCURSAL, 
                 ME_Productos.CODPROD, 
                 ME_Productos.DESPROD, 
@@ -289,6 +322,10 @@ router.post("/descargar_catalogo", async(req,res)=>{
             WHERE (ME_Productos.CODSUCURSAL = '${sucursal}') AND 
                 (ME_Productos.CODCLATRES='${codcatalogo}') 
             ORDER BY ME_Precios.CODPROD, ME_Precios.CODMEDIDA; ` 
+
+
+
+    }
 
         
             

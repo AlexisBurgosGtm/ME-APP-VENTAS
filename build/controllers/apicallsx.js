@@ -99,9 +99,11 @@ let apigen = {
 
                                 switch (GlobalTipoUsuario.toString()) {
                                     case 'VENDEDOR':
+
                                         classNavegar.inicioVendedor();    
                                         break;
                                     case 'SUPERVISOR':
+                                        GlobalTipoCatalogo ='0';
                                         classNavegar.inicio_supervisor();    
                                         break;
                                     case 'REPARTIDOR':
