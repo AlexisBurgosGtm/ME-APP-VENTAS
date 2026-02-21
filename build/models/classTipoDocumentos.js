@@ -126,18 +126,25 @@ let classTipoDocumentos = {
            
             let data = {
                 sucursal:GlobalCodSucursal,
-                coddoc:coddoc,
-                correlativo:nuevocorrelativo
+                coddoc:coddoc
             }
             //updatecorrelativo
             axios.post('/tipodocumentos/update_correlativo_auto', data)
             .then((response) => {
-                let data = response.data;
-                if(Number(data.rowsAffected[0])>0){
-                    resolve(nuevocorrelativo);             
+                if(response.status.toString()=='200'){
+                    let data = response.data;
+                    if(data.toString()=="error"){
+                        reject();
+                    }else{
+                        if(Number(data.rowsAffected[0])>0){
+                            resolve(data);             
+                        }else{
+                            reject();
+                        } 
+                    }       
                 }else{
-                    reject('0');
-                }            
+                    reject();
+                }     
             }, (error) => {
                 console.log(error);
                 reject('0');
@@ -145,29 +152,32 @@ let classTipoDocumentos = {
         })
         
     },
-    BACKUP_getCorrelativoDocumento: (tipodoc,coddoc)=>{
-        
-        return new Promise((resolve,reject)=>{
-            let correlativo = '0';
-            let data = {
-                empnit:GlobalEmpnit,
-                tipo:tipodoc,
-                coddoc:coddoc,
-                app:GlobalSistema
-            }
-            
-            axios.get('/tipodocumentos/correlativodoc?empnit=' + GlobalEmpnit + '&tipo=' + tipodoc + '&coddoc=' + coddoc  + '&app=' + GlobalSistema)
+    corregir_correlativo_documento:(sucursal,coddoc)=>{
+
+        return new Promise((resolve, reject)=>{
+            axios.post('/tipodocumentos/update_correlativo_auto', {
+                sucursal: sucursal,
+                coddoc:coddoc
+            })
             .then((response) => {
-                const data = response.data;        
-                data.recordset.map((rows)=>{
-                    correlativo = `${rows.CORRELATIVO}`
-                })
-                resolve(correlativo.toString());            
+                if(response.status.toString()=='200'){
+                    let data = response.data;
+                    if(data.toString()=="error"){
+                        reject();
+                    }else{
+                        if(Number(data.rowsAffected[0])>0){
+                            resolve(data);             
+                        }else{
+                            reject();
+                        } 
+                    }       
+                }else{
+                    reject();
+                }
             }, (error) => {
-                console.log(error);
-                reject('0');
+                reject();
             });
         })
-        
+   
     }
 }

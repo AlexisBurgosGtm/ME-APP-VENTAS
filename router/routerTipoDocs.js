@@ -4,13 +4,50 @@ const router = express.Router();
 
 
 
+/*
+router.post("/NEW_XELASOL_update_correlativo_auto", async(req,res)=>{
+   
+    const { token, sucursal, coddoc } = req.body;
+
+
+    let qry = ``
+    qry = `SELECT TOP 1 ISNULL(MAX(CORRELATIVO),0) AS CORRELATIVO 
+            FROM DOCUMENTOS 
+            WHERE EMPNIT='${sucursal}' AND CODDOC='${coddoc}';`
+
+    
+    
+    execute.get_data_qry(qry,token)
+    .then((data)=>{
+      
+        let nuevoCorrelativo = 0;
+        data.recordset.map((r)=>{
+            nuevoCorrelativo = Number(r.CORRELATIVO)+1;
+        })
+
+        let nQry = `UPDATE TIPODOCUMENTOS SET CORRELATIVO=${nuevoCorrelativo} WHERE EMPNIT='${sucursal}' AND CODDOC='${coddoc}';`;
+
+        execute.QueryToken(res,nQry,token);
+
+    })
+    .catch(()=>{
+        res.send('error');
+    })
+     
+});
+*/
+
+
+
+
+
 router.post("/update_correlativo_auto", async(req,res)=>{
     const {sucursal,coddoc} = req.body;
         
     let qry ='';
 
     qry = `
-            SELECT MAX(CORRELATIVO) AS ULTIMO 
+            SELECT isnull(MAX(DOC_NUMERO),0) AS ULTIMO 
             FROM ME_DOCUMENTOS 
             WHERE CODSUCURSAL='${sucursal}' 
             AND CODDOC='${coddoc}';
@@ -23,6 +60,8 @@ router.post("/update_correlativo_auto", async(req,res)=>{
             ultimo = Number(r.ULTIMO);
         })
 
+        console.log(ultimo);
+
         let newQry = `UPDATE 
             ME_TIPODOCUMENTOS SET CORRELATIVO=${(ultimo+1)} 
             WHERE CODSUCURSAL='${sucursal}' 
@@ -31,6 +70,8 @@ router.post("/update_correlativo_auto", async(req,res)=>{
             ME_USUARIOS SET CORRELATIVO=${(ultimo+1)} 
             WHERE CODSUCURSAL='${sucursal}' 
             AND CODDOC='${coddoc}';     `
+
+            console.log(newQry)
 
         execute.Query(res,newQry)
     

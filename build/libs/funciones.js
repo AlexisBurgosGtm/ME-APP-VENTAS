@@ -756,7 +756,7 @@ let funciones = {
     showToast: (text)=>{
       //depente de la libreria noty
       new Noty({
-        type: 'info',
+        type: 'information',
         layout: 'topRight',
         timeout: '500',
         theme: 'metroui',
@@ -923,7 +923,26 @@ let funciones = {
     },
     gotoGoogleMaps:(lat,long)=>{
       window.open(`https://www.google.com/maps?q=${lat},${long}`);
-    }
+    },
+    create_qr_code:(codigo,idcontainer)=>{
+
+          let container = document.getElementById(idcontainer);
+          container.innerHTML = '';
+
+          let qrcodetext = `MERCADOS-${codigo}`;
+          new QRCode(container, qrcodetext);
+
+      },
+      export_json_to_xlsx:(data,nombre)=>{
+
+         
+          filename= nombre.toString() + '.xlsx'; 
+          var ws = XLSX.utils.json_to_sheet(data); 
+          var wb = XLSX.utils.book_new(); 
+          XLSX.utils.book_append_sheet(wb, ws, "rpt"); 
+          XLSX.writeFile(wb,filename); 
+
+      }
 };
 
 //export default funciones;

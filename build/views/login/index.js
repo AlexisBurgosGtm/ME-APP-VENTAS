@@ -14,15 +14,12 @@ function getView(){
 
                     <div class="card-header text-center bg-white">
                         <div class="row">
-                            <div id="parallax_logo" class="col-4">
+                            <div id="parallax_logo" class="col-6">
                                 <img data-depth="1.0" src="./anuncio.png" width="100" height="100">                            
                             </div>    
-                            <div class="col-4">
-                                                            
-                            </div>  
-                             <div id="parallax_logo" class="col-4">
-                                <img data-depth="1.0" src="./img/mercados.png" width="70" height="70">                            
-                            </div>    
+                            <div class="col-6">
+                                <h3 class="negrita text-personal">MERCADOS EFECTIVOS</h3>                
+                            </div> 
                         </div>
                         
                     </div>
@@ -62,13 +59,17 @@ function getView(){
                                 <div class="row">
                                     
                                     <div class="col-3">
-                                       <button class="btn btn-lg btn-circle btn-outline-secondary hand shadow"
-                                       onclick="funciones.shareAppWhatsapp()">
-                                            <i class="fal fa-share"></i>
-                                       </button>
+                                        <img  
+                                            src="./img/mercados.png" 
+                                            width="50" 
+                                            height="50" 
+                                            onclick="funciones.shareAppWhatsapp()"
+                                            class="btn-share hand"
+                                        > 
+
                                     </div>  
                                     <div class="col-9">
-                                        <button class="btn btn-secondary btn-lg shadow col-12 btn-rounded"  type="submit" id="btnIniciar">
+                                        <button class="btn btn-personal btn-lg shadow col-12 btn-rounded"  type="submit" id="btnIniciar">
                                             <i class="fal fa-unlock"></i>
                                             Ingresar
                                         </button>

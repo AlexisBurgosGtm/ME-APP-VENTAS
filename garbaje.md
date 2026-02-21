@@ -2,6 +2,8 @@
 
 "mssql": "^4.3.7",
 
+animate__animated animate__bounce
+
 
 function getView(){
     let view = {

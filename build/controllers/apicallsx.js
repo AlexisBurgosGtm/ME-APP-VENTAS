@@ -670,83 +670,6 @@ let apigen = {
             
             
         },
-        BACKUP_clientesAjenosVendedor: async(sucursal,filtro,idContenedor)=>{
-        
-            let container = document.getElementById(idContenedor);
-            container.innerHTML = GlobalLoader;
-                    
-            let strdata = ''; 
-
-            axios.post('/clientes/listaajenosvendedor', {
-                app:GlobalSistema,
-                sucursal: sucursal,
-                filtro: filtro
-            })
-            .then((response) => {
-                const data = response.data.recordset;
-                
-                data.map((rows)=>{
-                    let btnCallCliente = ''; 
-                    if(rows.TELEFONO=='SN'){
-                        btnCallCliente=''
-                    }else{
-                        btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
-                    }                    
-                            strdata = strdata + `
-                        <tr class='card card-rounded border-secondary shadow p-2'>
-                            <td>${rows.NEGOCIO} // ${rows.NOMCLIE}
-                                <br>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <small>Cod: ${rows.CODIGO}</small>    
-                                    </div>
-                                    <div class="col-6">
-                                        ${btnCallCliente}   
-                                    </div>
-                                </div>
-                                <small>${rows.DIRCLIE}, ${rows.DESMUNI}<b></b></small>
-                                <br>
-                                <small class="text-info">Ref:${rows.REFERENCIA}</small>
-                                
-                                <div class="row">
-                                    
-                                    <div class="col-4">
-                                        <button class="btn btn-outline-primary btn-sm shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
-                                            <i class="fal fa-map-marker"></i>Ubicac
-                                        </button>
-                                    </div>
-                                                                            
-                                    <div class="col-4">
-                                        <button class="btn btn-outline-warning btn-sm shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                            <i class="fal fa-book"></i>Historial
-                                        </button>
-                                    </div>
-                                    
-                                    <div class="col-4">
-                                        <button class="btn btn-info btn-sm shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-shopping-cart"></i>Vender
-                                        </button>
-                                    </div>
-                                    
-                                </div>
-                                
-                            </td>
-                        </tr>`    
-                        
-                        
-                        
-                })
-                container.innerHTML = strdata;
-                
-
-            }, (error) => {
-                funciones.AvisoError('Error en la solicitud');
-                strdata = '';
-                container.innerHTML = 'No se pudo cargar la lista';
-            });
-            
-            
-        },
         clientesSetReminder: async (codclie,nit,nombre, direccion,recordatorio,hora,minuto,fecha)=>{
 
             return new Promise((resolve,reject)=>{
@@ -833,7 +756,7 @@ let apigen = {
                 
                 lbTotal.innerText = strdata;
             }, (error) => {
-                lbTotal.innerText = '--';
+                lbTotal.innerText = 'No hay conexión al servicio...';
             });
             
         },

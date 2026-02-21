@@ -203,6 +203,8 @@ aside.page-sidebar ($nav-width, $nav-background)
  */
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900");
 :root {
+  --color-personal: #4F4B0E;
+  --color-personal-shadow: #242102;
   --blue: #886ab5;
   --indigo: #6610f2;
   --purple: #6f42c1;
@@ -8312,6 +8314,7 @@ a.text-secondary:hover, a.text-secondary:focus {
 a.text-success:hover, a.text-success:focus {
   color: #13867a !important; }
 
+  
 .text-info {
   color: #2196F3 !important; }
 

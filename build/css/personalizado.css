@@ -1,0 +1,40 @@
+.bg-personal {
+  background-color: var(--color-personal) !important; 
+};
+
+.btn-personal {
+  -webkit-box-shadow: 0 2px 6px 0 var(--color-personal-shadow);
+          box-shadow: 0 2px 6px 0 var(--color-personal-shadow); }
+
+.btn-personal {
+  color: #fff;
+  background-color: var(--color-personal);
+  border-color: var(--color-personal); }
+  .btn-personal:hover {
+    color: #fff;
+    background-color: var(--color-personal);
+    border-color: var(--color-personal); }
+  .btn-personal:focus, .btn-personal.focus {
+    -webkit-box-shadow: 0 0 0 0.2rem var(--color-personal-shadow);
+            box-shadow: 0 0 0 0.2rem var(--color-personal-shadow); }
+  .btn-personal.disabled, .btn-personal:disabled {
+    color: #fff;
+    background-color: var(--color-personal);
+    border-color: var(--color-personal); }
+  .btn-personal:not(:disabled):not(.disabled):active, .btn-personal:not(:disabled):not(.disabled).active,
+  .show > .btn-personal.dropdown-toggle {
+    color: #fff;
+    background-color: var(--color-personal);
+    border-color: var(--color-personal); }
+    .btn-personal:not(:disabled):not(.disabled):active:focus, .btn-personal:not(:disabled):not(.disabled).active:focus,
+    .show > .btn-personal.dropdown-toggle:focus {
+      -webkit-box-shadow: 0 0 0 0.2rem var(--color-personal-shadow);
+              box-shadow: 0 0 0 0.2rem var(--color-personal-shadow); }
+
+
+
+.text-personal {
+  color: var(--color-personal) !important; }
+
+a.text-personal:hover, a.text-personal:focus {
+  color: var(--color-personal) !important; }

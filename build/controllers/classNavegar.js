@@ -113,7 +113,8 @@ let classNavegar = {
                   
                    
                     let btnMConfig = document.getElementById('btnMConfig');
-                    btnMConfig.addEventListener('click',()=>{
+                    btnMConfig.addEventListener('click',(e)=>{
+                        e.preventDefault();
                         if(GlobalSelectedForm=='LOGIN'){
                             funciones.AvisoError('Debe iniciar sesión para ver esta sección');
                             return;

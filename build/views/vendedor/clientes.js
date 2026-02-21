@@ -7,7 +7,7 @@ function getView(){
                     <div class="tab-content py-3">
 
                         <div class="tab-pane fade active show" id="panelInicio" role="tabpanel">
-                                ${view.tab_inicio()}
+                                ${view.tab_inicio() + view.modal_camara()}
                         </div>
 
                         <div class="tab-pane fade" id="panelNoVisitados" role="tabpanel">
@@ -36,56 +36,53 @@ function getView(){
 
                 </div>
             </div>
+
+            ${view.modal_qr()}
             `
         },
         tab_inicio : ()=>{
             return `
-                    <div class="card card-rounded">
-           
-                        <div class="card-body">
+            <div class="card card-rounded col-12">
+                <div class="card-body">
 
-                            <div class="row">
-                                <div class="card card-rounded col-12">
-                                    <div class="card-body">
-
-                                        <label>Total del día:</label><br>
-                                        <h4 class="negrita" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
+                    <label>Total del día:</label><br>
+                    <h4 class="negrita text-personal" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
                                         
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <label>Precios Descargados:</label>
-                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP">
-                                                    <i class="fal fa-download"></i>
-                                                </button>
-                                                <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
-                                            </div>
-                                            <div class="col-6">
-                                                <label>Clientes Descargados:</label>
-                                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC">
-                                                    <i class="fal fa-download"></i>
-                                                </button>
-                                                <h5 class="negrita text-danger" id="lbTotalClientes">0</h5>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <label>Precios en Nube:</label>
-                                                <h5 class="negrita text-success" id="lbTotalProductosOnline">0</h5>
-                                            </div>
-                                            <div class="col-6">
-                                                <label>Clientes en Nube:</label>
-                                                <h5 class="negrita text-success" id="lbTotalClientesOnline">0</h5>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                              
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Precios Descargados:</label>
+                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP">
+                                    <i class="fal fa-download"></i>
+                                </button>
+                                <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
                             </div>
-                           
+                            <div class="col-6">
+                                    <label>Clientes Descargados:</label>
+                                    <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC">
+                                        <i class="fal fa-download"></i>
+                                    </button>
+                                    <h5 class="negrita text-danger" id="lbTotalClientes">0</h5>
+                            </div>
+                        </div>
+                    
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Precios en Nube:</label>
+                                <h5 class="negrita text-success" id="lbTotalProductosOnline">0</h5>
+                            </div>
+                            <div class="col-6">
+                                <label>Clientes en Nube:</label>
+                                <h5 class="negrita text-success" id="lbTotalClientesOnline">0</h5>
+                            </div>
+                        </div>
 
-                            <br>
+                </div>
+            </div>
+            <br>
+            <div class="card card-rounded col-12">
+                <div class="card-body">
+
+                                     
 
                             <div class="row">
                                 <div class="col-6">
@@ -163,9 +160,12 @@ function getView(){
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    
-                    </div>
+                </div>        
+            </div>
+
+            <button class="btn btn-danger btn-xl btn-bottom-r btn-circle shadow hand" id="btnCameraQR">
+                <i class="fal fa-camera"></i>  
+            </button>
             `
         },
         tab_no_visitados: ()=>{
@@ -517,7 +517,82 @@ function getView(){
                 </div>
             </div>
             `
-        }
+        },
+        modal_qr:()=>{
+            return `
+            <div class="modal fade js-modal-settings modal-backdrop-transparent modal-with-scroll" tabindex="-1" 
+                role="dialog" aria-hidden="true" id="modal_qr">
+                <div class="modal-dialog modal-dialog-right modal-xl">
+                    <div class="modal-content">
+                        <div class="dropdown-header bg-base d-flex justify-content-center align-items-center w-100">
+                            <h4 class="m-0 text-center color-white" id="">
+                                Codigo QR del Cliente
+                            </h4>
+                        </div>
+                        <div class="modal-body p-4">
+                            
+                            <div class="card card-rounded" id="print_qr">
+                                <div class="card-body p-4">
+
+                                    <h3 class="negrita text-danger" id="lbNomclieQR"></h3>
+                                    <h5 class="negrita text-danger" id="lbCodclieQR"></h5>
+
+                                    <div id="container_qr">
+                                    </div>
+
+                                </div>
+
+                                <br>
+                                
+                                <button class="btn btn-xl btn-secondary btn-circle hand shadow" data-dismiss="modal">
+                                    <i class="fal fa-arrow-left"></i>
+                                </button>
+                            </div>                              
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            `
+        },
+        modal_camara:()=>{
+            return `
+            <div class="modal fade js-modal-settings modal-backdrop-transparent modal-with-scroll" tabindex="-1" 
+                role="dialog" aria-hidden="true" id="modal_barcode">
+                <div class="modal-dialog modal-dialog-right modal-xl">
+                    <div class="modal-content">
+                        <div class="dropdown-header bg-danger d-flex justify-content-center align-items-center w-100">
+                            <h4 class="m-0 text-center color-white" id="">
+                                Lectura de Codigo QR
+                            </h4>
+                        </div>
+                        <div class="modal-body p-4">
+                            
+                            <div class="card card-rounded" id="">
+                                <div class="card-body p-4">
+
+                                   <div class="" id="root_barcode">
+                                    </div>
+
+                                </div>
+
+                                <br>
+                                
+                                <button class="btn btn-xl btn-secondary btn-circle hand shadow" data-dismiss="modal">
+                                    <i class="fal fa-arrow-left"></i>
+                                </button>
+                            </div>                              
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            `
+        },
     }
 
     root.innerHTML = view.body() + view.modalHistorialCliente() + view.modalCambiarDatosCliente() +  view.modalGps();
@@ -1127,8 +1202,86 @@ async function addListeners(){
     });
     
 
+
+    let btnCameraQR = document.getElementById('btnCameraQR');
+    btnCameraQR.addEventListener('click',()=>{
+
+        $("#modal_barcode").modal('show');
+        iniciar_barcode();
+
+    });
     
     
+};
+
+async function iniciar_barcode() {
+
+    let root_barcode = document.getElementById('root_barcode');
+
+    try {
+        let child = document.getElementById('barcode_video');
+        root_barcode.removeChild(child)        
+    } catch (error) {
+        
+    }
+    
+    let txtCodprod = document.getElementById('txtBuscarClie')
+    
+
+    if('BarcodeDetector' in window ){
+        
+    }else{
+        root_barcode.innerHTML = 'No se puede usar Barcode en este dispositivo';
+        return;
+    };
+
+    
+    const barcodeDetector = new BarcodeDetector({
+        formats: ["code_39", "codabar", "ean_13",'code_128','qr_code'],
+    });
+
+    
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" }
+    });
+  
+    const video = document.createElement("video");
+    video.width=400;
+    video.height=500;
+    video.srcObject = mediaStream;
+    video.autoplay = true;
+    video.id = "barcode_video"
+  
+    //list.before(video);
+
+    root_barcode.appendChild(video);
+    let codproducto = '';
+
+    let contador = 0;
+    function render() {
+      barcodeDetector
+        .detect(video)
+        .then((barcodes) => {
+            
+          barcodes.forEach((barcode) => {
+                contador+=1;
+                    if(contador==1){
+                        codproducto = barcode.rawValue;
+                        //esto para evitar que busque muchas veces el mismo código
+                        txtCodprod.value = codproducto.replace('MERCADOS-','');
+                        $("#modal_barcode").modal('hide');
+                        document.getElementById('btnBuscarClie').click();
+                    }
+                    
+          });
+        })
+        .catch(console.error);
+    }
+  
+    (function renderLoop() {
+      requestAnimationFrame(renderLoop);
+      render();
+    })();
 };
 
 function getListaClientes(nodia){

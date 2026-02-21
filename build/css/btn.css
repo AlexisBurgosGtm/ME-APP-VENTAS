@@ -80,6 +80,24 @@
   bottom: 35px;
 }
 
+.btn-install{
+    position: fixed;
+    z-index: 1088;
+    left: 30%;
+    right: 30%;
+    bottom: 55px;
+    cursor: pointer;            
+    transition: transform 0.5s ease; 
+}.btn-install:hover {            
+          transform: scale(1.5);        
+      };
+      
+.btn-share {
+  transition: transform 0.5s ease; 
+}.btn-share:hover {            
+          transform: scale(1.5);        
+      } 
+
 .btn-bottom-mr { 
   position: fixed;
   z-index: 1088;

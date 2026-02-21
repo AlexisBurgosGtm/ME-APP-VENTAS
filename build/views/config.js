@@ -29,13 +29,14 @@ function getView(){
 
                         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <div class="form-group">
-                                <label class="negrita text-info">Adelantar Correlativo de Pedidos</label>
+                                <label class="negrita text-info">Corregir Correlativo de Pedidos</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" disabled="true" id="txtCorrelativo">
-                                    <button class="btn btn-outline-info hand shadow" id="btnActualizarCorrelativo">
-                                        <i class="fal fa-save"></i>
-                                        Actualizar Correlativo
+                                  
+                                    <button class="btn btn-outline-primary hand shadow" id="btnActualizarCorrelativo">
+                                        <i class="fal fa-spinner"></i>
+                                        Corregir Correlativo
                                     </button>
+                                    
                                 </div>
                             </div>
                             
@@ -96,45 +97,31 @@ function addListeners(){
 
 
 
-    classTipoDocumentos.getCorrelativoDocumento('',GlobalCoddoc)
-    .then((correlativo)=>{
-        document.getElementById('txtCorrelativo').value = Number(correlativo.replace(' ',''));
-    })
-    .catch(()=>{
-        document.getElementById('txtCorrelativo').value = '0';
-    });
 
     let btnActualizarCorrelativo = document.getElementById('btnActualizarCorrelativo');
     btnActualizarCorrelativo.addEventListener('click',()=>{
-        funciones.Confirmacion('¿Está seguro que desea actualizar este Correlativo?')
+
+
+        funciones.Confirmacion('¿Está seguro que desea corregir el Correlativo de documento de ventas?')
         .then((value)=>{
             if(value==true){
 
                 btnActualizarCorrelativo.disabled = true;
-                btnActualizarCorrelativo.innerHTML = `<i class="fal fa-save"></i>
-                                                    Actualizando...`
+                btnActualizarCorrelativo.innerHTML = `<i class="fal fa-spinner fa-spin"></i>`
 
-                let nuevo = Number(document.getElementById('txtCorrelativo').value)
-                classTipoDocumentos.updateCorrelativoDocumento(GlobalCoddoc,nuevo)
+              
+                classTipoDocumentos.updateCorrelativoDocumento(GlobalCoddoc)
                 .then(()=>{
                     funciones.Aviso('Correlativo actualizado Exitosamente!!');
 
-                    classTipoDocumentos.getCorrelativoDocumento('',GlobalCoddoc)
-                    .then((correlativo)=>{
-                        document.getElementById('txtCorrelativo').value = Number(correlativo.replace(' ',''));
-                    })
-                    .catch(()=>{
-                        document.getElementById('txtCorrelativo').value = '0';
-                    });
-                    
                     btnActualizarCorrelativo.disabled = false;
-                    btnActualizarCorrelativo.innerHTML = `<i class="fal fa-save"></i>
+                    btnActualizarCorrelativo.innerHTML = `<i class="fal fa-spinner"></i>
                                                         Actualizar Correlativo`
                 })
                 .catch(()=>{
                     funciones.AvisoError('No se pudo actualizar');
                     btnActualizarCorrelativo.disabled = false;
-                    btnActualizarCorrelativo.innerHTML = `<i class="fal fa-save"></i>
+                    btnActualizarCorrelativo.innerHTML = `<i class="fal fa-spinner"></i>
                                                         Actualizar Correlativo`
                 });
 
@@ -195,3 +182,6 @@ function initView(){
     addListeners();
 
 };
+
+
+

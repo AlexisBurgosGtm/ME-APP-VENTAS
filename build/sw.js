@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-v2025-004';
-const dynamicCacheName = 'runtime-cache-2025-004';
+const staticCacheName = 'pre-cache-v2026-001';
+const dynamicCacheName = 'runtime-cache-2026-001';
 
 
 // Pre Caching Assets
@@ -11,6 +11,7 @@ const precacheAssets = [
     './css/fa-regular.css',
     './css/fa-brands.css',
     './css/btn.css',
+    './css/personalizado.css',
     './css/custom_theme.css',
     './css/bootstrap.min.css',
     './css/bootstrap-toggle.css',
@@ -51,6 +52,7 @@ const precacheAssets = [
     './libs/sweetalert.min.js',
     './libs/toastr.js',
     './libs/parallax.min.js',
+    './libs/animate.min.css',
     './models/classTipoDocumentos.js',
     './models/classEmpleados.js',
     './vendor/jquery-easing/jquery.easing.js',
