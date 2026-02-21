@@ -118,6 +118,8 @@ function getView(){
 
 function addListeners(){
     
+   
+
     document.getElementById('lbUsuarioData').innerText = '';
 
     //carga las sucursales directamente desde código

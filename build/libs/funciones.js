@@ -316,7 +316,7 @@ let funciones = {
     },
     AvisoError: function(msn){
         swal(msn, {
-            timer: 1500,
+            timer: 2000,
             icon: "error",
             buttons: false
             });
@@ -756,11 +756,11 @@ let funciones = {
     showToast: (text)=>{
       //depente de la libreria noty
       new Noty({
-        type: 'information',
+        type: 'warning', //info, alert, notificacion, warning, error, information, success
         layout: 'topRight',
-        timeout: '500',
-        theme: 'metroui',
-        progressBar: false,
+        timeout: '1000',
+        theme: 'relax', //relax, metroui, mint, sunset,bootstrap-v3,
+        progressBar: true, //true false
         text,
       }).show();
     },
@@ -932,8 +932,8 @@ let funciones = {
           let qrcodetext = `MERCADOS-${codigo}`;
           new QRCode(container, qrcodetext);
 
-      },
-      export_json_to_xlsx:(data,nombre)=>{
+    },
+    export_json_to_xlsx:(data,nombre)=>{
 
          
           filename= nombre.toString() + '.xlsx'; 
@@ -942,7 +942,60 @@ let funciones = {
           XLSX.utils.book_append_sheet(wb, ws, "rpt"); 
           XLSX.writeFile(wb,filename); 
 
-      }
+    },
+    animateCSS: (element, animation, prefix = 'animate__') =>
+        //utiliza Animate.css
+        // We create a Promise and return it
+        new Promise((resolve, reject) => {
+        const animationName = `${prefix}${animation}`;
+        const node = document.getElementById(element);
+
+        node.classList.add(`${prefix}animated`, animationName);
+
+        // When the animation ends, we clean the classes and resolve the Promise
+        function handleAnimationEnd(event) {
+            event.stopPropagation();
+            node.classList.remove(`${prefix}animated`, animationName);
+            resolve('Animation ended');
+        }
+
+        node.addEventListener('animationend', handleAnimationEnd, {once: true});
+    }),
+    devuelve_dia_semana:()=>{
+
+        //const input = document.getElementById(idInput);
+        //const fecha = new Date(input.value + 'T00:00'); // 'T00:00' evita zona horaria UTC
+        const fecha = new Date(); // 'T00:00' evita zona horaria UTC
+        const diaSemana = fecha.getDay(); // 0 (Dom) - 6 (Sab)
+
+
+        switch (diaSemana) {
+          case 0:
+            return 'DOMINGO';
+            break;
+          case 1:
+            return 'LUNES';
+            break;
+          case 2:
+            return 'MARTES';
+            break;
+          case 3:
+            return 'MIERCOLES';
+            break;
+          case 4:
+            return 'JUEVES';
+            break;
+          case 5:
+            return 'VIERNES';
+            break;
+          case 6:
+            return 'SABADO';
+            break;
+        
+          default:
+            break;
+        }
+    },
 };
 
 //export default funciones;

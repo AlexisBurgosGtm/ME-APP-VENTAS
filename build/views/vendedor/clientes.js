@@ -86,14 +86,14 @@ function getView(){
 
                             <div class="row">
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('LUNES')">
+                                    <div id="btn_lunes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('LUNES')">
                                         <div class="card-body p-2 text-center">
                                             <h5>LUNES</h5>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('MARTES')">
+                                    <div id="btn_martes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('MARTES')">
                                         <div class="card-body p-2 text-center">
                                             <h5>MARTES</h5>
                                         </div>
@@ -103,14 +103,14 @@ function getView(){
                             <br>
                             <div class="row">
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('MIERCOLES')">
+                                    <div id="btn_miercoles" class="card card-rounded shadow hand col-12" onclick="getListaClientes('MIERCOLES')">
                                         <div class="card-body p-2 text-center">
                                             <h5>MIERCOLES</h5>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('JUEVES')">
+                                    <div id="btn_jueves" class="card card-rounded shadow hand col-12" onclick="getListaClientes('JUEVES')">
                                         <div class="card-body p-2 text-center">
                                             <h5>JUEVES</h5>
                                         </div>
@@ -121,14 +121,14 @@ function getView(){
                             <br>
                             <div class="row">
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('VIERNES')">
+                                    <div id="btn_viernes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('VIERNES')">
                                         <div class="card-body p-2 text-center">
                                             <h5>VIERNES</h5>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('SABADO')">
+                                    <div id="btn_sabado" class="card card-rounded shadow hand col-12" onclick="getListaClientes('SABADO')">
                                         <div class="card-body p-2 text-center">
                                             <h5>SABADO</h5>
                                         </div>
@@ -138,7 +138,7 @@ function getView(){
                             <br>
                             <div class="row">
                                 <div class="col-6">
-                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('DOMINGO')">
+                                    <div id="btn_domingo" class="card card-rounded shadow hand col-12" onclick="getListaClientes('DOMINGO')">
                                         <div class="card-body p-2 text-center">
                                             <h5>DOMINGO</h5>
                                         </div>
@@ -154,7 +154,7 @@ function getView(){
                             </div> 
                             <br>
                             <div class="row">
-                                <div class="card card-rounded shadow hand col-12 border-info text-info" onclick="getListaClientes('AJENOS')">
+                                <div class="card card-rounded shadow hand col-12 border-personal text-personal" onclick="getListaClientes('AJENOS')">
                                     <div class="card-body p-2 text-center">
                                         <h5>BUSCAR CLIENTE AJENO</h5>
                                     </div>
@@ -183,7 +183,7 @@ function getView(){
                     <input type="text" id="txtFiltrarCliente" class="form-control border-primary" placeholder="Buscar en la lista...">
                
 
-                <table class="table table-responsive col-12 p-0" id="tblLista">
+                <table class="table col-12 h-full p-0" id="tblLista">
                     <thead class="bg-secondary text-white">
                         <tr>
                             <td class="negrita">Cliente <small class="text-secondary">---------</small>Dirección</td>
@@ -203,7 +203,7 @@ function getView(){
         tab_visitados: ()=>{
             return `
             <div class="table-responsive">
-                <table class="table table-responsive" id="tblLista">
+                <table class="table h-full col-12" id="tblLista">
                 <thead class="bg-warning">
                     <tr>
                             <td class="negrita">Cliente / Dirección</td>
@@ -728,6 +728,10 @@ async function setRecordatorioVisita(codigo, nit, nombre, direccion){
 
 async function addListeners(){
 
+
+    fcn_get_color_dia();
+
+
     document.getElementById('btnTabNVAtras').addEventListener('click',()=>{
         document.getElementById('tab-inicio').click();
     });
@@ -1214,6 +1218,37 @@ async function addListeners(){
     
 };
 
+function fcn_get_color_dia(){
+
+    switch (funciones.devuelve_dia_semana()) {
+        case 'LUNES':
+            document.getElementById('btn_lunes').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'MARTES':
+            document.getElementById('btn_martes').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'MIERCOLES':
+            document.getElementById('btn_miercoles').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'JUEVES':
+            document.getElementById('btn_jueves').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'VIERNES':
+            document.getElementById('btn_viernes').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'SABADO':
+            document.getElementById('btn_sabado').classList.add("bg-personal", "text-white", "negrita");
+            break;
+        case 'DOMINGO':
+            document.getElementById('btn_domingo').classList.add("bg-personal", "text-white", "negrita");
+            break;
+    
+        default:
+            break;
+    }
+
+};
+
 async function iniciar_barcode() {
 
     let root_barcode = document.getElementById('root_barcode');
@@ -1225,7 +1260,7 @@ async function iniciar_barcode() {
         
     }
     
-    let txtCodprod = document.getElementById('txtBuscarClie')
+    let codigo_cliente = '';
     
 
     if('BarcodeDetector' in window ){
@@ -1255,7 +1290,7 @@ async function iniciar_barcode() {
     //list.before(video);
 
     root_barcode.appendChild(video);
-    let codproducto = '';
+    let codigo = '';
 
     let contador = 0;
     function render() {
@@ -1266,11 +1301,14 @@ async function iniciar_barcode() {
           barcodes.forEach((barcode) => {
                 contador+=1;
                     if(contador==1){
-                        codproducto = barcode.rawValue;
+                        codigo = barcode.rawValue;
                         //esto para evitar que busque muchas veces el mismo código
-                        txtCodprod.value = codproducto.replace('MERCADOS-','');
+                        codigo_cliente = codigo.replace(prefijo_codigo_cliente,'');
                         $("#modal_barcode").modal('hide');
-                        document.getElementById('btnBuscarClie').click();
+
+                        funciones.Aviso(codigo_cliente);
+                        get_ficha_cliente(codigo_cliente);
+
                     }
                     
           });
@@ -1283,6 +1321,12 @@ async function iniciar_barcode() {
       render();
     })();
 };
+
+function get_ficha_cliente(codigo){
+
+    //mandar tambien empnit
+    
+}
 
 function getListaClientes(nodia){
 

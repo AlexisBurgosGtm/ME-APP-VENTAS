@@ -38,3 +38,7 @@
 
 a.text-personal:hover, a.text-personal:focus {
   color: var(--color-personal) !important; }
+
+
+  .border-info {
+  border-color: var(--color-personal) !important; }
