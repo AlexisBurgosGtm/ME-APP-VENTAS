@@ -9,6 +9,93 @@ function detener_efecto(){
   
 }
 
+document.getElementById('btnCerrarSesion').addEventListener('click',(e)=>{
+    e.preventDefault();
+
+    if(GlobalCodSucursal==''){}else{
+
+        funciones.Confirmacion('¿Está seguro que desea CERRAR SESIÓN?')
+        .then((value)=>{
+            if(value==true){
+                classNavegar.login();
+            }
+        })
+    
+    }
+
+})
+
+
+//-------- PERFIL DEL CLIENTE -------
+
+function get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long){
+
+    //mandar tambien empnit
+
+    GlobalSelectedCodCliente = codigo;
+    GlobalSelectedNomCliente = nombre;
+    GlobalSelectedDirCliente = direccion;
+
+    document.getElementById('lbProfileNomclie').innerText = nombre;
+    document.getElementById('lbProfileNegocio').innerText = negocio;
+    document.getElementById('lbProfileDirclie').innerText = direccion;
+
+
+
+    
+
+    //crea el boton para ubicarlo en google maps
+    document.getElementById('container_btn_ubicacion').innerHTML = '';
+    document.getElementById('container_btn_ubicacion').innerHTML = `
+                            <button 
+                                class="btn btn-outline-primary btn-bottom-r btn-xl btn-circle hand shadow"
+                                onclick="funciones.gotoGoogleMaps('${lat}','${long}')">
+                                    <i class="fal fa-map-marker"></i>
+                            </button> 
+                            `;
+
+
+    $("#modal_perfil_cliente").modal('show');
+
+    
+
+};
+
+
+function listeners_profile_cliente(){
+
+
+      document.getElementById('btnProfileVenta').addEventListener('click',()=>{
+          $("#modal_perfil_cliente").modal('hide');
+          classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
+      })
+
+      document.getElementById('btnProfileCerrado').addEventListener('click',()=>{
+          $("#modal_perfil_cliente").modal('hide');
+          
+      })
+
+      document.getElementById('btnProfileDinero').addEventListener('click',()=>{
+          $("#modal_perfil_cliente").modal('hide');
+          
+      })
+
+      document.getElementById('btnProfileBloqueado').addEventListener('click',()=>{
+          $("#modal_perfil_cliente").modal('hide');
+          
+      })
+
+  
+
+  
+
+};
+
+listeners_profile_cliente();
+
+//-------- PERFIL DEL CLIENTE -------
+
+
 //inicializa la instalacion de la app
 funciones.instalationHandlers('btnInstalarApp');
 

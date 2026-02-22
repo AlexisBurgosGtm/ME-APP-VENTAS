@@ -68,10 +68,13 @@ let classNavegar = {
                                 <i class="fal fa-edit"></i>
                                 Censo
                             </button>
-                            <button class="btn btn-sm hidden"  id="btnMenu2VendedorSync">
-                                <i class="fal fa-sync"></i>
-                                Desc
+
+                            <button class="btn btn-sm"  id="btnMenu2Configuraciones">
+                                <i class="fal fa-cog"></i>
+                                Config
                             </button>
+
+                                                   
                     
                             `
 
@@ -105,22 +108,13 @@ let classNavegar = {
                         classNavegar.inicio_censo();
                     });
 
-                    let btnMenu2VendedorSync = document.getElementById('btnMenu2VendedorSync');
-                    btnMenu2VendedorSync.addEventListener('click',()=>{
-                        $('#modalSync').modal('show');
-                    });
-
-                  
-                   
-                    let btnMConfig = document.getElementById('btnMConfig');
-                    btnMConfig.addEventListener('click',(e)=>{
-                        e.preventDefault();
-                        if(GlobalSelectedForm=='LOGIN'){
-                            funciones.AvisoError('Debe iniciar sesión para ver esta sección');
-                            return;
-                        };
+                    let btnMenu2Configuraciones = document.getElementById('btnMenu2Configuraciones');
+                    btnMenu2Configuraciones.addEventListener('click',()=>{
+                    
                         classNavegar.ConfigVendedor();
                     });
+                   
+                   
 
                     await classEmpleados.updateMyLocation();
 

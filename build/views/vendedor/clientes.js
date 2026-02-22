@@ -4,7 +4,7 @@ function getView(){
             return `
             <div class="panel-container show">
                 <div class="panel-content bg-white">
-                    <div class="tab-content py-3">
+                    <div class="tab-content py-2">
 
                         <div class="tab-pane fade active show" id="panelInicio" role="tabpanel">
                                 ${view.tab_inicio() + view.modal_camara()}
@@ -46,18 +46,18 @@ function getView(){
                 <div class="card-body">
 
                     <label>Total del día:</label><br>
-                    <h4 class="negrita text-personal" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
+                    <h4 class="negrita text-danger" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
                                         
                         <div class="row">
                             <div class="col-6">
-                                <label>Precios Descargados:</label>
+                                <label>Precios Descargados</label>
                                 <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP">
                                     <i class="fal fa-download"></i>
                                 </button>
                                 <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
                             </div>
                             <div class="col-6">
-                                    <label>Clientes Descargados:</label>
+                                    <label>Clientes Descargados</label>
                                     <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC">
                                         <i class="fal fa-download"></i>
                                     </button>
@@ -645,9 +645,13 @@ function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
 
 };
 
-function getMenuCliente2(codigo,nombre,direccion,telefono,lat,long,nit){
+function getMenuCliente2(codigo,negocio,nombre,direccion,telefono,lat,long,nit){
     
-    
+ 
+    get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
+
+    return;
+
     //map.remove()
     //map = Lmap(lat,long,nombre,telefono);
 
@@ -1303,11 +1307,43 @@ async function iniciar_barcode() {
                     if(contador==1){
                         codigo = barcode.rawValue;
                         //esto para evitar que busque muchas veces el mismo código
-                        codigo_cliente = codigo.replace(prefijo_codigo_cliente,'');
-                        $("#modal_barcode").modal('hide');
+                        codigo_cliente = codigo.replace(GlobalCodSucursal,'').replace('-','');
 
-                        funciones.Aviso(codigo_cliente);
-                        get_ficha_cliente(codigo_cliente);
+                        funciones.showToast('Buscando cliente...');
+                        
+                        GF.data_cliente(GlobalCodSucursal,codigo_cliente)
+                        .then((data)=>{
+
+                            let codigo = '';
+                            let nit = '';
+                            let negocio = '';
+                            let nombre = '';
+                            let direccion = '';
+                            let telefono = '';
+                            let lat = ''; let long = '';
+
+                            data.recordset.map((r)=>{
+                                codigo = r.CODIGO;
+                                nit = r.NIT;
+                                negocio = r.NEGOCIO;
+                                nombre = r.NOMCLIE;
+                                direccion = r.DIRCLIE;
+                                telefono = r.TELEFONO;
+                                lat = r.LAT;
+                                long = r.LONG;
+                            })
+
+                            $("#modal_barcode").modal('hide');
+                            get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
+
+                            
+
+                            video.stop();
+                        })
+                        .catch(()=>{
+                            funciones.AvisoError('Codigo no encontrado');
+                        })
+
 
                     }
                     
@@ -1322,11 +1358,7 @@ async function iniciar_barcode() {
     })();
 };
 
-function get_ficha_cliente(codigo){
 
-    //mandar tambien empnit
-    
-}
 
 function getListaClientes(nodia){
 

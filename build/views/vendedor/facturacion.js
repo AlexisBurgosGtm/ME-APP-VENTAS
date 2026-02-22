@@ -103,7 +103,7 @@ function getView(){
                     <div class="panel-content">
                         
                         <div class="table-responsive border-top-rounded border-bottom-rounded shadow">
-                            <table class="table table-hover table-striped"><!--mt-5-->
+                            <table class="table table-hover table-striped h-full col-12"><!--mt-5-->
                                 <thead class="bg-secondary text-white">
                                     <tr>
                                         <th class="">Producto</th>

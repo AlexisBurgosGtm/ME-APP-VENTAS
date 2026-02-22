@@ -2,6 +2,37 @@ const execute = require('./connection');
 const express = require('express');
 const router = express.Router();
 
+router.post("/datos_cliente", async(req,res)=>{
+
+    const {sucursal,codclie}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT 
+                ME_Clientes.NITCLIE AS CODIGO, 
+                ME_Clientes.NITFACTURA AS NIT,
+                ME_Clientes.FAXCLIE AS TIPONEGOCIO,
+                 ME_Clientes.NOMFAC AS NEGOCIO, 
+                ME_Clientes.NOMCLIE, 
+                ME_Clientes.DIRCLIE, 
+                ME_Municipios.DESMUNI, 
+                ME_Clientes.TELCLIE AS TELEFONO, 
+                ISNULL(ME_Clientes.LATITUD, 0) AS LAT, 
+                ISNULL(ME_Clientes.LONGITUD, 0) AS LONG, 
+                ISNULL(ME_Clientes.FECHAINGRESO,'2020-04-15') AS LASTSALE, 
+                '' AS STVISITA, 
+                ME_Clientes.REFERENCIA, 
+                ME_Clientes.VISITA
+            FROM ME_Clientes LEFT OUTER JOIN
+                ME_Municipios ON ME_Clientes.CODSUCURSAL = ME_Municipios.CODSUCURSAL 
+                AND ME_Clientes.CODMUNI = ME_Municipios.CODMUNI
+            WHERE (ME_Clientes.CODSUCURSAL = '${sucursal}') 
+                AND (ME_Clientes.NITCLIE='${codclie}')
+           `;
+       
+    
+    execute.Query(res,qry);
+
+})
 
 
 router.post("/solicitud_cambios_cliente", async(req,res)=>{

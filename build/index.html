@@ -128,8 +128,8 @@
                         <div class="ml-auto d-flex">
                                                     
                         <div>
-                            <a href="#" data-toggle="" title="" class="text-white negrita hand header-icon d-flex align-items-center justify-content-center ml-2" id="btnMConfig">
-                                <i class="fal fa-cog text-white negrita"></i>
+                            <a href="#" data-toggle="" title="" class="text-white negrita hand header-icon d-flex align-items-center justify-content-center ml-2" id="btnCerrarSesion">
+                                <i class="fal fa-power-off text-white negrita"></i>
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-animated dropdown-xl">
@@ -436,8 +436,8 @@
         <div class="modal fade js-modal-settings modal-backdrop-transparent shadow" data-backdrop="static" data-keyboard="false"  tabindex="-1" role="dialog" aria-hidden="true" id="modalWait">
             <div class="modal-dialog modal-dialog-centered modal-sm">
                 <div class="modal-content">
-                    <div class="dropdown-header bg-secondary d-flex justify-content-center align-items-center w-100">
-                        <img width="30" height="30" src="./img/logoag.png">
+                    <div class="dropdown-header bg-personal d-flex justify-content-center align-items-center w-100">
+                        <img width="30" height="30" src="./img/logo.png">
                         <h3 class="m-0 text-center color-white">
                             Cargando datos...
                             <small class="mb-0 opacity-80">Espere por favor</small>
@@ -461,6 +461,98 @@
                         </button>
                     </div>
                  
+                </div>
+            </div>
+        </div>
+
+
+        <!-- FICHA DEL CLIENTE -->
+        <div class="modal fade js-modal-settings modal-backdrop-transparent" tabindex="-1" role="dialog" aria-hidden="true" 
+            id="modal_perfil_cliente">
+            <div class="modal-dialog modal-dialog-right modal-lg">
+                <div class="modal-content">
+                  
+                    <div class="modal-body p-2">
+
+                        <div class="card col-12 card-rounded shadow">
+                            <div class="card-body p-2">
+
+                                <div class="form-group">
+                                    <label for="">Cliente:</label>
+                                    <h5 id="lbProfileNomclie" class="text-danger">CONSUMIDOR FINAL</h5>
+                                    <h5 id="lbProfileNegocio" class="text-secondary">TIENDA LA BENDICION</h5>
+                                    <small id="lbProfileDirclie">Calle principal, Zacapa, Zacapa</small>
+                                </div>
+                               
+                                <div class="row hand" id="btnProfileVenta">
+                                    <div class="col-3">
+                                        <button class="btn btn-outline-success btn-circle btn-xl hand shadow">
+                                            <i class="fal fa-shopping-cart"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-9">
+                                        <br>
+                                        <b class="text-left h2 negrita text-success">NUEVA VENTA</b>
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row hand"  id="btnProfileCerrado">
+                                    <div class="col-3">
+                                         <button class="btn btn-outline-warning btn-circle btn-xl hand shadow">
+                                            <i class="fal fa-warehouse"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-9">
+                                        <br>
+                                        <b class="text-left h2 negrita text-warning">TIENDA CERRADA</b>                                       
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row hand"  id="btnProfileDinero">
+                                    <div class="col-3">
+                                        <button class="btn btn-outline-secondary btn-circle btn-xl hand shadow">
+                                            <i class="fal fa-dollar-sign"></i>
+                                        </button>        
+                                    </div>
+                                    <div class="col-9">
+                                        <br>
+                                        <b class="text-left h2 negrita text-secondary">NO TIENE DINERO</b>                                        
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row hand"  id="btnProfileBloqueado">
+                                    <div class="col-3">
+                                        <button class="btn btn-outline-info btn-circle btn-xl hand shadow">
+                                            <i class="fal fa-truck"></i>
+                                        </button>
+                                    </div>
+                                    <div class="col-9">
+                                        <br>
+                                        <b class="text-left h2 negrita text-info">PASO BLOQUEADO</b>
+                                    </div>
+                                </div>
+                                <hr>
+
+                            </div>
+                        </div>
+                   
+                        
+                        <div class="row">
+                            <div class="col-6">
+                                <button class="btn btn-secondary btn-bottom-l btn-xl btn-circle hand shadow" data-dismiss="modal">
+                                    <i class="fal fa-arrow-left"></i>
+                                </button>
+                            </div>
+                            <div class="col-6" id="container_btn_ubicacion">
+                               
+                            </div>
+                        </div>
+                     
+                    </div>
+                   
                 </div>
             </div>
         </div>

@@ -1,9 +1,8 @@
 
-let versionapp = 'Mod:21.02.2026.0';
+let versionapp = 'Mod:22.02.2026.0';
 let GlobalServerUrl = '';
 let GlobalUrlServicePedidos = '';
 
-let prefijo_codigo_cliente = 'MEQR-';
 
 async function almacenarCredenciales(){
         

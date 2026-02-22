@@ -254,7 +254,8 @@ let apigen = {
                                         
                                     </div>
                                     <div class="col-2">
-                                        <button class="btn btn-danger btn-lg btn-circle hand shadow" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                        <button class="btn btn-danger btn-lg btn-circle hand shadow" 
+                                        onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
                                             <i class="fal fa-cog"></i>
                                         </button>
                                         
@@ -318,7 +319,8 @@ let apigen = {
                                                
                                             </div>
                                             <div class="col-2">
-                                                <button class="btn btn-danger btn-lg btn-circle hand shadow" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                                <button class="btn btn-danger btn-lg btn-circle hand shadow" 
+                                                onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
                                                     <i class="fal fa-cog"></i>
                                                 </button>
                                                 
@@ -381,170 +383,6 @@ let apigen = {
             
             
         },
-        BACKUP_clientesVendedor: async(sucursal,codven,dia,idContenedor,idContenedorVisitados)=>{
-        
-            let container = document.getElementById(idContenedor);
-            container.innerHTML = GlobalLoader;
-
-            let containerVisitados = document.getElementById(idContenedorVisitados);
-            
-            let strdata = ''; let strdataVisitados = '';
-
-            selectCliente(dia)
-            .then((response) => {
-                const data = response;
-                
-                data.map((rows)=>{
-                        let f = rows.LASTSALE.toString().replace('T00:00:00.000Z','');
-                        let stClassClie = ''; let stNomStatus='';
-                        if(f==funciones.getFecha()){
-                            
-                            switch (rows.STVISITA) {
-                                case 'VENTA':
-                                    stClassClie='bg-success text-white card-rounded border-secondary';
-                                    stNomStatus= 'VENDIDO';
-                                    break;
-                                case 'CERRADO':
-                                    stClassClie='bg-warning card-rounded border-secondary';
-                                    stNomStatus= 'CERRADO';        
-                                    break;
-                                case 'NODINERO':
-                                    stClassClie='bg-secondary text-white card-rounded border-secondary';
-                                    stNomStatus= 'SIN DINERO';
-                                    break;
-                            
-                                default:
-                                    
-                                    break;
-                            };
-                            let btnCallCliente = ''; 
-                            if(rows.TELEFONO=='SN'){
-                                btnCallCliente=''
-                            }else{
-                                btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
-                            }
-                            strdataVisitados = strdataVisitados + `
-                        <tr class='${stClassClie}'>
-                            <td>${rows.NEGOCIO} // ${rows.NOMCLIE}
-                                <br>
-                                <div class="row">
-                                    <div class="col-4">
-                                        <small>Cod: ${rows.CODIGO} - St:${stNomStatus}</small>    
-                                    </div>
-                                    <div class="col-4">
-                                        ${btnCallCliente}
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-danger btn-lg btn-circle hand shadow" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-cog"></i>
-                                        </button>
-                                        
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-warning btn-lg btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');">
-                                            <i class="fal fa-edit"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <small>${rows.DIRCLIE}, <b>${rows.DESMUNI}</b></small>
-                                <br>
-                                <small class="text-info">Ref:${rows.REFERENCIA}</small>
-
-                                <div class="row">
-                                    <div class="col-4">
-                                        <button class="btn btn-success btn-sm" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
-                                            <i class="fal fa-map-marker"></i>Ubicac
-                                        </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button class="btn btn-warning btn-sm" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                            <i class="fal fa-book"></i>Historial
-                                        </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <button class="btn btn-info btn-sm" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-shopping-cart"></i>Vender
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </td>
-                        
-                        </tr>` 
-
-                        }else{
-                            let btnCallCliente = ''; 
-                            if(rows.TELEFONO=='SN'){
-                                btnCallCliente=''
-                            }else{
-                                btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
-                            }
-                            strdata = strdata + `
-                                <tr class='col-12 border-bottom border-info'>
-                                    <td>${rows.NEGOCIO} // ${rows.NOMCLIE}
-                                        <br>
-                                        <div class="row">
-                                            <div class="col-4">
-                                                <small>Cod: ${rows.CODIGO} - St:${stNomStatus}</small>    
-                                            </div>
-                                            <div class="col-4">
-                                                ${btnCallCliente}
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="btn btn-danger btn-lg btn-circle hand shadow" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                                    <i class="fal fa-cog"></i>
-                                                </button>
-                                                
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="btn btn-warning btn-lg btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');">
-                                                    <i class="fal fa-edit"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        
-                                        <small>${rows.DIRCLIE}, <b>${rows.DESMUNI}</b></small>
-                                        
-                                        <br>
-                                        <small class="text-info">Ref:${rows.REFERENCIA}</small>
-                                        <div class="row">
-                                            
-                                            <div class="col-4">
-                                                <button class="btn btn-outline-primary btn-sm shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
-                                                    <i class="fal fa-map-marker"></i>Ubicac
-                                                </button>
-                                            </div>  
-                                            <div class="col-4">
-                                                <button class="btn btn-outline-warning shadow btn-sm" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                                    <i class="fal fa-book"></i>Historial
-                                                </button>   
-                                            </div>
-                                        
-                                            <div class="col-4">
-                                                <button class="btn btn-info btn-sm" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                                    <i class="fal fa-shopping-cart"></i>Vender
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                `
-                        }
-                        
-                        
-                })
-                container.innerHTML = strdata;
-                containerVisitados.innerHTML = strdataVisitados;
-
-            }, (error) => {
-                funciones.AvisoError('Error en la solicitud');
-                strdata = '';
-                containerVisitados.innerHTML = 'No se pudo cargar la lista';
-                container.innerHTML = 'No se pudo cargar la lista';
-            });
-            
-            
-        },
         clientesVendedorMapa: async(sucursal,codven,dia,idContenedor, lt, lg)=>{
 
             let container = document.getElementById(idContenedor);
@@ -571,7 +409,7 @@ let apigen = {
                         .on('click', function(e){
                             //console.log(e.sourceTarget._leaflet_id);
                             GlobalMarkerId = Number(e.sourceTarget._leaflet_id);
-                            getMenuCliente(rows.CODIGO,rows.NOMCLIE,rows.DIRCLIE,rows.TELEFONO,rows.LAT,rows.LONG,rows.NIT);
+                            getMenuCliente(rows.CODIGO,rows.NEGOCIO,rows.NOMCLIE,rows.DIRCLIE,rows.TELEFONO,rows.LAT,rows.LONG,rows.NIT);
                         })
                     }
                 })
@@ -3710,4 +3548,39 @@ let apigen = {
             });
             
         }
+};
+
+
+let GF = {
+    data_cliente:(sucursal,codclie)=>{
+        
+        return new Promise((resolve,reject)=>{
+
+            let data = {
+                sucursal:sucursal,
+                codclie:codclie
+            }
+
+            axios.post('/clientes/datos_cliente', data)
+            .then((response) => {
+                if(response.status.toString()=='200'){
+                    let data = response.data;
+                    if(data.toString()=="error"){
+                        reject();
+                    }else{
+                        if(Number(data.rowsAffected[0])>0){
+                            resolve(data);             
+                        }else{
+                            reject();
+                        } 
+                    }       
+                }else{
+                    reject();
+                }                   
+            }, (error) => {
+                reject();
+            });
+        })
+
+    }
 }

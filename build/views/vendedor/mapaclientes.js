@@ -3,27 +3,15 @@ function getView(){
     let view = {
         encabezado : ()=>{
             return `
-                    <div class="card">
+                    <div class="card col-12">
                         <div class="card-body">
                             <h4 id="lbTotalDia">Seleccione Dia</h4>
                             <div class="row">
-
-                                <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
                                         <div class="input-group">               
                                             <select class="form-control border-info" id="cmbDiaVisita"></select>
                                         </div>                            
                                 </div>
-                            <!--
-                                <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 text-right">
-                                    <br>
-                                </div>                                        
-                                <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
-                                    <input type="text" id="txtFiltrarCliente" class="form-control hidden" placeholder="Buscar en la lista...">
-                                </div>
-                                <div class="col-sm-12 col-md-1 col-lg-1 col-xl-1 text-right">
-                                    <br>
-                                </div>                                        
-                            -->    
                             </div> 
                         </div>
 
@@ -40,7 +28,7 @@ function getView(){
             </div>
             <div class="card col-12">
                 <div class="table-responsive">
-                    <table class="table table-responsive table-hover table-striped table-bordered">
+                    <table class="table h-full col-12 table-hover table-striped table-bordered">
                         <thead>
                             <td></td>
                             <td></td>
@@ -272,9 +260,16 @@ function cargarMapaClientes(){
 
 };
 
-function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
+function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit,negocio){
     
+  
+
     
+    get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
+
+
+    return;
+
     //map.remove()
     //map = Lmap(lat,long,nombre,telefono);
 
@@ -291,6 +286,8 @@ function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
     showMenuLateral('Opciones del Cliente');
 
 };
+
+
 
 function iniciarVistaVendedorMapaClientes(){
     getView();
