@@ -2,6 +2,32 @@ const execute = require('./connection');
 const express = require('express');
 const router = express.Router();
 
+
+router.post("/insert_visita", async(req,res)=>{
+   
+    const { sucursal, codemp, codclie, fecha,hora,motivo,lat,long } = req.body;
+
+    let qry = `
+        INSERT INTO CLIENTES_VISITAS (EMPNIT,CODCLIENTE,FECHA,HORA,CODEMP,MOTIVO,LATITUD,LONGITUD)
+        SELECT '${sucursal}' AS EMPNIT, 
+                ${codclie} AS CODCLIENTE, 
+                '${fecha}' AS FECHA, 
+                '${hora}' AS HORA, 
+                ${codemp} AS CODEMP, 
+                '${motivo}' AS MOTIVO, 
+                ${lat} AS LATITUD,
+                ${long} AS LONGITUD;
+            `;
+
+            //UPDATE CLIENTES SET LASTSALE='${fecha}' WHERE CODCLIENTE=${codclie};
+    
+          
+      execute.Query(res,qry);
+     
+});
+
+
+
 router.post("/datos_cliente", async(req,res)=>{
 
     const {sucursal,codclie}  = req.body;

@@ -70,18 +70,106 @@ function listeners_profile_cliente(){
           classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
       })
 
-      document.getElementById('btnProfileCerrado').addEventListener('click',()=>{
-          $("#modal_perfil_cliente").modal('hide');
+      let btnProfileCerrado = document.getElementById('btnProfileCerrado')
+      btnProfileCerrado.addEventListener('click',()=>{
+
+          funciones.Confirmacion('¿Esta seguro que quiere registrar que la tienda esta CERRADA?')
+          .then((value)=>{
+            if(value==true){
+
+                funciones.showToast('Enviando datos...');
+
+                btnProfileCerrado.disabled = true;
+            
+                GF.insert_visita(GlobalSelectedCodCliente,'TIENDA CERRADA',0,0)
+                .then(()=>{
+
+                    btnProfileCerrado.disabled = false;
+                  
+                    funciones.Aviso('Visita registrada exitosamente!!');
+
+                    $("#modal_perfil_cliente").modal('hide');
+
+                })
+                .catch(()=>{
+                    funciones.AvisoError('No se pudo actualizar la visita');
+
+                    btnProfileCerrado.disabled = false;
+                })
+
+
+            }
+          })
+
           
       })
 
-      document.getElementById('btnProfileDinero').addEventListener('click',()=>{
-          $("#modal_perfil_cliente").modal('hide');
+      let btnProfileDinero = document.getElementById('btnProfileDinero');
+      btnProfileDinero.addEventListener('click',()=>{
+        
+       
+            funciones.Confirmacion('¿Esta seguro que quiere registrar que la tienda NO TIENE DINERO?')
+            .then((value)=>{
+              if(value==true){
+
+                  funciones.showToast('Enviando datos...');
+
+                  btnProfileDinero.disabled = true;
+              
+                  GF.insert_visita(GlobalSelectedCodCliente,'NO TIENE DINERO',0,0)
+                  .then(()=>{
+
+                      btnProfileDinero.disabled = false;
+                    
+                      funciones.Aviso('Visita registrada exitosamente!!');
+
+                      $("#modal_perfil_cliente").modal('hide');
+
+                  })
+                  .catch(()=>{
+                      funciones.AvisoError('No se pudo actualizar la visita');
+
+                      btnProfileDinero.disabled = false;
+                  })
+
+
+              }
+            })
+
+
           
       })
 
-      document.getElementById('btnProfileBloqueado').addEventListener('click',()=>{
-          $("#modal_perfil_cliente").modal('hide');
+      let btnProfileBloqueado = document.getElementById('btnProfileBloqueado');
+      btnProfileBloqueado.addEventListener('click',()=>{
+        
+            funciones.Confirmacion('¿Esta seguro que desea registrar que EL PASO ESTABA BLOQUEADO?')
+            .then((value)=>{
+              if(value==true){
+
+                  funciones.showToast('Enviando datos...');
+
+                  btnProfileBloqueado.disabled = true;
+              
+                  GF.insert_visita(GlobalSelectedCodCliente,'NO HABIA PASO',0,0)
+                  .then(()=>{
+
+                      btnProfileBloqueado.disabled = false;
+                    
+                      funciones.Aviso('Visita registrada exitosamente!!');
+
+                      $("#modal_perfil_cliente").modal('hide');
+
+                  })
+                  .catch(()=>{
+                      funciones.AvisoError('No se pudo actualizar la visita');
+
+                      btnProfileBloqueado.disabled = false;
+                  })
+
+
+              }
+            })
           
       })
 

@@ -3582,5 +3582,41 @@ let GF = {
             });
         })
 
+    },
+    insert_visita:(codclie,motivo,latitud,longitud)=>{
+
+
+        return new Promise((resolve,reject)=>{
+
+            let fecha = F.getFecha();
+            let hora = F.getHora();
+        
+                axios.post('/clientes/insert_visita',
+                {
+                    sucursal:GlobalCodSucursal,
+                    codclie:codclie,
+                    codemp:GlobalCodUsuario,
+                    motivo:motivo,
+                    hora:hora,
+                    fecha:fecha,
+                    lat: latitud,
+                    long: longitud
+                })
+                .then((response) => {
+                    if(response.status.toString()=='200'){
+                        let data = response.data;
+                        if(Number(data.rowsAffected[0])>0){
+                            resolve(data);
+                        }else{
+                            reject();
+                        }            
+                    }else{
+                        reject();
+                    }             
+                }, (error) => {
+                    reject();
+                });
+        })
+
     }
 }

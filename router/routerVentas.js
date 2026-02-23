@@ -1335,6 +1335,211 @@ router.post("/insertventa", async (req,res)=>{
                                             '', '', 0, ${lat},${long},'${app}','${jsondocproductos}'
                                             );`
  
+             let qry_visita = `
+                    INSERT INTO CLIENTES_VISITAS (EMPNIT,CODCLIENTE,FECHA,HORA,CODEMP,MOTIVO,LATITUD,LONGITUD)
+                    SELECT '${empnit}' AS EMPNIT, 
+                            ${nitclie} AS CODCLIENTE, 
+                            '${fecha}' AS FECHA, 
+                            '${hora}' AS HORA, 
+                            ${Number(codven)} AS CODEMP, 
+                            'VENTA' AS MOTIVO, 
+                            ${lat} AS LATITUD,
+                            ${long} AS LONGITUD;
+                        `;
+
+    execute.Query(res, qrycorrelativo + qry + qrydoc + qry_visita + qryBackup);
+    
+});
+
+router.post("/BACKUP3_insertventa", async (req,res)=>{
+    
+    const {jsondocproductos,codsucursal,empnit,anio,mes,dia,coddoc,correl,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long,hora} = req.body;
+  
+    let app = codsucursal;
+  
+    let tblDocproductos = JSON.parse(jsondocproductos);
+   
+    let qry = ''; // inserta los datos en la tabla documentos
+    let qrydoc = ''; // inserta los datos de la tabla docproductos
+    let qrycorrelativo = ''; //actualiza el correlativo del documento
+
+    let correlativo = correl;
+      //carga los espacios en blanco en el correlativo actual
+      correlativo = getCorrelativo(correlativo);
+
+    tblDocproductos.map((p)=>{
+        qrydoc = qrydoc + `INSERT INTO ME_DOCPRODUCTOS 
+        (EMP_NIT,DOC_ANO,DOC_MES,CODDOC,DOC_NUMERO,
+        DOC_ITEM,CODPROD,CODMEDIDA,CANTIDAD,EQUIVALE,
+        CANTIDADINV,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,
+        BODEGAENTRADA,BODEGASALIDA,SUBTOTAL,DESCUENTOPROD,PORDESCUPROD,
+        DESCUENTOFAC,PORDESCUFAC,TOTALDESCUENTO,DESCRIPCION,SUBTOTALPROD,
+        TIPOCAMBIO,PRODPRECIO,CANTIDADENVIADA,CODFAC,NUMFAC,
+        ITEMFAC,NOAFECTAINV, DOCPESO,COSTOINV,FLETE,TOTALPRECIOFIN,PRECIOFIN,TOTALCOSTOINV,CANTIDADBONI,CODOPR,NUMOPR,
+        ITEMOPR,CODINV,NUMINV,ITEMINV,TIPOCLIE,LISTA,PORIVA,VALORIVA,NOLOTE,VALORIMPU1,DESEMPAQUE,
+        SALDOINVANTCOM,NCUENTAMESA,CUENTACERRADA,COSTODOL,COSTOINVDOL,TOTALCOSTODOL,TOTALCOSTOINVDOL,
+        IMPCOMBUSTIBLE,CODVENPROD,COMIVEN,SOBREPRECIO,CODREG,NUMREG,ITEMREG,CANTIDADORIGINAL,CANTIDADMODIFICADA,NSERIETARJETA,
+        CODOC,NUMOC,PORTIMBREPRENSA,VALORTIMBREPRENSA,CODTIPODESCU,TOTALPUNTOS,ITEMOC,CODPRODORIGEN,CODMEDIDAORIGEN,
+        CANTIDADDEVUELTA,CODARANCEL,TIPOPRECIO,CODSUCURSAL) 
+        VALUES ('${p.EMPNIT}',${anio},${mes},'${coddoc}','${correlativo}',
+        ${p.ID},'${p.CODPROD}','${p.CODMEDIDA}',${p.CANTIDAD},${p.EQUIVALE},
+        ${p.TOTALUNIDADES},${p.COSTO},${p.PRECIO},${p.TOTALCOSTO},${p.TOTALPRECIO},
+        '','${codbodega}',${p.TOTALPRECIO},0,0,
+        0,0,0,'${p.DESPROD}',${p.TOTALPRECIO},
+        1,${p.PRECIO},0,'','',
+        0,0,0,${p.COSTO},0,${p.TOTALPRECIO},
+        ${p.PRECIO},${p.TOTALCOSTO},0,'','',0,'','',0,'P','',
+         0,0,'SN',0,'',0,'',0,0,${p.COSTO},0,${p.TOTALCOSTO},0,0,0,0,'','',0,0,0,'','','',0,0,'',0,0,'','',0,'','${p.TIPOPRECIO}','${codsucursal}' 
+        );`
+    });
+
+
+    //obtiene el número del correlativo actual para actualizar luego
+    let ncorrelativo = correl;
+
+
+    //variables sin asignar
+    let concre = 'CRE';
+    let abono = totalprecio; 
+    let saldo = totalprecio;
+    let pagotarjeta = 0; let recargotarjeta = 0;
+    let codrep = 0;
+    let totalexento=0;
+
+  
+    let nuevocorrelativo = Number(ncorrelativo) + 1;
+
+            qry = `INSERT INTO ME_DOCUMENTOS (
+                EMP_NIT, DOC_ANO, DOC_MES, CODDOC, DOC_NUMERO, 
+                CODCAJA, DOC_FECHA, DOC_NUMREF, DOC_NOMREF, BODEGAENTRADA,
+                BODEGASALIDA, USUARIO, DOC_ESTATUS, DOC_TOTALCOSTO, DOC_TOTALVENTA,
+                DOC_HORA, DOC_FVENCE, DOC_DIASCREDITO, DOC_CONTADOCREDITO, DOC_DESCUENTOTOTAL,
+                DOC_DESCUENTOPROD, DOC_PORDESCUTOTAL, DOC_IVA, DOC_SUBTOTALIVA, DOC_SUBTOTAL,
+                NITCLIE, DOC_PORDESCUFAC, CODVEN, DOC_ABONOS, DOC_SALDO,
+                DOC_VUELTO, DOC_NIT, DOC_PAGO, DOC_CODREF, DOC_TIPOCAMBIO,
+                DOC_PARCIAL, DOC_ANTICIPO, ANT_CODDOC, ANT_DOCNUMERO, DOC_OBS,
+                DOC_PORCENTAJEIVA, DOC_ENVIO, DOC_CUOTAS, DOC_TIPOCUOTA, 
+                DIVA_NUMINT, FRT_CODIGO, TRANSPORTE, DOC_REFPEDIDO, DOC_REFFACTURA,
+                CODPROV, DOC_TOTALOTROS, DOC_RECIBO, DOC_MATSOLI, DOC_REFERENCIA, 
+                DOC_LUGAR, DOC_ANOMBREDE, DOC_IVAEXO, DOC_VALOREXO, DOC_SECTOR,
+                DOC_DIRENTREGA, DOC_CANTENV, DOC_EXP, DOC_FECHAENT, TIPOPRODUCCION,
+                DOC_TOTCOSINV, DOC_TOTALFIN, USUARIOENUSO, DOC_IMPUESTO1, DOC_TOTALIMPU1,
+                DOC_PORCOMI, DOC_DOLARES, CODMESA, DOC_TIPOOPE, USUARIOAUTORIZA, 
+                NUMAUTORIZA, DOC_TEMPORADA, DOC_INGUAT,
+                CODVENBOD,
+                CODHABI, DOC_SERIE,
+                CTABAN, NUMINTBAN, 
+                CODVENEMP,
+                DOC_TOTCOSDOL, DOC_TOTCOSINVDOL, CODUNIDAD,
+                TOTCOMBUSTIBLE, DOC_CODCONTRA, DOC_NUMCONTRA, INTERES, ABONOINTERES,
+                SALDOINTERES, NUMEROCORTE, DOC_PORLOCAL, DOC_NUMORDEN, DOC_FENTREGA,
+                DOC_INTERESADO, DOC_RECIBE, NUMEROROLLO, COD_CENTRO, GENCUOTA,
+                DOC_PORINGUAT, DOC_INGUATEXENTO, DOC_TIPOTRANIVA, DOC_PORTIMBREPRE, DOC_TIMBREPRENSA,
+                ABONOSANTICIPO, SALDOANTICIPO, DOC_PRODEXENTO, PUNTOSGANADOS, PUNTOSUSADOS,
+                APL_ANTICIPO, COD_DEPARTA, FIRMAELECTRONICA, DOC_CODDOCRETENCION, DOC_SERIERETENCION,
+                DOC_NUMRETENCION, FIRMAISC, ISCENVIADO, LAT, LONG, CODSUCURSAL, JSONDOCPRODUCTOS
+                ) 
+                VALUES (
+                '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
+                '', '${fecha}', '', '${nomclie}', '',
+                '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
+                '${hora}', '${fecha}', 0, '${concre}', 0,
+                0, 0, 0, ${totalprecio}, ${totalprecio},
+                '${nitclie}', 0, '${codven}', 0, ${saldo}, 
+                0, '${nitclie}', 0, '', 1, 
+                0, 0, '', '', '${obs}',
+                0, 0, 0, 0, 
+                0, '', '${formaentrega}', '', '',
+                '', 0, 0, '${direntrega}', '', 
+                '', '', '', 0, '', 
+                '${dirclie}', '', '', '${fechaentrega}', '',
+                ${totalcosto}, 0, '', 0, 0,
+                0, 0, '', 0,'',
+                0, 0, 0,
+                0,
+                '', '', 
+                0, 0, 
+                0,
+                0, 0, '',
+                0, '', '', 0, 0, 
+                0, 0, 0, '','NO',
+                '', '', 0, '', '',
+                0, 'N', 'C', 0, 0,
+                0, 0, 0, 0, 0,
+                '', '', '', '', '',
+                '', '', 0, ${lat},${long},'${app}','${jsondocproductos}'
+                );`
+                   
+                qrycorrelativo =`   UPDATE ME_TIPODOCUMENTOS 
+                                        SET CORRELATIVO=${nuevocorrelativo} 
+                                        WHERE CODSUCURSAL='${codsucursal}' AND CODDOC='${coddoc}';
+                                    UPDATE ME_USUARIOS 
+                                        SET CORRELATIVO=${nuevocorrelativo} 
+                                        WHERE CODSUCURSAL='${codsucursal}' AND CODDOC='${coddoc}';`
+      
+ 
+ 
+        let qryBackup = `INSERT INTO ME_DOCUMENTOS_BACKUP (
+                                            EMP_NIT, DOC_ANO, DOC_MES, CODDOC, DOC_NUMERO, 
+                                            CODCAJA, DOC_FECHA, DOC_NUMREF, DOC_NOMREF, BODEGAENTRADA,
+                                            BODEGASALIDA, USUARIO, DOC_ESTATUS, DOC_TOTALCOSTO, DOC_TOTALVENTA,
+                                            DOC_HORA, DOC_FVENCE, DOC_DIASCREDITO, DOC_CONTADOCREDITO, DOC_DESCUENTOTOTAL,
+                                            DOC_DESCUENTOPROD, DOC_PORDESCUTOTAL, DOC_IVA, DOC_SUBTOTALIVA, DOC_SUBTOTAL,
+                                            NITCLIE, DOC_PORDESCUFAC, CODVEN, DOC_ABONOS, DOC_SALDO,
+                                            DOC_VUELTO, DOC_NIT, DOC_PAGO, DOC_CODREF, DOC_TIPOCAMBIO,
+                                            DOC_PARCIAL, DOC_ANTICIPO, ANT_CODDOC, ANT_DOCNUMERO, DOC_OBS,
+                                            DOC_PORCENTAJEIVA, DOC_ENVIO, DOC_CUOTAS, DOC_TIPOCUOTA, 
+                                            DIVA_NUMINT, FRT_CODIGO, TRANSPORTE, DOC_REFPEDIDO, DOC_REFFACTURA,
+                                            CODPROV, DOC_TOTALOTROS, DOC_RECIBO, DOC_MATSOLI, DOC_REFERENCIA, 
+                                            DOC_LUGAR, DOC_ANOMBREDE, DOC_IVAEXO, DOC_VALOREXO, DOC_SECTOR,
+                                            DOC_DIRENTREGA, DOC_CANTENV, DOC_EXP, DOC_FECHAENT, TIPOPRODUCCION,
+                                            DOC_TOTCOSINV, DOC_TOTALFIN, USUARIOENUSO, DOC_IMPUESTO1, DOC_TOTALIMPU1,
+                                            DOC_PORCOMI, DOC_DOLARES, CODMESA, DOC_TIPOOPE, USUARIOAUTORIZA, 
+                                            NUMAUTORIZA, DOC_TEMPORADA, DOC_INGUAT,
+                                            CODVENBOD,
+                                            CODHABI, DOC_SERIE,
+                                            CTABAN, NUMINTBAN, 
+                                            CODVENEMP,
+                                            DOC_TOTCOSDOL, DOC_TOTCOSINVDOL, CODUNIDAD,
+                                            TOTCOMBUSTIBLE, DOC_CODCONTRA, DOC_NUMCONTRA, INTERES, ABONOINTERES,
+                                            SALDOINTERES, NUMEROCORTE, DOC_PORLOCAL, DOC_NUMORDEN, DOC_FENTREGA,
+                                            DOC_INTERESADO, DOC_RECIBE, NUMEROROLLO, COD_CENTRO, GENCUOTA,
+                                            DOC_PORINGUAT, DOC_INGUATEXENTO, DOC_TIPOTRANIVA, DOC_PORTIMBREPRE, DOC_TIMBREPRENSA,
+                                            ABONOSANTICIPO, SALDOANTICIPO, DOC_PRODEXENTO, PUNTOSGANADOS, PUNTOSUSADOS,
+                                            APL_ANTICIPO, COD_DEPARTA, FIRMAELECTRONICA, DOC_CODDOCRETENCION, DOC_SERIERETENCION,
+                                            DOC_NUMRETENCION, FIRMAISC, ISCENVIADO, LAT, LONG, CODSUCURSAL, JSONDOCPRODUCTOS
+                                            ) 
+                                            VALUES (
+                                            '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
+                                            '', '${fecha}', '', '${nomclie}', '',
+                                            '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
+                                            '${hora}', '${fecha}', 0, '${concre}', 0,
+                                            0, 0, 0, ${totalprecio}, ${totalprecio},
+                                            '${nitclie}', 0, '${codven}', 0, ${saldo}, 
+                                            0, '${nitclie}', 0, '', 1, 
+                                            0, 0, '', '', '${obs}',
+                                            0, 0, 0, 0, 
+                                            0, '', '${formaentrega}', '', '',
+                                            '', 0, 0, '${direntrega}', '', 
+                                            '', '', '', 0, '', 
+                                            '${dirclie}', '', '', '${fechaentrega}', '',
+                                            ${totalcosto}, 0, '', 0, 0,
+                                            0, 0, '', 0,'',
+                                            0, 0, 0,
+                                            0,
+                                            '', '', 
+                                            0, 0, 
+                                            0,
+                                            0, 0, '',
+                                            0, '', '', 0, 0, 
+                                            0, 0, 0, '','NO',
+                                            '', '', 0, '', '',
+                                            0, 'N', 'C', 0, 0,
+                                            0, 0, 0, 0, 0,
+                                            '', '', '', '', '',
+                                            '', '', 0, ${lat},${long},'${app}','${jsondocproductos}'
+                                            );`
+ 
     execute.Query(res, qrycorrelativo + qry + qrydoc + qryBackup);
     
 });
