@@ -79,23 +79,31 @@ function listeners_profile_cliente(){
 
                 funciones.showToast('Enviando datos...');
 
-                btnProfileCerrado.disabled = true;
-            
-                GF.insert_visita(GlobalSelectedCodCliente,'TIENDA CERRADA',0,0)
+
+                funciones.Obtiene_ubicacion_lat_long()
                 .then(()=>{
 
-                    btnProfileCerrado.disabled = false;
-                  
-                    funciones.Aviso('Visita registrada exitosamente!!');
+                        btnProfileCerrado.disabled = true;
+                
+                        GF.insert_visita(GlobalSelectedCodCliente,'TIENDA CERRADA',selected_longitud,selected_longitud)
+                        .then(()=>{
 
-                    $("#modal_perfil_cliente").modal('hide');
+                            btnProfileCerrado.disabled = false;
+                        
+                            funciones.Aviso('Visita registrada exitosamente!!');
 
+                            $("#modal_perfil_cliente").modal('hide');
+
+                        })
+                        .catch(()=>{
+                            funciones.AvisoError('No se pudo actualizar la visita');
+
+                            btnProfileCerrado.disabled = false;
+                        })
+                        
                 })
-                .catch(()=>{
-                    funciones.AvisoError('No se pudo actualizar la visita');
 
-                    btnProfileCerrado.disabled = false;
-                })
+               
 
 
             }
@@ -112,25 +120,33 @@ function listeners_profile_cliente(){
             .then((value)=>{
               if(value==true){
 
-                  funciones.showToast('Enviando datos...');
+                    funciones.showToast('Enviando datos...');
 
-                  btnProfileDinero.disabled = true;
+                    funciones.Obtiene_ubicacion_lat_long()
+                    .then(()=>{
+
+                        btnProfileDinero.disabled = true;
               
-                  GF.insert_visita(GlobalSelectedCodCliente,'NO TIENE DINERO',0,0)
-                  .then(()=>{
+                        GF.insert_visita(GlobalSelectedCodCliente,'NO TIENE DINERO',selected_longitud,selected_longitud)
+                        .then(()=>{
 
-                      btnProfileDinero.disabled = false;
-                    
-                      funciones.Aviso('Visita registrada exitosamente!!');
+                            btnProfileDinero.disabled = false;
+                            
+                            funciones.Aviso('Visita registrada exitosamente!!');
 
-                      $("#modal_perfil_cliente").modal('hide');
+                            $("#modal_perfil_cliente").modal('hide');
 
-                  })
-                  .catch(()=>{
-                      funciones.AvisoError('No se pudo actualizar la visita');
+                        })
+                        .catch(()=>{
+                            funciones.AvisoError('No se pudo actualizar la visita');
 
-                      btnProfileDinero.disabled = false;
-                  })
+                            btnProfileDinero.disabled = false;
+                        })
+
+
+                    })
+
+                
 
 
               }
@@ -149,25 +165,30 @@ function listeners_profile_cliente(){
 
                   funciones.showToast('Enviando datos...');
 
-                  btnProfileBloqueado.disabled = true;
+                    funciones.Obtiene_ubicacion_lat_long()
+                    .then(()=>{
+
+                           btnProfileBloqueado.disabled = true;
               
-                  GF.insert_visita(GlobalSelectedCodCliente,'NO HABIA PASO',0,0)
-                  .then(()=>{
+                            GF.insert_visita(GlobalSelectedCodCliente,'NO HABIA PASO',selected_longitud,selected_longitud)
+                            .then(()=>{
 
-                      btnProfileBloqueado.disabled = false;
-                    
-                      funciones.Aviso('Visita registrada exitosamente!!');
+                                btnProfileBloqueado.disabled = false;
+                                
+                                funciones.Aviso('Visita registrada exitosamente!!');
 
-                      $("#modal_perfil_cliente").modal('hide');
+                                $("#modal_perfil_cliente").modal('hide');
 
-                  })
-                  .catch(()=>{
-                      funciones.AvisoError('No se pudo actualizar la visita');
+                            })
+                            .catch(()=>{
+                                funciones.AvisoError('No se pudo actualizar la visita');
 
-                      btnProfileBloqueado.disabled = false;
-                  })
+                                btnProfileBloqueado.disabled = false;
+                            })
 
+                    })
 
+                 
               }
             })
           

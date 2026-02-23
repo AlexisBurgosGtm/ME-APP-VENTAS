@@ -3588,8 +3588,8 @@ let GF = {
 
         return new Promise((resolve,reject)=>{
 
-            let fecha = F.getFecha();
-            let hora = F.getHora();
+            let fecha = funciones.getFecha();
+            let hora = funciones.getHora();
         
                 axios.post('/clientes/insert_visita',
                 {

@@ -1337,7 +1337,7 @@ router.post("/insertventa", async (req,res)=>{
  
              let qry_visita = `
                     INSERT INTO CLIENTES_VISITAS (EMPNIT,CODCLIENTE,FECHA,HORA,CODEMP,MOTIVO,LATITUD,LONGITUD)
-                    SELECT '${empnit}' AS EMPNIT, 
+                    SELECT '${codsucursal}' AS EMPNIT, 
                             ${nitclie} AS CODCLIENTE, 
                             '${fecha}' AS FECHA, 
                             '${hora}' AS HORA, 
