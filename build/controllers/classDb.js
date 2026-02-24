@@ -209,7 +209,7 @@ async function connectDb_config(){
 
 
     //INSERTA LOS VALORES INICIALES
-    let datos = [{ID:1,DESCRIPCION:"INICIA EN MAPA O CLIENTES",VALOR:"CLIENTES"}]
+    let datos = {CODIGO:1,DESCRIPCION:"INICIA EN MAPA O CLIENTES",VALOR:"CLIENTES"}
 
     connection_config.insert({
             into: "config",
