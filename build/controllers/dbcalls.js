@@ -818,16 +818,6 @@ function selectVentasPendientes(usuario) {
 //carga pedidos pendientes de la base de datos previa
 function selectVentasPendientes_old(usuario) {
 
-    
-    
-    return new Promise(async(resolve,reject)=>{
-        var response = await connection_old.select({
-
-            from: "documentos",
-            order: { by: 'ID', type: 'asc' }
-        });
-        resolve(response)
-    });
 };
 
 //carga la lista de pedidos

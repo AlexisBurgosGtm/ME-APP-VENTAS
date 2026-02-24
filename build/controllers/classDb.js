@@ -1,5 +1,5 @@
 const DbName = "mercadosefectivos_db_01";
-const DbName_old = "mercadosefectivosoffline7";
+const DbName_config = "mercadosefectivos_config";
 
 var tblDocumentos = {
     name: 'documentos',
@@ -159,14 +159,25 @@ var database = {
     tables: [tblDocumentos,tblProductos,tblClientes,tblTempventas,tblCredenciales,tempcenso,tblMunicipios,tblDepartamentos]
 };
 
-var database_old = {
-    name: DbName_old,
-    tables: [tblDocumentos,tblProductos,tblClientes,tblTempventas,tblCredenciales,tempcenso]
+//-------------------------------------
+
+var tbl_config = {
+    name: 'config',
+    columns: {
+        CODIGO:{primaryKey: true,dataType: "number"},
+        DESCRIPCION:{dataType: "string"},
+        VALOR:{dataType: "string"}
+    }
+};
+
+var database_config = {
+    name: DbName_config,
+    tables: [tbl_config]
 };
  
 // initiate jsstore connection
 var connection = new JsStore.Connection();
-var connection_old = new JsStore.Connection();
+var connection_config = new JsStore.Connection();
 
 async function connectDb(){
    
@@ -183,9 +194,9 @@ async function connectDb(){
     
 }
 
-async function connectDb_old(){
+async function connectDb_config(){
    
-    var isDbCreatedOld = await connection_old.initDb(database_old);
+    var isDbCreatedOld = await connection_config.initDb(database_config);
     // isDbCreated will be true when database will be initiated for first time
     if(isDbCreatedOld){
         //alert('Db Created & connection is opened');
@@ -193,11 +204,27 @@ async function connectDb_old(){
     }
     else{
         //alert('Connection is opened');
-      console.log('db vieja conectada...')
+      console.log('db configuraciones...')
     }
+
+
+    //INSERTA LOS VALORES INICIALES
+    let datos = [{ID:1,DESCRIPCION:"INICIA EN MAPA O CLIENTES",VALOR:"CLIENTES"}]
+
+    connection_config.insert({
+            into: "config",
+            values: [datos], //you can insert multiple values at a time
+    })
+    .then(()=>{
+            console.log('db configuraciones')  
+    })
+    .catch(()=>{
+            console.log('db config no inserto datos iniciales')
+    })
+
 
 }
 //inicia la conexión a la db
 connectDb();
 
-connectDb_old(); //conecta a la versión vieja de la base de datos
+connectDb_config(); //conecta a la versión vieja de la base de datos

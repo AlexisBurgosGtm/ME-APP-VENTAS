@@ -1337,8 +1337,8 @@ async function iniciar_barcode() {
                             get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
 
                             try {
-                                let child2 = document.getElementById('barcode_video');
-                                root_barcode.removeChild(child2)        
+                                video.pause();
+                                root_barcode.removeChild(video)        
                             } catch (error) {
                                 
                             }
