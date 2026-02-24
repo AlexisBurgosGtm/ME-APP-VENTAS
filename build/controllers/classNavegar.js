@@ -56,22 +56,27 @@ let classNavegar = {
                             </button> 
                             <button class="btn btn-sm "  id="btnMenu2VendedorClientes">
                                 <i class="fal fa-shopping-cart"></i>
-                                Clientes
+                                Cliente
                             </button>
                           
-                            <button class="btn btn-sm " id="btnMenu2VendedorLogro">
-                                <i class="fal fa-chart-pie"></i>
-                                Logro
-                            </button>
-
                             <button class="btn btn-sm " id="btnMenu2Censo">
                                 <i class="fal fa-edit"></i>
                                 Censo
                             </button>
 
+                            <button class="btn btn-sm " id="btnMenu2VendedorLogro">
+                                <i class="fal fa-chart-pie"></i>
+                                Logro
+                            </button>
+
+                            <button class="btn btn-sm " id="btnMenu2VendedorLogroReal">
+                                <i class="fal fa-chart-bar"></i>
+                                Objetivos
+                            </button>
+                            
                             <button class="btn btn-sm"  id="btnMenu2Configuraciones">
                                 <i class="fal fa-cog"></i>
-                                Config
+                                Cnfg
                             </button>
 
                                                    

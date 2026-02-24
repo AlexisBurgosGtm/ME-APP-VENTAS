@@ -532,7 +532,7 @@ function getView(){
                         <div class="modal-body p-4">
                             
                             <div class="card card-rounded" id="print_qr">
-                                <div class="card-body p-4">
+                                <div class="card-body p-2">
 
                                     <h3 class="negrita text-danger" id="lbNomclieQR"></h3>
                                     <h5 class="negrita text-danger" id="lbCodclieQR"></h5>
@@ -568,10 +568,10 @@ function getView(){
                                 Lectura de Codigo QR
                             </h4>
                         </div>
-                        <div class="modal-body p-4">
+                        <div class="modal-body p-0">
                             
-                            <div class="card card-rounded" id="">
-                                <div class="card-body p-4">
+                            <div class="card card-rounded col-12" id="">
+                                <div class="card-body p-0">
 
                                    <div class="" id="root_barcode">
                                     </div>
@@ -1336,9 +1336,14 @@ async function iniciar_barcode() {
                             $("#modal_barcode").modal('hide');
                             get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
 
-                            
+                            try {
+                                let child2 = document.getElementById('barcode_video');
+                                root_barcode.removeChild(child2)        
+                            } catch (error) {
+                                
+                            }
 
-                            video.stop();
+                            
                         })
                         .catch(()=>{
                             funciones.AvisoError('Codigo no encontrado');
