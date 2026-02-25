@@ -162,13 +162,19 @@ function addListeners(){
     selected_tab = 'tab_fechas';
 
 
-    let cmbMes = document.getElementById('cmbMes').innerHTML = funciones.ComboMeses();
-    let cmbAnio = document.getElementById('cmbAnio').innerHTML = funciones.ComboAnio();
+    let cmbMes = document.getElementById('cmbMes');
+    cmbMes.innerHTML = funciones.ComboMeses();
+    let cmbAnio = document.getElementById('cmbAnio');
+    cmbAnio.innerHTML = funciones.ComboAnio();
 
-    cmbMes.addListeners('change',()=>{
+    let f = new Date();
+    cmbMes.value = f.getUTCMonth()+1;
+    cmbAnio.value = f.getFullYear();
+
+    cmbMes.addEventListener('change',()=>{
         tbl_fechas();    
     });
-    cmbAnio.addListeners('change',()=>{
+    cmbAnio.addEventListener('change',()=>{
         tbl_fechas();    
     });
 
@@ -267,7 +273,8 @@ function tbl_fechas(){
         document.getElementById('lbTotalImporte').innerText = funciones.setMoneda(var_total_venta,'Q');
         
     })
-    .catch(()=>{
+    .catch((err)=>{
+        console.log(err)
         container.innerHTML ='No se cargaron datos...';
 
         document.getElementById('lbTotalVentas').innerText = '---';

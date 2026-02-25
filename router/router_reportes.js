@@ -12,8 +12,8 @@ router.post("/rpt_fechas", async(req,res)=>{
             FROM rpt_data_venta_vendedor
             WHERE 
                 (MES = ${mes}) AND 
-                (ANIO = ${anio}}) AND 
-                (CODSUCURSAL = '${sucursal}}') AND 
+                (ANIO = ${anio}) AND 
+                (CODSUCURSAL = '${sucursal}') AND 
                 (CODVEN = ${codemp})
             GROUP BY FECHA
             ORDER BY FECHA
