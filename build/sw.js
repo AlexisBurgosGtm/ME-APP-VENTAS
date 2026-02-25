@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-v2026-006';
-const dynamicCacheName = 'runtime-cache-2026-006';
+const staticCacheName = 'pre-cache-v2026-008';
+const dynamicCacheName = 'runtime-cache-2026-008';
 
 
 // Pre Caching Assets
@@ -70,6 +70,7 @@ const precacheAssets = [
     './views/vendedor/facturacion.js',
     './views/vendedor/censo.js',
     './views/vendedor/logro.js',
+    './views/reportes/view_reportes.js',
     './views/pedidos/vendedor.js',
     './views/login/index.js',
     './views/programador.js',

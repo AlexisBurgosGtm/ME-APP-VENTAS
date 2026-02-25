@@ -118,6 +118,10 @@ let classNavegar = {
                     
                         classNavegar.ConfigVendedor();
                     });
+
+                    document.getElementById('btnMenu2VendedorLogroReal').addEventListener('click',()=>{
+                        classNavegar.vendedor_reportes();
+                    });
                    
                    
 
@@ -178,6 +182,19 @@ let classNavegar = {
         .then(()=>{
             GlobalSelectedForm ='VENDEDORCENSO';
             iniciarVistaVendedorCenso();
+        })
+      
+    },
+    vendedor_reportes: async()=>{
+        
+        //efecto nieve
+        detener_efecto();
+               
+
+        funciones.loadScript('./views/reportes/view_reportes.js','root')
+        .then(()=>{
+            GlobalSelectedForm ='REPORTES';
+            initView();
         })
       
     },

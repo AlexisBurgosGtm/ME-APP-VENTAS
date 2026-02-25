@@ -6,6 +6,15 @@
 	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000}
 };
 
+
+const configBi = {
+	user: 'db_a6478c_mercadosbi_admin',
+	password: 'razors1805',
+	server: 'sql5061.site4now.net',
+	database: 'db_a6478c_mercadosbi',
+	pool: {	max: 100,	min: 0,	idleTimeoutMillis: 30000}
+};
+
 const config = {
 	user: process.env.DB_USER,
 	password: process.env.DB_PWD,
@@ -29,6 +38,33 @@ let execute = {
 		//console.log('ejecutando consulta... ' + sqlqry);		
 		try {
 		  const pool1 = new sql.ConnectionPool(config, err => {
+			new sql.Request(pool1)
+			.query(sqlqry, (err, result) => {
+				if(err){
+					console.log(err.message);
+					res.send('error');
+				}else{
+					res.send(result);
+				}					
+			})
+			sql.close();  
+		  })
+		  pool1.on('error', err => {
+				res.send('error');
+			  console.log('error sql = ' + err);
+			  sql.close();
+		  })
+		} catch (error) {
+			console.log(error);
+		  res.send('error');   
+		  sql.close();
+		}
+	},
+	query_bi : (res,sqlqry)=>{	
+		
+	
+		try {
+		  const pool1 = new sql.ConnectionPool(configBi, err => {
 			new sql.Request(pool1)
 			.query(sqlqry, (err, result) => {
 				if(err){

@@ -1,5 +1,5 @@
 
-let versionapp = 'Mod:24.02.2026.0';
+let versionapp = 'Mod:25.02.2026.0';
 let GlobalServerUrl = '';
 let GlobalUrlServicePedidos = '';
 
@@ -25,6 +25,8 @@ let lbTipo = document.getElementById('lbTipo');
 divUsuario.innerText = "DESCONECTADO";
 lbTipo.innerText = "Inicie sesión";
 
+
+let selected_tab = '';
 
 let GlobalSelectedClientesDia ='SN';
 let GlobalSelectedDiaUpdated  = 0;
