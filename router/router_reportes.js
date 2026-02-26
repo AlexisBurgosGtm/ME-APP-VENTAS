@@ -25,6 +25,29 @@ router.post("/rpt_fechas", async(req,res)=>{
 });
 
 
+router.post("/rpt_fecha_movimientos", async(req,res)=>{
+
+    const{sucursal,codemp,fecha} = req.body;
+
+    let qry = `
+        SELECT 
+            TIPO, FECHA, 
+            CODDOC, CORRELATIVO, 
+            NOMBRECLIENTE AS CLIENTE, 
+            SUM(TOTALPRECIO) AS IMPORTE
+        FROM BI_RPT_GENERAL
+        WHERE 
+            (CODSUCURSAL = '${sucursal}') AND 
+            (CODVEN = ${codemp})
+        GROUP BY TIPO, FECHA, CODDOC, CORRELATIVO, NOMBRECLIENTE
+        HAVING (FECHA = '${fecha}')
+        `
+
+    
+     execute.query_bi(res,qry);
+     
+});
+
 
 
 module.exports = router;

@@ -136,6 +136,11 @@
 
 };
 
+.fontsmall2 {
+    font-size: 80%;
+
+};
+
 .btn-bottom-right { 
   position: fixed;
   z-index: 1088;

@@ -361,7 +361,7 @@ let funciones = {
           })
       })     
     },
-    setMoneda: function(num,signo) {
+    BACKUP_setMoneda: function(num,signo) {
         num = num.toString().replace(/\$|\,/g, '');
         if (isNaN(num)) num = "0";
         let sign = (num == (num = Math.abs(num)));
@@ -372,6 +372,45 @@ let funciones = {
         for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
             num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
         return (((sign) ? '' : '-') + signo + ' ' + num + ((cents == "00") ? '' : '.' + cents)).toString();
+    },
+    setMoneda: function(num,signo) {
+          num = num.toString().replace(/\$|\,/g, '');
+          if (isNaN(num)) num = "0";
+          let sign = (num == (num = Math.abs(num)));
+          num = Math.floor(num * 100 + 0.50000000001);
+          let cents = num % 100;
+          num = Math.floor(num / 100).toString();
+          if (cents < 10) cents = "0" + cents;
+          for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+              num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+          let resultado = ((((sign) ? '' : '-') + signo + ' ' + num + ((cents == "00") ? '' : '.' + cents)).toString());
+          
+          if(resultado.includes('.')){}else{resultado = resultado + ".00"}
+          
+          return resultado; //.replace('-','');
+
+    },
+    setNumero: function(num) {
+          
+          let signo = '';
+
+          num = num.toString().replace(/\$|\,/g, '');
+          if (isNaN(num)) num = "0";
+          let sign = (num == (num = Math.abs(num)));
+          num = Math.floor(num * 100 + 0.50000000001);
+          let cents = num % 100;
+          num = Math.floor(num / 100).toString();
+          if (cents < 10) cents = "0" + cents;
+          for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+              num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+          let resultado = ((((sign) ? '' : '-') + signo + ' ' + num + ((cents == "00") ? '' : '.' + cents)).toString());
+          
+          
+          let valorfinal = resultado; //Number(resultado);
+          //valorfinal = valorfinal.toFixed(Number(decimales));
+          
+          return valorfinal; //.replace('-','');
+
     },
     setMargen: function(num,signo) {
       
@@ -666,6 +705,22 @@ let funciones = {
               <option value='2029'>2029</option>
               <option value='2030'>2030</option>`
     return str;
+    },
+    get_mes_curso:()=>{
+        
+        let mes = 0;
+        let f = new Date();
+        mes = f.getUTCMonth()+1;
+        return mes;
+
+    },
+    get_anio_curso:()=>{
+        
+        let anio = 0;
+        let f = new Date();
+        anio = f.getFullYear();
+        return anio;
+
     },
     getFecha(){
       let fecha
@@ -996,6 +1051,31 @@ let funciones = {
             break;
         }
     },
+    barra_progreso:(color,minimo,maximo,valor, leyenda)=>{
+      
+      let porcentaje = ((Number(valor)/Number(maximo)) * 100)
+
+
+      return `
+          <div class="progress col-12" style="height: 40px;">
+            <div class="progress-bar bg-${color} progress-bar-animated" 
+                role="progressbar" 
+                aria-valuenow="${Number(valor)}"
+                aria-valuemin="${Number(minimo)}" 
+                aria-valuemax="${Number(maximo)}" 
+                style="width:${porcentaje}%">
+                ${funciones.setMoneda(valor,'Q')} ${leyenda} ${funciones.setMoneda(porcentaje,'')}%
+            </div>
+          </div>
+          `
+
+      /*
+        return `
+          <label for="pBar">Progreso</label>
+          <progress class="" id="pBar" value="${Number(valor)}" max="${Number(maximo)}">${funciones.setMoneda(porcentaje,'')}%</progress>
+          `
+          */
+    }
 };
 
 //export default funciones;
