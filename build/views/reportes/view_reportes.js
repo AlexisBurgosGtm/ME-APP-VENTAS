@@ -330,13 +330,15 @@ function tbl_fechas(){
         container.innerHTML = str;
 
         document.getElementById('lbTotalVentas').innerText = funciones.setMoneda(var_total_venta,'Q');
-        document.getElementById('lbTotalDevoluciones').innerText = funciones.setMoneda(var_total_venta,'Q');
+        document.getElementById('lbTotalDevoluciones').innerText = funciones.setMoneda(var_total_devolucion,'Q');
         document.getElementById('lbTotalImporte').innerText = funciones.setMoneda(var_total_importe,'Q');
         
         document.getElementById('container_progreso').innerHTML = funciones.barra_progreso('success',0,GlobalObjetivoVenta,var_total_importe,'Logro actual ')
     })
     .catch((err)=>{
+
         console.log(err)
+        
         container.innerHTML ='No se cargaron datos...';
 
         document.getElementById('lbTotalVentas').innerText = '---';

@@ -9,7 +9,8 @@ router.post("/rpt_fechas", async(req,res)=>{
     let qry = `
             SELECT   
                 FECHA, SUM(VENTA) AS VENTA, SUM(DEVOLUCION * -1) AS DEVOLUCION
-            FROM rpt_data_venta_vendedor
+            FROM 
+                rpt_data_venta_vendedor
             WHERE 
                 (MES = ${mes}) AND 
                 (ANIO = ${anio}) AND 
