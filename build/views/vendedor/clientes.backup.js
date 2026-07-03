@@ -1,78 +1,3 @@
-function showProgressOverlay(title, percent = 0, message = 'Estamos preparando los datos...') {
-    if (!document.getElementById('progressOverlay')) {
-        document.body.insertAdjacentHTML('beforeend', `
-            <div id="progressOverlay" class="progress-overlay">
-                <div class="progress-card glass-card">
-                    <div class="progress-card-title" id="progressTitle">${title}</div>
-                    <div class="progress-card-bar">
-                        <div class="progress-card-fill" id="progressFill" style="width: ${percent}%"></div>
-                    </div>
-                    <div class="progress-card-percent" id="progressPercent">${percent}%</div>
-                    <div class="progress-card-message" id="progressMessage">${message}</div>
-                </div>
-            </div>
-        `);
-    }
-
-    const overlay = document.getElementById('progressOverlay');
-    const fill = document.getElementById('progressFill');
-    const percentLabel = document.getElementById('progressPercent');
-    const titleEl = document.getElementById('progressTitle');
-    const messageEl = document.getElementById('progressMessage');
-
-    if (titleEl) titleEl.innerText = title;
-    if (fill) fill.style.width = `${Math.max(0, Math.min(100, percent))}%`;
-    if (percentLabel) percentLabel.innerText = `${Math.max(0, Math.min(100, percent))}%`;
-    if (messageEl) messageEl.innerText = message;
-    if (overlay) overlay.classList.add('show');
-}
-
-function updateProgressOverlay(percent, message) {
-    const fill = document.getElementById('progressFill');
-    const percentLabel = document.getElementById('progressPercent');
-    const messageEl = document.getElementById('progressMessage');
-    const safePercent = Math.max(0, Math.min(100, percent));
-    if (fill) fill.style.width = `${safePercent}%`;
-    if (percentLabel) percentLabel.innerText = `${safePercent}%`;
-    if (messageEl) messageEl.innerText = message;
-}
-
-function hideProgressOverlay() {
-    const overlay = document.getElementById('progressOverlay');
-    if (overlay) overlay.classList.remove('show');
-    setTimeout(() => overlay && overlay.remove(), 250);
-}
-
-function resaltarDiaSeleccionado(nodia) {
-    const botones = ['btn_lunes', 'btn_martes', 'btn_miercoles', 'btn_jueves', 'btn_viernes', 'btn_sabado', 'btn_domingo'];
-
-    botones.forEach((id) => {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        btn.classList.remove('day-active', 'bg-personal', 'text-white', 'negrita');
-        btn.classList.add('day-pill');
-    });
-
-    const mapa = {
-        LUNES: 'btn_lunes',
-        MARTES: 'btn_martes',
-        MIERCOLES: 'btn_miercoles',
-        JUEVES: 'btn_jueves',
-        VIERNES: 'btn_viernes',
-        SABADO: 'btn_sabado',
-        DOMINGO: 'btn_domingo'
-    };
-
-    const id = mapa[nodia];
-    if (id) {
-        const btn = document.getElementById(id);
-        if (btn) {
-            btn.classList.remove('bg-personal', 'text-white', 'negrita');
-            btn.classList.add('day-active');
-        }
-    }
-}
-
 function getView(){
     let view = {
         body :()=>{
@@ -117,103 +42,158 @@ function getView(){
         },
         tab_inicio : ()=>{
             return `
-            <div class="modern-dashboard-shell w-100">
-                <div class="glass-card p-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <div class="text-muted small">Resumen del día</div>
-                            <h4 class="mb-1 text-danger" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
-                        </div>
-                        <span class="badge badge-pill badge-primary-soft" id="lbDiaActualLabel">Hoy</span>
-                    </div>
+            <div class="card card-rounded col-12">
+                <div class="card-body">
 
-                    <div class="row mt-3">
-
-                        <div class="col-6 mb-2">
-                            <div class="stat-card">
-                                <div class="stat-label">Precios descargados</div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <h5 class="mb-0 text-danger" id="lbTotalProductos">0</h5>
-                                    <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP"><i class="fal fa-download"></i></button>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between mt-2 pt-2 border-top">
-                                    <span class="small text-muted">Precios en nube</span>
-                                    <h6 class="mb-0 text-success" id="lbTotalProductosOnline">0</h6>
-                                </div>
+                    <label>Total del día:</label><br>
+                    <h4 class="negrita text-danger" id="lbTotalDia">Total venta 0 - pedidos 0</h4>
+                                        
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Precios Descargados</label>
+                                <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP">
+                                    <i class="fal fa-download"></i>
+                                </button>
+                                <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
+                            </div>
+                            <div class="col-6">
+                                    <label>Clientes Descargados</label>
+                                    <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC">
+                                        <i class="fal fa-download"></i>
+                                    </button>
+                                    <h5 class="negrita text-danger" id="lbTotalClientes">0</h5>
                             </div>
                         </div>
-                        <div class="col-6 mb-2">
-                            <div class="stat-card">
-                                <div class="stat-label">Clientes descargados</div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <h5 class="mb-0 text-danger" id="lbTotalClientes">0</h5>
-                                    <button class="btn btn-sm btn-info btn-circle" id="btnDescargarC"><i class="fal fa-download"></i></button>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between mt-2 pt-2 border-top">
-                                    <span class="small text-muted">Clientes en nube</span>
-                                    <h6 class="mb-0 text-success" id="lbTotalClientesOnline">0</h6>
-                                </div>
+                    
+                        <div class="row">
+                            <div class="col-6">
+                                <label>Precios en Nube:</label>
+                                <h5 class="negrita text-success" id="lbTotalProductosOnline">0</h5>
+                            </div>
+                            <div class="col-6">
+                                <label>Clientes en Nube:</label>
+                                <h5 class="negrita text-success" id="lbTotalClientesOnline">0</h5>
                             </div>
                         </div>
-                    </div>
+
                 </div>
+            </div>
+            <br>
+            <div class="card card-rounded col-12">
+                <div class="card-body">
 
-                <div class="glass-card p-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <div class="text-muted small">Seleccionar día</div>
-                            <h5 class="mb-0">Clientes por día</h5>
-                        </div>
-                        <span class="text-primary small">El día actual aparece marcado</span>
-                    </div>
+                                     
 
-                    <div class="row">
-                        <div class="col-6 mb-2"><div id="btn_lunes" class="day-pill hand" onclick="getListaClientes('LUNES')">LUNES</div></div>
-                        <div class="col-6 mb-2"><div id="btn_martes" class="day-pill hand" onclick="getListaClientes('MARTES')">MARTES</div></div>
-                        <div class="col-6 mb-2"><div id="btn_miercoles" class="day-pill hand" onclick="getListaClientes('MIERCOLES')">MIERCOLES</div></div>
-                        <div class="col-6 mb-2"><div id="btn_jueves" class="day-pill hand" onclick="getListaClientes('JUEVES')">JUEVES</div></div>
-                        <div class="col-6 mb-2"><div id="btn_viernes" class="day-pill hand" onclick="getListaClientes('VIERNES')">VIERNES</div></div>
-                        <div class="col-6 mb-2"><div id="btn_sabado" class="day-pill hand" onclick="getListaClientes('SABADO')">SABADO</div></div>
-                        <div class="col-6 mb-2"><div id="btn_domingo" class="day-pill hand" onclick="getListaClientes('DOMINGO')">DOMINGO</div></div>
-                        <div class="col-6 mb-2"><div class="day-pill hand" onclick="getListaClientes('OTROS')">OTROS</div></div>
-                    </div>
-
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <div class="day-pill day-pill-ghost hand" onclick="getListaClientes('AJENOS')">BUSCAR CLIENTE AJENO</div>
-                        </div>
-                    </div>
-                </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div id="btn_lunes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('LUNES')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>LUNES</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div id="btn_martes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('MARTES')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>MARTES</h5>
+                                        </div>
+                                    </div>
+                                </div>    
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div id="btn_miercoles" class="card card-rounded shadow hand col-12" onclick="getListaClientes('MIERCOLES')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>MIERCOLES</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div id="btn_jueves" class="card card-rounded shadow hand col-12" onclick="getListaClientes('JUEVES')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>JUEVES</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div id="btn_viernes" class="card card-rounded shadow hand col-12" onclick="getListaClientes('VIERNES')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>VIERNES</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div id="btn_sabado" class="card card-rounded shadow hand col-12" onclick="getListaClientes('SABADO')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>SABADO</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div id="btn_domingo" class="card card-rounded shadow hand col-12" onclick="getListaClientes('DOMINGO')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>DOMINGO</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card card-rounded shadow hand col-12" onclick="getListaClientes('OTROS')">
+                                        <div class="card-body p-2 text-center">
+                                            <h5>OTROS</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            <br>
+                            <div class="row">
+                                <div class="card card-rounded shadow hand col-12 border-personal text-personal" onclick="getListaClientes('AJENOS')">
+                                    <div class="card-body p-2 text-center">
+                                        <h5>BUSCAR CLIENTE AJENO</h5>
+                                    </div>
+                                </div>
+                            </div>
+                </div>        
             </div>
 
             <button class="btn btn-danger btn-xl btn-bottom-r btn-circle shadow hand" id="btnCameraQR">
-                <i class="fal fa-camera"></i>
+                <i class="fal fa-camera"></i>  
             </button>
             `
         },
         tab_no_visitados: ()=>{
             return `
-            <div class="glass-card p-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap mb-2">
-                    <div>
-                        <div class="text-muted small">Vista de clientes</div>
-                        <label class="negrita text-primary mb-0" id="lbNombreDia">Clientes del día</label>
-                    </div>
-                    <button class="btn btn-sm btn-warning shadow hand" id="btnVvisitados">Ver visitados</button>
-                </div>
-                <label class="negrita text-info d-block mb-2" id="lbTotalClientesConteo"></label>
-                <input type="text" id="txtFiltrarCliente" class="form-control border-primary mb-2" placeholder="Buscar en la lista...">
+            <div class="table-responsive">
+             
+                      
+          
+                    <label class="negrita text-primary" id="lbNombreDia">Clientes del día</label>             <button class="btn btn-sm btn-warning shadow hand" id="btnVvisitados">
+                                                                            Ver visitados ->>
+                                                                        </button>
+                    <br>
+                    <label class="negrita text-info" id="lbTotalClientesConteo"></label>
+                    <br>                                                
+                    <input type="text" id="txtFiltrarCliente" class="form-control border-primary" placeholder="Buscar en la lista...">
+               
 
-                <div class="table-responsive">
-                    <table class="table modern-table" id="tblLista">
-                        <thead class="bg-info text-white">
-                            <tr>
-                                <th class="negrita">Cliente / Dirección</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblClientes"></tbody>
-                    </table>
-                </div>
+                <table class="table col-12 h-full p-0" id="tblLista">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <td class="negrita">Cliente <small class="text-secondary">---------</small>Dirección</td>
+                        
+                        </tr>
+                    </thead>
+                    <tbody id="tblClientes">
+
+                    </tbody>
+                </table>
             </div>
             <button class="btn btn-secondary btn-circle btn-xl hand shadow btn-bottom-r" id="btnTabNVAtras">
                 <i class="fal fa-arrow-left"></i>
@@ -222,23 +202,16 @@ function getView(){
         },
         tab_visitados: ()=>{
             return `
-            <div class="glass-card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <div>
-                        <div class="text-muted small">Visitados</div>
-                        <h5 class="mb-0">Clientes visitados</h5>
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="table modern-table" id="tblLista">
-                        <thead class="bg-info text-white">
-                            <tr>
-                                <th class="negrita">Cliente / Dirección</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblClientesVisitados"></tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table h-full col-12" id="tblLista">
+                <thead class="bg-warning">
+                    <tr>
+                            <td class="negrita">Cliente / Dirección</td>
+                        </tr>
+                    </thead>
+                    <tbody id="tblClientesVisitados">
+                    </tbody>
+                </table>
             </div>
             <button class="btn btn-secondary btn-circle btn-xl hand shadow btn-bottom-r" id="btnTabVAtras">
                 <i class="fal fa-arrow-left"></i>
@@ -247,27 +220,30 @@ function getView(){
         },
         tab_ajenos: ()=>{
             return `
-            <div class="glass-card p-3">
-                <div class="form-group mb-3">
-                    <label class="negrita">Clientes ajenos:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control border-secondary" id="txtClientesAjenosBuscar" placeholder="Escriba para buscar cliente...">
-                        <div class="input-group-append">
-                            <button class="btn btn-md btn-icon btn-round" id="btnClientesAjenosBuscar"><i class="fal fa-search"></i></button>
-                        </div>
+            <div class="form-group p-2">
+                <label class="negrita">Clientes ajenos:</label>
+                <div class="input-group">
+                                  
+                    <input type="text" class="form-control border-secondary" id="txtClientesAjenosBuscar" placeholder="Escriba para buscar cliente...">    
+                    <div class="input-group-append">
+                        <button class="btn btn-md btn-icon btn-round" id="btnClientesAjenosBuscar">
+                            <i class="fal fa-search"></i>
+                        </button>    
                     </div>
-                </div>
+                </div>                            
+            </div>
 
-                <div class="table-responsive">
-                    <table class="table modern-table" id="">
-                        <thead  class="bg-info text-white">
-                            <tr>
-                                <th class="negrita">Cliente / Dirección</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblClientesAjenos"></tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+                <table class="table table-responsive col-12" id="">
+                    <thead class="bg-trans-gradient text-white">
+                        <tr>
+                            <td class="negrita">Cliente / Dirección</td>
+                        </tr>
+                    </thead>
+                    <tbody id="tblClientesAjenos">
+
+                    </tbody>
+                </table>
             </div>
             <button class="btn btn-secondary btn-circle btn-xl hand shadow btn-bottom-r" id="btnTabAAtras">
                 <i class="fal fa-arrow-left"></i>
@@ -623,20 +599,141 @@ function getView(){
     rootMenuLateral.innerHTML = view.modalMenuCliente();
 };
 
+function Lmap(lat,long){
+                      
+          var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          osm = L.tileLayer(osmUrl, {center: [lat, long],maxZoom: 20, attribution: osmAttrib});    
+          map = L.map('mapcontainer').setView([lat, long], 18).addLayer(osm);
+
+          L.marker([lat, long], {draggable:'true'})
+            .addTo(map)
+            .bindPopup(`Marque la nueva posición GPS del cliente`, {closeOnClick: false, autoClose: false})
+            .openPopup()
+            .on("dragend",function(e) {
+                    this.openPopup();
+                    var position = e.target._latlng;
+               
+                    GlobalSelectedLat = position.lat.toString();
+                    GlobalSelectedLong = position.lng.toString();                  
+            });
+           
+            return map;
+
+};
+
+function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
+    
+    
+    //map.remove()
+    //map = Lmap(lat,long,nombre,telefono);
+
+    document.getElementById('lbNombreCliente').innerHTML = nombre;
+    document.getElementById('txtCodClie').value = codigo;
+    document.getElementById('txtNitClie').value = nit;
+    document.getElementById('txtDirClie').value = direccion;
+    document.getElementById('txtTelClie').value = telefono;
+    
+    GlobalSelectedCodCliente = codigo;
+    GlobalSelectedNomCliente = nombre;
+    GlobalSelectedDirCliente = direccion;
+    
+
+    classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
+
+    //showMenuLateral('Opciones del Cliente');
+
+};
+
+function getMenuCliente2(codigo,negocio,nombre,direccion,telefono,lat,long,nit){
+    
+ 
+    get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
+
+    return;
+
+    //map.remove()
+    //map = Lmap(lat,long,nombre,telefono);
+
+    document.getElementById('lbNombreCliente').innerHTML = nombre;
+    document.getElementById('txtCodClie').value = codigo;
+    document.getElementById('txtNitClie').value = nit;
+    document.getElementById('txtDirClie').value = direccion;
+    document.getElementById('txtTelClie').value = telefono;
+    
+    GlobalSelectedCodCliente = codigo;
+    GlobalSelectedNomCliente = nombre;
+    GlobalSelectedDirCliente = direccion;
+    
+
+    //classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
+
+    showMenuLateral('Opciones del Cliente');
+
+};
+
+function getEditCliente(codigo,nombre,direccion,referencia,telefono,lat,long,nit,tiponegocio,negocio){
+    
+    
+    //map.remove()
+    //map = Lmap(lat,long,nombre,telefono);
+
+    document.getElementById('txtEditNit').value = nit;
+    document.getElementById('txtEditNombre').value = nombre;
+    document.getElementById('txtEditDireccion').value = direccion; 
+    document.getElementById('txtEditReferencia').value = referencia;
+    document.getElementById('txtEditLatitud').value = lat;
+    document.getElementById('txtEditLongitud').value = long;
+    document.getElementById('cmbEditTipoNegocio').value = tiponegocio;
+    document.getElementById('txtEditNegocio').value = negocio;
+
+    GlobalSelectedCodCliente = codigo;
+    GlobalSelectedNomCliente = nombre;
+    GlobalSelectedDirCliente = direccion;
+    
+
+    $("#ModalCambiarDatosCliente").modal('show');
+
+
+
+};
+
+async function getHistorialCliente(codigo,nit,nombre){
+    
+    await apigen.vendedorHistorialCliente(codigo,'tblHistorial');
+
+    $('#ModalHistorialCliente').modal('show')
+
+};
+
+async function setRecordatorioVisita(codigo, nit, nombre, direccion){
+    
+    await funciones.hablar(`¿Quieres establecer el recordatorio de visita a ${nombre}`);
+    
+    let recordatorio = 'Retomar visita';
+
+    funciones.Confirmacion(`¿Quieres establecer el recordatorio de visita a ${nombre}`)
+    .then((value)=>{
+        if (value==true){
+
+            apigen.clientesSetReminder(codigo,nit,nombre,direccion,recordatorio,0,0,funciones.getFecha())
+            .then(()=>{
+                funciones.Aviso('Recordatorio establecido exitosamente');
+            })
+            .catch(()=>{
+                funciones.AvisoError('No se pudo establecer el recordatorio');
+            })
+            //funciones.setReminder(`Visitar a ${nombre}, ubicado en ${direccion}`, 60);
+            
+        }
+    })
+    
+};
+
 async function addListeners(){
 
 
-    const diaInicial = GlobalSelectedClientesDia === 'SN' ? funciones.devuelve_dia_semana() : GlobalSelectedClientesDia;
-    const dayLabel = document.getElementById('lbDiaActualLabel');
-    if (dayLabel) {
-        dayLabel.innerText = diaInicial === 'SN' ? 'Hoy' : diaInicial;
-    }
-    fcn_get_color_dia(diaInicial);
-
-    //if (diaInicial !== 'SN' && diaInicial !== 'AJENOS') {
-        //getListaClientes(diaInicial);
-    //}
-
+    fcn_get_color_dia();
 
 
     document.getElementById('btnTabNVAtras').addEventListener('click',()=>{
@@ -871,8 +968,6 @@ async function addListeners(){
                 
                 btnDescargarP.disabled = true;
                 btnDescargarP.innerHTML = `<i class="fal fa-sync fa-spin"></i>`;
-                showProgressOverlay('Descargando productos', 0, 'Iniciando descarga...');
-                Pace.restart();
 
                 downloadProductos()
                 .then((data)=>{
@@ -883,9 +978,6 @@ async function addListeners(){
                     .then(()=>{
                         let contador = 1;
                         let totalrows = Number(data.rowsAffected[0]);
-                        if (totalrows > 0) {
-                            updateProgressOverlay(5, 'Preparando registros...');
-                        }
                           
                         data.recordset.map(async(rows)=>{
                             var datosdb = {
@@ -910,16 +1002,14 @@ async function addListeners(){
                             });
                             if (noOfRowsInserted > 0) {
                                 let porc = (Number(contador) / Number(totalrows)) * 100;
+                                //setLog(`<label>Productos agregados: ${contador} de ${totalrows} (${porc.toFixed(2)}%)</label>`,'rootWait')
                                 contador += 1;
-                                updateProgressOverlay(Math.round(porc), `Guardando producto ${contador - 1} de ${totalrows}`);
                                 if(totalrows==contador){
                                    
                                     funciones.Aviso('Productos descargados exitosamente!!');
                                    
                                     btnDescargarP.disabled = false;
                                     btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
-                                    hideProgressOverlay();
-                                    Pace.stop();
 
                                     try {
                                         getTotalProductos('lbTotalProductos');
@@ -935,8 +1025,6 @@ async function addListeners(){
                        funciones.AvisoError('No se pudieron eliminar los productos previos');
                        btnDescargarP.disabled = false;
                        btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
-                       hideProgressOverlay();
-                       Pace.stop();
 
                     })
                 })
@@ -945,8 +1033,6 @@ async function addListeners(){
                     funciones.AvisoError('No se pudieron descargar los productos');
                     btnDescargarP.disabled = false;
                     btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
-                    hideProgressOverlay();
-                    Pace.stop();
 
                 })
     
@@ -964,8 +1050,6 @@ async function addListeners(){
     
                 btnDescargarC.disabled = true;
                 btnDescargarC.innerHTML = `<i class="fal fa-sync fa-spin"></i>`;
-                showProgressOverlay('Descargando clientes', 0, 'Iniciando descarga...');
-                Pace.restart();
     
                 downloadClientes()
                 .then((data)=>{
@@ -974,9 +1058,6 @@ async function addListeners(){
                     .then(()=>{
                         let totalrows = Number(data.rowsAffected[0]);
                         let contador = 1;
-                        if (totalrows > 0) {
-                            updateProgressOverlay(5, 'Preparando registros...');
-                        }
     
                         data.recordset.map(async(rows)=>{
                             var datosdb = {
@@ -1002,15 +1083,13 @@ async function addListeners(){
                             });
                             if (noOfRowsInserted > 0) {
                                 let porc = (Number(contador)/Number(totalrows))*100;
+                                //setLog(`<label>Clientes agregados: ${contador} de ${totalrows} (${porc.toFixed(2)} %)</label>`,'rootWait')
                                 contador += 1;
-                                updateProgressOverlay(Math.round(porc), `Guardando cliente ${contador - 1} de ${totalrows}`);
                                 if(totalrows==contador){
                                    
                                     funciones.Aviso('Clientes descargados exitosamente!!');
                                     btnDescargarC.disabled = false;
                                     btnDescargarC.innerHTML = `<i class="fal fa-download"></i>`;
-                                    hideProgressOverlay();
-                                    Pace.stop();
                                     try {
                                         getTotalClientes('lbTotalClientes');
                                        
@@ -1027,8 +1106,6 @@ async function addListeners(){
                         funciones.AvisoError('No se pudieron eliminar los Clientes previos');
                         btnDescargarC.disabled = false;
                         btnDescargarC.innerHTML = `<i class="fal fa-download"></i>`;
-                        hideProgressOverlay();
-                        Pace.stop();
                     })
                 })
                 .catch(()=>{
@@ -1036,8 +1113,6 @@ async function addListeners(){
                     funciones.AvisoError('No se pudieron descargar los clientes');
                     btnDescargarC.disabled = false;
                     btnDescargarC.innerHTML = `<i class="fal fa-download"></i>`;
-                    hideProgressOverlay();
-                    Pace.stop();
                 })
                       
                 
@@ -1144,146 +1219,32 @@ async function addListeners(){
 
     });
     
-
-    document.getElementById('tab-inicio').click();
     
 };
 
-function Lmap(lat,long){
-                      
-          var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          osmAttrib = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          osm = L.tileLayer(osmUrl, {center: [lat, long],maxZoom: 20, attribution: osmAttrib});    
-          map = L.map('mapcontainer').setView([lat, long], 18).addLayer(osm);
+function fcn_get_color_dia(){
 
-          L.marker([lat, long], {draggable:'true'})
-            .addTo(map)
-            .bindPopup(`Marque la nueva posición GPS del cliente`, {closeOnClick: false, autoClose: false})
-            .openPopup()
-            .on("dragend",function(e) {
-                    this.openPopup();
-                    var position = e.target._latlng;
-               
-                    GlobalSelectedLat = position.lat.toString();
-                    GlobalSelectedLong = position.lng.toString();                  
-            });
-           
-            return map;
+    const dias = {
+        LUNES: 'btn_lunes',
+        MARTES: 'btn_martes',
+        MIERCOLES: 'btn_miercoles',
+        JUEVES: 'btn_jueves',
+        VIERNES: 'btn_viernes',
+        SABADO: 'btn_sabado',
+        DOMINGO: 'btn_domingo'
+    };
 
-};
+    const diaActual = funciones.devuelve_dia_semana();
+    const btnId = dias[diaActual];
 
-function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
-    
-    
-    //map.remove()
-    //map = Lmap(lat,long,nombre,telefono);
+    if (!btnId) return;
 
-    document.getElementById('lbNombreCliente').innerHTML = nombre;
-    document.getElementById('txtCodClie').value = codigo;
-    document.getElementById('txtNitClie').value = nit;
-    document.getElementById('txtDirClie').value = direccion;
-    document.getElementById('txtTelClie').value = telefono;
-    
-    GlobalSelectedCodCliente = codigo;
-    GlobalSelectedNomCliente = nombre;
-    GlobalSelectedDirCliente = direccion;
-    
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
 
-    classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
-
-    //showMenuLateral('Opciones del Cliente');
-
-};
-
-function getMenuCliente2(codigo,negocio,nombre,direccion,telefono,lat,long,nit){
-    
- 
-    get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long)
-
-    return;
-
-    //map.remove()
-    //map = Lmap(lat,long,nombre,telefono);
-
-    document.getElementById('lbNombreCliente').innerHTML = nombre;
-    document.getElementById('txtCodClie').value = codigo;
-    document.getElementById('txtNitClie').value = nit;
-    document.getElementById('txtDirClie').value = direccion;
-    document.getElementById('txtTelClie').value = telefono;
-    
-    GlobalSelectedCodCliente = codigo;
-    GlobalSelectedNomCliente = nombre;
-    GlobalSelectedDirCliente = direccion;
-    
-
-    //classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
-
-    showMenuLateral('Opciones del Cliente');
-
-};
-
-function getEditCliente(codigo,nombre,direccion,referencia,telefono,lat,long,nit,tiponegocio,negocio){
-    
-    
-    //map.remove()
-    //map = Lmap(lat,long,nombre,telefono);
-
-    document.getElementById('txtEditNit').value = nit;
-    document.getElementById('txtEditNombre').value = nombre;
-    document.getElementById('txtEditDireccion').value = direccion; 
-    document.getElementById('txtEditReferencia').value = referencia;
-    document.getElementById('txtEditLatitud').value = lat;
-    document.getElementById('txtEditLongitud').value = long;
-    document.getElementById('cmbEditTipoNegocio').value = tiponegocio;
-    document.getElementById('txtEditNegocio').value = negocio;
-
-    GlobalSelectedCodCliente = codigo;
-    GlobalSelectedNomCliente = nombre;
-    GlobalSelectedDirCliente = direccion;
-    
-
-    $("#ModalCambiarDatosCliente").modal('show');
-
-
-
-};
-
-async function getHistorialCliente(codigo,nit,nombre){
-    
-    await apigen.vendedorHistorialCliente(codigo,'tblHistorial');
-
-    $('#ModalHistorialCliente').modal('show')
-
-};
-
-async function setRecordatorioVisita(codigo, nit, nombre, direccion){
-    
-    await funciones.hablar(`¿Quieres establecer el recordatorio de visita a ${nombre}`);
-    
-    let recordatorio = 'Retomar visita';
-
-    funciones.Confirmacion(`¿Quieres establecer el recordatorio de visita a ${nombre}`)
-    .then((value)=>{
-        if (value==true){
-
-            apigen.clientesSetReminder(codigo,nit,nombre,direccion,recordatorio,0,0,funciones.getFecha())
-            .then(()=>{
-                funciones.Aviso('Recordatorio establecido exitosamente');
-            })
-            .catch(()=>{
-                funciones.AvisoError('No se pudo establecer el recordatorio');
-            })
-            //funciones.setReminder(`Visitar a ${nombre}, ubicado en ${direccion}`, 60);
-            
-        }
-    })
-    
-};
-
-
-
-function fcn_get_color_dia(dia = funciones.devuelve_dia_semana()){
-    resaltarDiaSeleccionado(dia);
+    btn.classList.remove('bg-light', 'text-dark', 'text-white');
+    btn.classList.add('bg-personal', 'text-white', 'negrita');
+    btn.style.boxShadow = '0 10px 24px rgba(37, 99, 235, 0.2)';
 };
 
 async function iniciar_barcode() {
@@ -1401,7 +1362,6 @@ async function iniciar_barcode() {
 function getListaClientes(nodia){
 
     GlobalSelectedClientesDia = nodia;
-    resaltarDiaSeleccionado(nodia);
 
     if(nodia=='AJENOS'){
         document.getElementById('tab-ajenos').click();
@@ -1409,7 +1369,6 @@ function getListaClientes(nodia){
         apigen.clientesVendedor(GlobalCodSucursal,GlobalCodUsuario,nodia,'tblClientes','tblClientesVisitados','lbTotalClientesConteo');
         document.getElementById('tab-no-visitados').click();
     };
-
 
     document.getElementById('lbNombreDia').innerText = 'CLIENTES: ' + nodia;
 

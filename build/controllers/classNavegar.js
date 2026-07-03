@@ -28,6 +28,7 @@ let classNavegar = {
             
     },
     inicio : async(tipousuario)=>{
+        document.body.classList.remove('login-active');
         divUsuario.innerText = GlobalUsuario;
         lbTipo.innerText = GlobalTipoUsuario;
 
@@ -47,92 +48,139 @@ let classNavegar = {
             InicializarVista();
         })
     },
+    setupMenuFooter(options = {}) {
+        const {
+            itemsHtml = '',
+            showPedidosPend = true,
+            onReady = null,
+            autoNavigateId = null,
+            bindEvents = null
+        } = options;
+
+        const strFooter = `
+            <div class="vendor-menu-shell">
+                <button class="vendor-menu-toggle" id="btnToggleMenuVendedor" type="button">
+                    <i class="fal fa-bars"></i> Menu
+                </button>
+                <div class="vendor-menu-panel" id="vendorMenuPanel">
+                    <div class="vendor-menu-panel-head">
+                        <span>Menú</span>
+                    </div>
+                    ${itemsHtml}
+                </div>
+            </div>
+        `;
+
+        rootMenuFooter.innerHTML = strFooter;
+
+        const vendorMenuPanel = document.getElementById('vendorMenuPanel');
+        const btnToggleMenuVendedor = document.getElementById('btnToggleMenuVendedor');
+
+        btnToggleMenuVendedor.addEventListener('click', () => {
+            vendorMenuPanel.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!vendorMenuPanel.contains(event.target) && !btnToggleMenuVendedor.contains(event.target)) {
+                vendorMenuPanel.classList.remove('open');
+            }
+        });
+
+        const closeMenu = () => vendorMenuPanel.classList.remove('open');
+
+        if (bindEvents) {
+            bindEvents({ closeMenu });
+        }
+
+        document.getElementById('btnPedidosPend').style = showPedidosPend
+            ? 'visibility:visible'
+            : 'visibility:hidden';
+
+        if (onReady) {
+            return Promise.resolve(onReady({ closeMenu })).then(() => {
+                if (autoNavigateId) {
+                    const autoBtn = document.getElementById(autoNavigateId);
+                    if (autoBtn) autoBtn.click();
+                }
+            });
+        }
+
+        if (autoNavigateId) {
+            const autoBtn = document.getElementById(autoNavigateId);
+            if (autoBtn) autoBtn.click();
+        }
+    },
     inicioVendedor : async ()=>{
-       
-                                
-        let strFooter =    `<button class="btn btn-sm "  id="btnMenu2VendedorClientesMapa">
-                                <i class="fal fa-map"></i>
-                                Mapa
-                            </button> 
-                            <button class="btn btn-sm "  id="btnMenu2VendedorClientes">
-                                <i class="fal fa-shopping-cart"></i>
-                                Cliente
-                            </button>
-                          
-                            <button class="btn btn-sm " id="btnMenu2Censo">
-                                <i class="fal fa-edit"></i>
-                                Censo
-                            </button>
+        const vendedorItems = `
+                    <button class="vendor-menu-item" id="btnMenu2VendedorClientesMapa">
+                        <i class="fal fa-map"></i>
+                        <span>Mapa</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2VendedorClientes">
+                        <i class="fal fa-shopping-cart"></i>
+                        <span>Cliente</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2Censo">
+                        <i class="fal fa-edit"></i>
+                        <span>Censo</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2VendedorLogro">
+                        <i class="fal fa-chart-pie"></i>
+                        <span>Logro</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2VendedorLogroReal">
+                        <i class="fal fa-chart-bar"></i>
+                        <span>Objetivos</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2Configuraciones">
+                        <i class="fal fa-cog"></i>
+                        <span>Configuración</span>
+                    </button>
+        `;
 
-                            <button class="btn btn-sm " id="btnMenu2VendedorLogro">
-                                <i class="fal fa-chart-pie"></i>
-                                Logro
-                            </button>
+        await classNavegar.setupMenuFooter({
+            itemsHtml: vendedorItems,
+            showPedidosPend: true,
+            autoNavigateId: 'btnMenu2VendedorClientes',
+            bindEvents: ({ closeMenu }) => {
+                document.getElementById('btnMenu2VendedorClientes').addEventListener('click', () => {
+                    closeMenu();
+                    detener_efecto();
+                    classNavegar.inicioVendedorListado();
+                });
 
-                            <button class="btn btn-sm " id="btnMenu2VendedorLogroReal">
-                                <i class="fal fa-chart-bar"></i>
-                                Objetivos
-                            </button>
-                            
-                            <button class="btn btn-sm"  id="btnMenu2Configuraciones">
-                                <i class="fal fa-cog"></i>
-                                Cnfg
-                            </button>
+                document.getElementById('btnMenu2VendedorClientesMapa').addEventListener('click', () => {
+                    closeMenu();
+                    detener_efecto();
+                    classNavegar.ventasMapaClientes();
+                });
 
-                                                   
-                    
-                            `
+                document.getElementById('btnMenu2VendedorLogro').addEventListener('click', () => {
+                    closeMenu();
+                    detener_efecto();
+                    classNavegar.logrovendedor();
+                });
 
-                    rootMenuFooter.innerHTML = strFooter;
-                                                 
-                    let btnMenu2VendedorClientes = document.getElementById('btnMenu2VendedorClientes');
-                    btnMenu2VendedorClientes.addEventListener('click',()=>{
-                         //efecto nieve
-                        detener_efecto();
-                        classNavegar.inicioVendedorListado();
-                    });
+                document.getElementById('btnMenu2Censo').addEventListener('click', () => {
+                    closeMenu();
+                    detener_efecto();
+                    classNavegar.inicio_censo();
+                });
 
-                    let btnMenu2VendedorClientesMapa = document.getElementById('btnMenu2VendedorClientesMapa');
-                    btnMenu2VendedorClientesMapa.addEventListener('click',()=>{
-                         //efecto nieve
-                        detener_efecto();
-                        classNavegar.ventasMapaClientes();
-                    });
-             
-                    let btnMenu2VendedorLogro = document.getElementById('btnMenu2VendedorLogro');
-                    btnMenu2VendedorLogro.addEventListener('click',()=>{
-                         //efecto nieve
-                        detener_efecto();
-                        classNavegar.logrovendedor();
-                    });
-                 
-                    let btnMenu2Censo = document.getElementById('btnMenu2Censo');
-                    btnMenu2Censo.addEventListener('click',()=>{
-                        //efecto nieve
-                        detener_efecto();
-                        classNavegar.inicio_censo();
-                    });
+                document.getElementById('btnMenu2Configuraciones').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.ConfigVendedor();
+                });
 
-                    let btnMenu2Configuraciones = document.getElementById('btnMenu2Configuraciones');
-                    btnMenu2Configuraciones.addEventListener('click',()=>{
-                    
-                        classNavegar.ConfigVendedor();
-                    });
-
-                    document.getElementById('btnMenu2VendedorLogroReal').addEventListener('click',()=>{
-                        classNavegar.vendedor_reportes();
-                    });
-                   
-                   
-
-                    await classEmpleados.updateMyLocation();
-
-                    btnMenu2VendedorClientes.click();
-                    //classNavegar.inicioVendedorListado();
-
-                    document.getElementById('btnPedidosPend').style="visibility:visible";
-
-             
+                document.getElementById('btnMenu2VendedorLogroReal').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.vendedor_reportes();
+                });
+            },
+            onReady: async () => {
+                await classEmpleados.updateMyLocation();
+            }
+        });
     },
     inicioVendedorListado :async ()=>{
         funciones.loadScript('../views/vendedor/clientes.js','root')
@@ -260,78 +308,73 @@ let classNavegar = {
         })
     },
     inicio_supervisor : async ()=>{
-        let strFooter =    `<button class="btn btn-sm "  id="btnMenu2SuperMapa">
-                                <i class="fal fa-map"></i>
-                                Gps
-                            </button> 
-                            <button class="btn btn-sm "  id="btnMenu2SuperVentas">
-                                <i class="fal fa-shopping-cart"></i>
-                                Reportes
-                            </button>
-                            <button class="btn btn-sm "  id="btnMenu2SuperCobertura">
-                                <i class="fal fa-user"></i>
-                                Cobertura
-                            </button>
-                            <button class="btn btn-sm "  id="btnMenu2SuperHorarios">
-                                <i class="fal fa-clock"></i>
-                                Horarios
-                            </button>
-                            <button class="btn btn-sm "  id="btnMenu2SuperPrecios">
-                                <i class="fal fa-box"></i>
-                                Precios
-                            </button>
-                             <button class="btn btn-sm "  id="btnMenu2SuperUsuarios">
-                                <i class="fal fa-unlock"></i>
-                                Usuarios
-                            </button>
-                            `
-                    rootMenuFooter.innerHTML = strFooter;
-                                               
-                                        
-                    let btnMenu2SuperMapa = document.getElementById('btnMenu2SuperMapa');
-                    btnMenu2SuperMapa.addEventListener('click',()=>{
-                            classNavegar.supervisor_mapa();
-                    });
+        const supervisorItems = `
+                    <button class="vendor-menu-item" id="btnMenu2SuperMapa">
+                        <i class="fal fa-map-marker-alt"></i>
+                        <span>Gps</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperVentas">
+                        <i class="fal fa-chart-line"></i>
+                        <span>Reportes</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperCobertura">
+                        <i class="fal fa-user"></i>
+                        <span>Cobertura</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperHorarios">
+                        <i class="fal fa-clock"></i>
+                        <span>Horarios</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperPrecios">
+                        <i class="fal fa-box"></i>
+                        <span>Precios</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperUsuarios">
+                        <i class="fal fa-unlock"></i>
+                        <span>Usuarios</span>
+                    </button>
+        `;
 
-                    let btnMenu2SuperVentas = document.getElementById('btnMenu2SuperVentas');
-                    btnMenu2SuperVentas.addEventListener('click',()=>{
-                            classNavegar.supervisor_ventas();
-                    });
+        await classNavegar.setupMenuFooter({
+            itemsHtml: supervisorItems,
+            showPedidosPend: false,
+            autoNavigateId: 'btnMenu2SuperVentas',
+            bindEvents: ({ closeMenu }) => {
+                document.getElementById('btnMenu2SuperMapa').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_mapa();
+                });
 
-                    let btnMenu2SuperCobertura = document.getElementById('btnMenu2SuperCobertura');
-                    btnMenu2SuperCobertura.addEventListener('click',()=>{
-                            classNavegar.supervisor_cobertura();
-                    });
-
-                    let btnMenu2SuperHorarios = document.getElementById('btnMenu2SuperHorarios');
-                    btnMenu2SuperHorarios.addEventListener('click',()=>{
-                            classNavegar.supervisor_horarios();
-                    });
-
-                    let btnMenu2SuperPrecios = document.getElementById('btnMenu2SuperPrecios');
-                    btnMenu2SuperPrecios.addEventListener('click',()=>{
-                            classNavegar.supervisor_precios();
-                    });
-
-                    let btnMenu2SuperUsuarios = document.getElementById('btnMenu2SuperUsuarios');
-                    btnMenu2SuperUsuarios.addEventListener('click',()=>{
-                            classNavegar.supervisor_usuarios();
-                    });
-
-                
-                 
-                    //actualiza la ubicación del empleado
-                    await classEmpleados.updateMyLocation();
-
-                    //actualiza las credenciales
-                    updateDateDownload();
-
-                    document.getElementById('btnPedidosPend').style="visibility:hidden";
-
+                document.getElementById('btnMenu2SuperVentas').addEventListener('click', () => {
+                    closeMenu();
                     classNavegar.supervisor_ventas();
+                });
 
-                  
-             
+                document.getElementById('btnMenu2SuperCobertura').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_cobertura();
+                });
+
+                document.getElementById('btnMenu2SuperHorarios').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_horarios();
+                });
+
+                document.getElementById('btnMenu2SuperPrecios').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_precios();
+                });
+
+                document.getElementById('btnMenu2SuperUsuarios').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_usuarios();
+                });
+            },
+            onReady: async () => {
+                await classEmpleados.updateMyLocation();
+                updateDateDownload();
+            }
+        });
     },
     supervisor_ventas:()=>{
         funciones.loadScript('./views/supervisor/ventas.js','root')

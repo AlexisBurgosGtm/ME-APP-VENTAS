@@ -4,7 +4,7 @@ function getView(){
             return `
             <div class="row">    
                 <div class="form-group col-12">
-                    <label class="negrita">Seleccione un Reporte</label>
+                            <label class="negrita text-secondary">Seleccione un Reporte</label>
                     <select class="form-control border-danger negrita text-danger" id="cmbReporte">
                         <option value="1">REPORTE PEDIDOS DEL DIA (DIA)</option>
                         <option value="2">REPORTE MARCAS VENDIDAS (DIA)</option>
@@ -12,7 +12,6 @@ function getView(){
                         <option value="4">REPORTE VENTAS POR FECHA (MES)</option>
                         <option value="5">REPORTE PRODUCTOS DEL MES (MES)</option>
                         <option value="6">MARCAS DEL MES (MES)</option>
-                        <option value="7">VENTAS NETAS - OBJETIVO (MES)</option>
                     </select>
                 </div>
             </div>
@@ -20,7 +19,7 @@ function getView(){
             <div class="row">
                 <div class="col-12">
                         <div class="form-group">
-                            <label class="negrita">Mes - Año - Fecha</label>
+                            <label class="negrita text-secondary">Mes - Año - Fecha</label>
                             <div class="input-group">
                                 <select class="form-control negrita" id="cmbMes"></select>
                                 <select class="form-control negrita" id="cmbAnio"></select>
@@ -35,11 +34,10 @@ function getView(){
         },
         listado: ()=>{
             return `
-            <div class="" id="containerTotal"></div>
-                <br>
-            <div class="row card">
-                <div class="table-responsive" id="tblReport">
-                  
+            <div class="logro-view">
+                <div id="containerTotal"></div>
+                <div class="logro-report-shell">
+                    <div class="logro-report-wrap" id="tblReport"></div>
                 </div>
             </div>
             <button class="btn btn-secondary btn-circle btn-xl hand shadow btn-bottom-r" id="btnFiltro">
@@ -193,20 +191,18 @@ function getView(){
         },
         modal_filtro:()=>{
             return `
-            <div class="modal fade modal-with-scroll" id="modal_filtro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog  modal-dialog-bottom modal-xl" role="document">
-                    <div class="modal-content">
-
-                        <div class="modal-header bg-secondary text-white">
-                            <label class="modal-title h5">Indique la información a Mostrar</label>
+            <div class="modal fade logro-filter-modal" id="modal_filtro" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+                    <div class="modal-content logro-filter-modal-content">
+                        <div class="modal-header border-0 pb-0">
+                            <label class="modal-title h5 text-secondary mb-0">Indique la información a Mostrar</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-
-                        <div class="modal-body">
+                        <div class="modal-body pt-2">
                             ${view.encabezado()}
-                            
-                            
                         </div>
-                        
                     </div>
                 </div>
             </div>
@@ -330,11 +326,6 @@ function getCargarGrid(){
             //MARCAS POR MES
             getRptMarcas(cmbMes.value, cmbAnio.value);
             break;
-        
-        case '7':
-            //VENTAS NETAS MES
-            getRptDinero2(cmbMes.value, cmbAnio.value);
-            break;
         default:
             break;
     }
@@ -398,9 +389,6 @@ function corregir_pedido(coddoc,correlativo,fecha){
 
 
 
-function getRptDinero2(mes,anio){
-    apigen.reporteDinero2(GlobalCodSucursal,GlobalCodUsuario,anio,mes,'tblReport','containerTotal');
-};
 function getRptDinero(mes,anio){
     apigen.reporteDinero(GlobalCodSucursal,GlobalCodUsuario,anio,mes,'tblReport','containerTotal');
 };
@@ -425,12 +413,10 @@ function deletePedidoVendedor(fecha,coddoc,correlativo,st){
                     .then((clave)=>{
                         if(clave==GlobalPassUsuario){
 
-                            apigen.deletePedidoVendedor(GlobalCodSucursal,GlobalCodUsuario,fecha,coddoc,correlativo)
+                                apigen.deletePedidoVendedor(GlobalCodSucursal,GlobalCodUsuario,fecha,coddoc,correlativo)
                             .then(()=>{
                                 funciones.Aviso('Pedido Eliminado Exitosamente!!');
-                                console.log('recargandolista');
-                                //apigen.pedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,funciones.devuelveFecha('txtFechaPedido'),'tblListaPedidos','lbTotalPedidos');
-                                apigen.pedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,funciones.devuelveFecha('txtFecha'),'tblReport','containerTotal');
+                                rpt_pedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,funciones.devuelveFecha('txtFecha'),'tblReport','containerTotal');
                             })
                             .catch(()=>{
                                 funciones.AvisoError('No se pudo eliminar')
@@ -734,79 +720,58 @@ function rpt_pedidosVendedor(sucursal,codven,fecha,idContenedor,idLbTotal){
                 total = total + Number(rows.IMPORTE);
                 totalpedidos = totalpedidos + 1;
                 strdata += `
-                <div class="card card-rounded col-12 shadow hand p-1 ${strClassAlerta}">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <b>${rows.NEGOCIO} // ${rows.NOMCLIE}</b>
-                            <br>
-                            <small class="text-secondary">${rows.DIRCLIE + ', ' + rows.DESMUNI}</small>
-                            <br>
-                            <small class="text-white bg-secondary">${rows.OBS}</small>
+                <div class="logro-order-card ${strClassAlerta}">
+                    <div class="logro-order-card-top">
+                        <div class="logro-order-doc text-secondary">${rows.CODDOC}-${rows.CORRELATIVO}</div>
+                        <div class="logro-order-client">${rows.NEGOCIO} · ${rows.NOMCLIE}</div>
+                        <div class="logro-order-address text-secondary">${rows.DIRCLIE}, ${rows.DESMUNI}</div>
+                        ${rows.OBS ? `<div class="logro-order-obs text-secondary">${rows.OBS}</div>` : ''}
+                    </div>
+                    <div class="logro-order-card-bottom">
+                        <div class="logro-order-amounts">
+                            <span class="text-secondary small">Facturado</span>
+                            <strong class="text-danger">${funciones.setMoneda(rows.IMPORTE,'Q')}</strong>
+                            <span class="text-secondary small">Productos</span>
+                            <strong class="text-secondary">${funciones.setMoneda(rows.TOTALPRODUCTOS,'Q')}</strong>
                         </div>
-                        <div class="row">
-                            <small class="negrita text-secondary">${rows.CODDOC + '-' + rows.CORRELATIVO}</small>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <b class="h5 text-danger">F:${funciones.setMoneda(rows.IMPORTE,'Q')}</b>
-                                <br>
-                                <b class="h5 text-secondary">P:${funciones.setMoneda(rows.TOTALPRODUCTOS,'Q')}</b>
-                            </div>
-                            <div class="col-2">
-                                <button class="btn btn-info btn-sm btn-circle"
-                                    onclick="getDetallePedido('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.CODCLIE}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.ST}');">
-                                    <i class="fal fa-edit"></i>
-                                </button>    
-                            </div>
-                            <div class="col-2">
-                                <button class="btn btn-danger btn-sm btn-circle"
-                                    onclick="deletePedidoVendedor('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.ST}');">
-                                    <i class="fal fa-trash"></i>
-                                </button>    
-                            </div>
-                            <div class="col-2">
-                                <button class="btn btn-outline-success btn-sm btn-circle"
-                                    onclick="funciones.enviarPedidoWhatsapp2('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}');">
-                                    w
-                                </button>    
-                            </div>
+                        <div class="logro-order-actions">
+                            <button class="btn btn-info btn-sm btn-circle"
+                                onclick="getDetallePedido('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.CODCLIE}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.ST}');">
+                                <i class="fal fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-circle"
+                                onclick="deletePedidoVendedor('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.ST}');">
+                                <i class="fal fa-trash"></i>
+                            </button>
+                            <button class="btn btn-outline-success btn-sm btn-circle"
+                                onclick="funciones.enviarPedidoWhatsapp2('${rows.FECHA.toString().replace('T00:00:00.000Z','')}','${rows.CODDOC}','${rows.CORRELATIVO}');">
+                                w
+                            </button>
                         </div>
                     </div>
-                </div>
-                <br>`
+                </div>`
         })
-        container.innerHTML = strdata;
-        //lbTotal.innerText = `${funciones.setMoneda(total,'Q ')} - Pedidos: ${totalpedidos} - Promedio:${funciones.setMoneda((Number(total)/Number(totalpedidos)),'Q')}`;
+        container.innerHTML = `<div class="logro-orders-list">${strdata}</div>`;
         lbTotal.innerHTML = `
-                    <div class="card card-rounded border-secondary bg-secondary text-white col-12 p-2 shadow">
-                        <div class="card-body">
-                            <div class="row">
-                                
-                                <div class="col-3" id="parallax_logo">
-                                    <img data-depth="1.0" src="./favicon.png"  width="65" height="65">
+                    <div class="card logro-summary-card col-12 shadow-sm">
+                        <div class="card-body py-2 px-3">
+                            <div class="row align-items-center no-gutters">
+                                <div class="col-auto pr-2" id="parallax_logo">
+                                    <img data-depth="1.0" src="./favicon.png" width="38" height="38" alt="logo" class="logro-summary-logo">
                                 </div>
-                                <div class="col-9">
-                                    <table>
-                                        <tbody>
-                                            <tr>
-                                                <td><i class="fal fa-dollar-sign"></i> Total Vendido:</td>
-                                                <td></td>
-                                                <td class="negrita h2 text-warning">${funciones.setMoneda(total,'Q ')}</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fal fa-edit"></i> Pedidos:</td>
-                                                <td></td>
-                                                <td class="negrita h2 text-warning">${totalpedidos}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    
+                                <div class="col">
+                                    <div class="logro-summary-row">
+                                        <span class="text-secondary small"><i class="fal fa-dollar-sign"></i> Total Vendido:</span>
+                                        <span class="negrita text-danger">${funciones.setMoneda(total,'Q ')}</span>
+                                    </div>
+                                    <div class="logro-summary-row">
+                                        <span class="text-secondary small"><i class="fal fa-edit"></i> Pedidos:</span>
+                                        <span class="negrita text-secondary">${totalpedidos}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    `;
+                    </div>`;
             var parallax_logo = document.getElementById('parallax_logo');
             var parallaxInstance = new Parallax(parallax_logo);
                    

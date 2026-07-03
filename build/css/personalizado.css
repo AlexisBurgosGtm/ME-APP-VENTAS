@@ -1,6 +1,8 @@
 .bg-personal {
-  background-color: var(--color-personal) !important; 
-};
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95), rgba(56, 189, 248, 0.88), rgba(220, 38, 38, 0.78)) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
 
 .btn-personal {
   -webkit-box-shadow: 0 2px 6px 0 var(--color-personal-shadow);
@@ -42,3 +44,15 @@ a.text-personal:hover, a.text-personal:focus {
 
   .border-info {
   border-color: var(--color-personal) !important; }
+
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 16px 40px rgba(2, 6, 23, 0.22);
+  }
+
+  .rounded-xxl {
+    border-radius: 22px;
+  }

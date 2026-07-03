@@ -58,11 +58,10 @@ document.getElementById('btnDownloadProductos').addEventListener('click',()=>{
                    funciones.AvisoError('No se pudieron eliminar los productos previos')       
                 })
             })
-            .catch(()=>{
+            .catch((err)=>{
                 console.log('no se descargó nada.')
                 hideWaitForm();
-                //$('#modalWait').modal('hide');
-                funciones.AvisoError('No se pudieron descargar los productos')
+                funciones.AvisoError(err || 'No se pudieron descargar los productos')
             })
 
             
@@ -115,6 +114,7 @@ document.getElementById('btnDownloadClientes').addEventListener('click',()=>{
                             contador += 1;
                             if(totalrows==contador){
                                 hideWaitForm();
+                                ApiGate.recordClientesDownload();
                                 //$('#modalWait').modal('hide');
                                 funciones.Aviso('Clientes descargados exitosamente!!');
                                 try {
@@ -133,10 +133,9 @@ document.getElementById('btnDownloadClientes').addEventListener('click',()=>{
                     funciones.AvisoError('No se pudieron eliminar los Clientes previos')
                 })
             })
-            .catch(()=>{
+            .catch((err)=>{
                 hideWaitForm();
-                //$('#modalWait').modal('hide');
-                funciones.AvisoError('No se pudieron descargar los clientes')
+                funciones.AvisoError(err || 'No se pudieron descargar los clientes')
             })
                   
             
@@ -348,6 +347,13 @@ function downloadProductos(){
 
     return new Promise((resolve,reject)=>{
 
+        try {
+            ApiGate.assertCanDownloadCatalog();
+        } catch (e) {
+            reject(e.message);
+            return;
+        }
+
         axios.post('/ventas/descargar_catalogo', {sucursal:GlobalCodSucursal,
                                                   codcatalogo:GlobalTipoCatalogo})  
         .then(async(response) => {
@@ -357,7 +363,11 @@ function downloadProductos(){
                 reject();
             }else{
                 update_cod_update = data.recordset[0].CODUPDATE.toString();
-                deleteDateDownload().then(()=>{updateDateDownload()})  
+                deleteDateDownload().then(()=>{
+                    updateDateDownload().then(()=>{
+                        ApiGate.recordCatalogDownload();
+                    });
+                })
                 resolve(data);                         
             }
         }, (error) => {
@@ -416,6 +426,13 @@ function selectProducto(filtro) {
 function downloadClientes (){
 
     return new Promise((resolve,reject)=>{
+
+        try {
+            ApiGate.assertCanDownloadClientes();
+        } catch (e) {
+            reject(e.message);
+            return;
+        }
 
         axios.post('/clientes/descargar_clientes_ruta', {
             sucursal: GlobalCodSucursal,
@@ -750,6 +767,29 @@ function selectDataRowVenta(id,nuevacantidad) {
 };
 
 
+function normalizeDocproductosParaEnvio(rows) {
+    return rows.map((row, index) => ({
+        EMPNIT: row.EMPNIT || GlobalEmpnit,
+        CODSUCURSAL: row.CODSUCURSAL || GlobalCodSucursal,
+        CODDOC: row.CODDOC,
+        ID: index + 1,
+        DOC_ITEM: index + 1,
+        CODPROD: row.CODPROD,
+        DESPROD: row.DESPROD,
+        CODMEDIDA: row.CODMEDIDA,
+        CANTIDAD: Number(row.CANTIDAD),
+        EQUIVALE: Number(row.EQUIVALE),
+        TOTALUNIDADES: Number(row.TOTALUNIDADES),
+        COSTO: Number(row.COSTO),
+        PRECIO: Number(row.PRECIO),
+        TOTALCOSTO: Number(row.TOTALCOSTO),
+        TOTALPRECIO: Number(row.TOTALPRECIO),
+        TIPOPRECIO: row.TIPOPRECIO || 'P',
+        EXENTO: Number(row.EXENTO || 0),
+        USUARIO: row.USUARIO
+    }));
+}
+
 function gettempDocproductos(usuario){
     
     return new Promise(async(resolve,reject)=>{
@@ -761,7 +801,7 @@ function gettempDocproductos(usuario){
             order: { by: 'ID', type: 'asc' }
         })
         if(Number(response.length)>0){
-            resolve(response);
+            resolve(normalizeDocproductosParaEnvio(response));
         }else{
             reject('No hay productos agregados');
         }
@@ -783,6 +823,10 @@ function deleteTempVenta(usuario){
 
 //INSERTA LOCALMENTE UN PEDIDO
 function insertVenta(datos){
+    if (!datos.LOCAL_ID) {
+        datos.LOCAL_ID = ApiGate.generateLocalId();
+    }
+    datos.ENVIADO = 0;
     console.log('intentando ingresar en tabla documentos')
     return new Promise(async(resolve,reject)=>{
         var response = await connection.insert({
@@ -1114,104 +1158,20 @@ function dbSendPedido(id,idbtn){
                 setLog(`<label class="text-danger">Intentando obtener el correlativo de documentos...</label>`,'rootWait');
                 $('#modalWait').modal('show');
 
-                classTipoDocumentos.get_Correlativo_Documento_service('PED',GlobalCoddoc)
-                .then((correlativo)=>{
-                    //lee el documento de la base de datos local y lo intenta enviar
-                    setLog(`<label class="text-danger">Cargando los datos del documento para intentarlo enviar...</label>`,'rootWait');
-                        
-                    let datos; 
-                    let nit;
-                    getPedidoEnviar(id)
-                    .then((response)=>{
-                        response.map((rs)=>{
-                            nit = rs.NITCLIE;
-                            GlobalSelectedCodCliente = rs.CODCLIE;
-                            datos = {
-                                jsondocproductos:rs.JSONPRODUCTOS,
-                                codsucursal:rs.CODSUCURSAL,
-                                empnit: rs.EMPNIT,
-                                coddoc:rs.CODDOC,
-                                correl: correlativo.toString(),
-                                anio:rs.ANIO,
-                                mes:rs.MES,
-                                dia:rs.DIA,
-                                fecha:rs.FECHA,
-                                fechaentrega:rs.FECHAENTREGA,
-                                formaentrega:rs.FORMAENTREGA,
-                                codbodega:GlobalCodBodega,
-                                codcliente: rs.CODCLIE,
-                                nomclie:rs.NOMCLIE,
-                                totalcosto:rs.TOTALCOSTO,
-                                totalprecio:rs.TOTALPRECIO,
-                                nitclie:rs.NITCLIE,
-                                dirclie:rs.DIRCLIE,
-                                obs:rs.OBS,
-                                direntrega:rs.DIRENTREGA,
-                                usuario:rs.USUARIO,
-                                codven:rs.CODVEN,
-                                lat:rs.LAT,
-                                long:rs.LONG
-                            }
-                        })
-                        
-                        setLog(`<label class="text-info">Intentando enviar el pedido...</label>`,'rootWait');
-                
-                        axios.post(GlobalUrlServicePedidos + '/ventas/insertventa', datos)
-                        .then(async(response) => {
-                            const data = response.data;
-                            //if (data.rowsAffected[0]==0){
-                            if (data.toString()=='error'){
-                                hideWaitForm();
-                                btn.disabled = false;
-                                btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
-                                funciones.AvisoError('No se logró Enviar este pedido, verifique su número de correlativo o la señal de internet');   
-                            }else{
-                                hideWaitForm();
-                                funciones.Aviso('Pedido Enviado Exitosamente !!!')
-                            
-                                //actualiza la ubicación del empleado
-                                await classEmpleados.updateMyLocation();
-                                //actualiza la última venta del cliente
-                                await apigen.updateClientesLastSale(nit,'VENTA');
-                                deletePedidoEnviado(id)
-                                .then(()=>{
-                                    dbCargarPedidosPendientes();
-                                })
-                                                                                
-                            }
-                            //$('#modalWait').modal('hide');
-                        }, (error) => {
-                            //$('#modalWait').modal('hide'); 
-                            hideWaitForm();
-                            btn.disabled = false;
-                            btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
-                            funciones.AvisoError('Ha ocurrido un error y no se pudo enviar');
-                           
-                        })
-                        .catch((error)=>{
-                            //$('#modalWait').modal('hide');
-                            hideWaitForm();
-                            btn.disabled = false;
-                            btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
-                            funciones.AvisoError('Error: ' + error);
-                           
-                        })
-        
-                    })
-
-
+                SyncQueue.sendPedidoCore(id, { silent: false })
+                .then(()=>{
+                    hideWaitForm();
+                    funciones.Aviso('Pedido Enviado Exitosamente !!!');
+                    dbCargarPedidosPendientes();
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
                 })
                 .catch(()=>{
-                    //$('#modalWait').modal('hide');
                     hideWaitForm();
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
-                    funciones.AvisoError('No se pudo obtener el correlativo del documento a generar, revise su conexión a internet')
-                })
-                
-                            
-                
-          
+                    funciones.AvisoError('No se logró enviar este pedido, verifique su conexión a internet');
+                });
 
             }
         })
@@ -1219,9 +1179,6 @@ function dbSendPedido(id,idbtn){
 
 
 function dbSendPedidosBackground(usuario){
-    return new Promise((resolve,reject)=>{
-        resolve();
-    })
-    
+    return SyncQueue.runBackgroundSync({ silent: true });
 };
 

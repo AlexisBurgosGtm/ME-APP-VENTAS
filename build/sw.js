@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-v2026-011';
-const dynamicCacheName = 'runtime-cache-2026-011';
+const staticCacheName = 'pre-cache-v2026-013';
+const dynamicCacheName = 'runtime-cache-2026-013';
 
 
 // Pre Caching Assets
@@ -50,6 +50,8 @@ const precacheAssets = [
     './libs/chartjs.bundle.js',
     './libs/funciones.js',
     './libs/sweetalert.min.js',
+    './libs/sweetalert2.min.js',
+    './libs/sweetalert2-compat.js',
     './libs/toastr.js',
     './libs/parallax.min.js',
     './libs/animate.min.css',

@@ -325,6 +325,9 @@ let btnPedidosPend = document.getElementById('btnPedidosPend');
 btnPedidosPend.addEventListener('click',()=>{
     $('#ModalPendientes').modal('show');
     dbCargarPedidosPendientes();
+    if (navigator.onLine && typeof SyncQueue !== 'undefined') {
+        SyncQueue.runBackgroundSync({ silent: true });
+    }
 });
 
 
@@ -356,6 +359,10 @@ btnPedidosPend.addEventListener('click',()=>{
       internetStatus.style.backgroundColor = "#00b894";
       internetStatus.style.boxShadow = "0 .5rem 1rem rgba(0,0,0,.15)";
       $("#internetStatus").delay("5000").fadeOut(500);
+
+      if (typeof SyncQueue !== 'undefined') {
+          SyncQueue.runBackgroundSync({ silent: true });
+      }
   });
 
   window.addEventListener('offline', function () {

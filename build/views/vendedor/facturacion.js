@@ -79,62 +79,42 @@ function getView(){
         },
         gridTempVenta :()=>{
             return `
-        <div class="row">
-            <label class="text-info" id="lbNomClien">Consumidor Final</label>
-            <div id="panel-2" class="panel col-12">
-
-                <div class="panel-hdr">
-                   
-                    <h2 id="txtTotalItems" class="negrita">0 items</h2>
-                    <div class="panel-toolbar">
-
-                                                                   
-                        <button class="btn btn-sm btn-outline-secondary hand hidden">
-                        </button>
-
-                        <h1 id="txtTotalVenta" class="text-danger negrita"></h1>
-                        
-                        <button class="btn btn-outline-warning btn-md shadow hidden" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen" id="btnMaxVenta">
-                            <i class="fal fa-angle-double-up"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="panel-container show">
-                    <div class="panel-content">
-                        
-                        <div class="table-responsive border-top-rounded border-bottom-rounded shadow">
-                            <table class="table table-hover table-striped h-full col-12"><!--mt-5-->
-                                <thead class="bg-secondary text-white">
-                                    <tr>
-                                        <th class="">Producto</th>
-                                        <th class="">Subtotal</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tblGridTempVentas"></tbody>
-                            </table>
-                        </div>
-                    </div>
+        <div class="factura-page">
+            <div class="factura-card-shell">
+                <div class="factura-card-header">
                     <div>
-
-                        <button class="btn btn-xl btn-secondary btn-bottom-ml btn-circle hand shadow" id="btnCambiarCliente">
-                            <i class="fal fa-user"></i>
-                        </button>
-                    
-                        <button class="btn btn-circle btn-xl btn-success shadow btn-bottom-mr hand" id="btnAgregarProd">
-                            <i class="fal fa-search"></i>
-                        </button>
-
-                        <button class="btn btn-danger btn-xl btn-circle btn-bottom-r shadow hand" id="btnCobrar">
-                            <i class="fal fa-save"></i>
-                        </button>
-
+                        <label class="text-info mb-0" id="lbNomClien">Consumidor Final</label>
+                        <div class="factura-card-meta text-secondary" id="txtTotalItems">0 items</div>
+                    </div>
+                    <h1 id="txtTotalVenta" class="text-danger negrita mb-0"></h1>
+                </div>
+                <div class="factura-card-body">
+                    <div class="factura-cart-table-wrap">
+                        <table class="table factura-cart-table w-100 mb-0">
+                            <thead class="factura-cart-thead">
+                                <tr>
+                                    <th>Producto</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblGridTempVentas"></tbody>
+                        </table>
                     </div>
                 </div>
-                
+                <div class="factura-card-actions">
+                    <button class="btn btn-xl btn-secondary btn-bottom-ml btn-circle hand shadow" id="btnCambiarCliente">
+                        <i class="fal fa-user"></i>
+                    </button>
+                    <button class="btn btn-circle btn-xl btn-success shadow btn-bottom-mr hand" id="btnAgregarProd">
+                        <i class="fal fa-search"></i>
+                    </button>
+                    <button class="btn btn-danger btn-xl btn-circle btn-bottom-r shadow hand" id="btnCobrar">
+                        <i class="fal fa-save"></i>
+                    </button>
+                </div>
                 <div id="containerModalesVentas"></div>
-
             </div>
-        </div>  
+        </div>
             `
         },
         gridTempVentaModalBusquedaProductos :()=>{
@@ -191,8 +171,8 @@ function getView(){
                 <div class="modal fade modal-with-scroll" id="ModalBusqueda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-right" role="document">
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <label class="modal-title text-danger h3" id="">Búsqueda de Productos</label>
+                            <div class="modal-header p-2">
+                                <label class="modal-title text-danger h5" id="">Búsqueda de Productos</label>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true"><i class="fal fa-times"></i></span>
                                </button>
@@ -281,59 +261,48 @@ function getView(){
         },
         modalBusquedaProductos :()=>{
             return `
-            <div class="modal fade  modal-with-scroll" id="ModalBusqueda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-right" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <label class="modal-title text-danger h3" id="">Búsqueda de Productos</label>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <div class="modal fade factura-search-modal modal-with-scroll" id="ModalBusqueda" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered factura-search-dialog" role="document">
+                    <div class="modal-content factura-search-modal-content">
+                        <div class="modal-header border-0 pb-0 factura-search-header">
+                            <label class="modal-title text-secondary h5 mb-0">Búsqueda de Productos</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
                                 <span aria-hidden="true"><i class="fal fa-times"></i></span>
                             </button>
                         </div>
-
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="input-group">
-                                    <select class="form-control col-3 shadow border-secondary negrita border-left-0 border-right-0 border-top-0" id="cmbTipoPrecio">
-                                        <option value="P">DET</option>
-                                        <option value="C">PreB</option>
-                                        <option value="B">PreA</option>
-                                        <option value="A">MAY</option>
-                                        <option value="K">CAMBIO</option>
-                                    </select>
-                                    <input id="txtBusqueda" type="text" ref="txtBusqueda" class="bg-amarillo form-control col-7 shadow" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-success btn-rounded waves-effect waves-themed shadow" type="button" id="btnBuscarProducto">
-                                            <i class="fal fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                        <div class="modal-body factura-search-body pt-2">
+                            <div class="factura-search-toolbar">
+                                <select class="form-control factura-price-select text-left" id="cmbTipoPrecio">
+                                    <option value="P">DETALLE</option>
+                                    <option value="C">PRECIO B</option>
+                                    <option value="B">PRECIO A</option>
+                                    <option value="A">MAYORISTA</option>
+                                    <option value="K">CAMBIO</option>
+                                </select>
+                                <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control factura-search-input" placeholder="Buscar código o descripción..." />
+                                <button class="btn btn-success factura-search-btn" type="button" id="btnBuscarProducto">
+                                    <i class="fal fa-search"></i>
+                                </button>
                             </div>
-                        <table class="table table-responsive table-striped table-hover">
-                            <thead class="bg-secondary text-white">
-                                <tr>
-                                    <td>Producto</td>
-                                    <td>Precio</td>                         
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody id="tblResultadoBusqueda">
-                            
-
-                            </tbody>
-                        </table>
+                            <div class="factura-search-table-wrap">
+                                <table class="table factura-search-table w-100 mb-0">
+                                    <thead class="factura-search-thead">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Precio</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblResultadoBusqueda"></tbody>
+                                </table>
+                            </div>
                         </div>
-                        
-                    
+                        <button type="button" class="factura-search-fab-close btn btn-danger shadow" data-dismiss="modal" id="btnCerrarModalBusqueda" aria-label="Cerrar búsqueda">
+                            <i class="fal fa-times"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="shortcut-menu align-left">
-                    <button class="btn btn-danger btn-sm" data-dismiss="modal">
-                        <i class="fal fa-angle-double-left"></i>Atrás
-                    </button>
-                </div>
             </div>
-            
             `
         },
         modalBusquedaCliente :()=>{
@@ -548,63 +517,45 @@ function getView(){
         },
         modalCantidadProducto:()=>{
             return `
-            <div class="modal fade" id="ModalCantidadProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-right" role="document">
-                    <div class="modal-content">
-                        <br><br><br><br><br>
-                        <div class="modal-header">
-                            <label class="modal-title" id="txtDesProducto">Azucar don Justo Cabal Kilo</label>
+            <div class="modal fade factura-qty-modal" id="ModalCantidadProducto" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content factura-qty-modal-content">
+                        <div class="modal-header border-0 pb-0">
+                            <label class="modal-title text-secondary h6 mb-0" id="txtDesProducto">Producto</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
-                        <div class="modal-body" align="right">
-                            <div class="col-8">
-                                <div class="row">
-                                    <b id="txtCodMedida">UNIDAD</b>
+                        <div class="modal-body pt-2">
+                            <div class="text-center mb-2">
+                                <span class="badge badge-info px-3 py-2" id="txtCodMedida">UNIDAD</span>
+                            </div>
+                            <div class="input-group factura-qty-input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-info btn-round" id="btnCantidadDown" type="button">-</button>
                                 </div>
-                                
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="input-group">
-                                
-                                            <div class="input-group-prepend">
-                                                <button class="btn btn-md btn-icon btn-round btn-info" id="btnCantidadDown">
-                                                    -
-                                                </button>
-                                            </div>
-                                
-                                            <input type="number" class="text-center form-control" id="txtCantidad" value="1">    
-                                
-                                            <div class="input-group-append">
-                                                <button class="btn btn-md btn-icon btn-round btn-info" id="btnCantidadUp">
-                                                    +
-                                                </button>    
-                                            </div>
-                                        </div>                            
-                                    </div>                              
+                                <input type="number" class="text-center form-control" id="txtCantidad" value="1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-info btn-round" id="btnCantidadUp" type="button">+</button>
                                 </div>
-
-                                <div class="col-12">
-                                    <label>Precio: </label>
-                                    <label class="text-success" id="txtPrecioProducto">Q500</label>
-                                    <br>
-                                    <label>Subtotal:</label>
-                                    <label class="text-danger" id="txtSubTotal">Q500</label>
+                            </div>
+                            <div class="factura-qty-summary text-center mb-3">
+                                <div><span class="text-secondary">Precio:</span> <strong class="text-success" id="txtPrecioProducto">Q0.00</strong></div>
+                                <div><span class="text-secondary">Subtotal:</span> <strong class="text-danger" id="txtSubTotal">Q0.00</strong></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-outline-secondary btn-block btn-round" data-dismiss="modal" id="btnCancelarModalProducto">
+                                        <i class="fal fa-ban"></i> Cancelar
+                                    </button>
                                 </div>
-                                <br>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <button type="button" class="btn btn-outline-secondary btn-round" data-dismiss="modal" id="btnCancelarModalProducto">
-                                            <i class="fal fa-ban"></i>Cancelar
-                                        </button>
-                                    </div>
-                                    <div class="col-6">
-                                        <button type="button" class="btn btn-primary btn-round" id="btnAgregarProducto">
-                                            <i class="fal fa-check"></i>Agregar
-                                        </button>
-                                    </div>
+                                <div class="col-6">
+                                    <button type="button" class="btn btn-primary btn-block btn-round" id="btnAgregarProducto">
+                                        <i class="fal fa-check"></i> Agregar
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -1152,33 +1103,24 @@ async function fcnCargarGridTempVentas(idContenedor){
                 varTotalItems += 1;
                 varTotalVenta = varTotalVenta + Number(rows.TOTALPRECIO);
                 varTotalCosto = varTotalCosto + Number(rows.TOTALCOSTO);
-                return `<tr id="${rows.ID.toString()}" class="border-bottom" ondblclick="funciones.hablar('${rows.DESPROD}')">
+                return `<tr id="${rows.ID.toString()}" class="factura-cart-row" ondblclick="funciones.hablar('${rows.DESPROD}')">
                             <td class="text-left">
-                                ${rows.DESPROD}
-                                <br>
-                                <small class="text-danger"><b>${rows.CODPROD} (${rows.EQUIVALE} item)</b></small>
-                                <br>
-                                    <small>
-                                        Cant:<b class="text-danger h4" id=${idcant}>${rows.CANTIDAD}</b>  ${rows.CODMEDIDA}  ||  Precio:<b>${funciones.setMoneda(rows.PRECIO,'Q')}</b>
-                                    </small>
-                                <br>
-                                <div class="row">
-                                    <div class="col-4"></div>
-                                    <div class="col-4 " align="right">
-                                        <button class="btn btn-secondary btn-sm btn-circle" onClick="fcnCambiarCantidad(${rows.ID},${rows.CANTIDAD},'${rows.CODPROD}',${rows.EXISTENCIA});">
-                                            <i class="fal fa-edit"></i>
-                                        </button>    
-                                    </div>
-                                    <div class="col-4 text-right" align="right">
-                                        <button class="btn btn-sm btn-danger btn-circle" onclick="fcnEliminarItem(${rows.ID});">
-                                            <i class="fal fa-trash"></i>
-                                        </button>    
-                                    </div>
+                                <div class="factura-cart-prod-name">${rows.DESPROD}</div>
+                                <small class="text-danger factura-cart-prod-code"><b>${rows.CODPROD} (${rows.EQUIVALE} item)</b></small>
+                                <div class="factura-cart-prod-meta">
+                                    Cant:<b class="text-danger">${rows.CANTIDAD}</b> ${rows.CODMEDIDA}
+                                    &nbsp;|&nbsp; Precio:<b>${funciones.setMoneda(rows.PRECIO,'Q')}</b>
+                                </div>
+                                <div class="factura-cart-actions">
+                                    <button class="btn btn-secondary btn-sm btn-circle" onClick="fcnCambiarCantidad(${rows.ID},${rows.CANTIDAD},'${rows.CODPROD}',${rows.EXISTENCIA});">
+                                        <i class="fal fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-circle" onclick="fcnEliminarItem(${rows.ID});">
+                                        <i class="fal fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
-                                                        
-                            <td class="text-right" id=${'S'+idcant}>${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</td>
-                            
+                            <td class="text-right factura-cart-subtotal">${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</td>
                         </tr>`
            }).join('\n');
            tabla.innerHTML = data;
@@ -1457,6 +1399,39 @@ async function fcnCargarComboTipoPrecio(){
 
 
 
+function buildFacturaWaitHtml(message, tone) {
+    const tones = {
+        loading: { icon: 'fa-paper-plane', spin: true, title: 'Procesando pedido' },
+        offline: { icon: 'fa-mobile-alt', spin: false, title: 'Guardando en el teléfono' },
+        error: { icon: 'fa-exclamation-circle', spin: false, title: 'No se pudo enviar' }
+    };
+    const cfg = tones[tone] || tones.loading;
+    const spinClass = cfg.spin ? ' fa-spin' : '';
+    return `<div class="factura-wait-panel factura-wait-${tone || 'loading'}">
+        <div class="factura-wait-icon"><i class="fal ${cfg.icon}${spinClass}"></i></div>
+        <h4 class="factura-wait-title">${cfg.title}</h4>
+        <p class="factura-wait-msg">${message}</p>
+        <div class="factura-wait-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+    </div>`;
+}
+
+function showFacturaPedidoWait(message, tone) {
+    const modalWait = document.getElementById('modalWait');
+    if (modalWait) modalWait.classList.add('factura-wait-modal');
+    setLog(buildFacturaWaitHtml(message, tone || 'loading'), 'rootWait');
+    if (!$('#modalWait').hasClass('show')) {
+        $('#modalWait').modal('show');
+    }
+}
+
+function hideFacturaPedidoWait() {
+    const modalWait = document.getElementById('modalWait');
+    if (modalWait) modalWait.classList.remove('factura-wait-modal');
+    hideWaitForm();
+}
+
+
+
 //FINALIZAR PEDIDO
 async function fcnFinalizarPedido(){
     
@@ -1488,7 +1463,6 @@ async function fcnFinalizarPedido(){
     let d = txtFecha.getUTCDate() 
     let fecha = anio + '-' + mes + '-' + d; // CAMPO DOC_FECHA
     let dia = d;
-    let hora = funciones.getHora();
     let fe = txtFecha;// new Date(document.getElementById('txtEntregaFecha').value);
     let ae = fe.getFullYear();
     let me = fe.getUTCMonth()+1;
@@ -1510,6 +1484,7 @@ async function fcnFinalizarPedido(){
         let docproductos_ped = response;  
 
         //guarda el pedido localmente
+        const localPedidoId = ApiGate.generateLocalId();
         var datospedido = {
                 CODSUCURSAL:GlobalCodSucursal,
                 EMPNIT: GlobalEmpnit,
@@ -1532,7 +1507,8 @@ async function fcnFinalizarPedido(){
                 CODVEN:Number(cmbVendedor.value),
                 LAT:latdoc,
                 LONG:longdoc,
-                JSONPRODUCTOS:JSON.stringify(docproductos_ped)
+                JSONPRODUCTOS:JSON.stringify(docproductos_ped),
+                LOCAL_ID:localPedidoId
         };
 
         //UNA VEZ OBTENIDO EL DETALLE, PROCEDE A GUARDARSE O ENVIARSE
@@ -1546,15 +1522,14 @@ async function fcnFinalizarPedido(){
             .then((value)=>{
                 if(value==true){
 
-                    setLog(`<label class="text-danger">Creando el pedido a enviar...</label>`,'rootWait');
-                    $('#modalWait').modal('show');
+                    showFacturaPedidoWait('Preparando y enviando su pedido al servidor...', 'loading');
                                                 
                     //ENVIANDOLO ONLINE
                         
-                        setLog(`<label class="text-info">Pedido creado, enviado pedido...</label>`,'rootWait');
+                        showFacturaPedidoWait('Conectando con el servidor y registrando el pedido...', 'loading');
                                     
                         axios.post('/ventas/insertventa', {
-                            jsondocproductos:JSON.stringify(response),
+                            jsondocproductos: JSON.stringify(docproductos_ped),
                             codsucursal:GlobalCodSucursal,
                             empnit: GlobalEmpnit,
                             coddoc:coddoc,
@@ -1578,7 +1553,8 @@ async function fcnFinalizarPedido(){
                             codven:cmbVendedor.value,
                             lat:latdoc,
                             long:longdoc,
-                            hora:hora
+                            hora: funciones.getHora(),
+                            local_id:localPedidoId
                         })
                         .then(async(response) => {
                             const data = response.data;
@@ -1586,11 +1562,11 @@ async function fcnFinalizarPedido(){
                             
                             if(data.toString()=='error'){
                                 //funciones.beep();
-                                setLog(`<label class="text-info">No se logró Enviar este pedido, se intentará guardarlo en el teléfono</label>`,'rootWait');
+                                showFacturaPedidoWait('No se logró enviar. Guardando el pedido en el teléfono...', 'offline');
                                                     
                                 insertVenta(datospedido)
                                 .then(async()=>{   
-                                    hideWaitForm();
+                                    hideFacturaPedidoWait();
                                     document.getElementById('btnEntregaCancelar').click();                                                                                       
                                     //actualiza la ubicación del empleado
                                     await classEmpleados.updateMyLocation();           
@@ -1605,7 +1581,7 @@ async function fcnFinalizarPedido(){
                                     fcnNuevoPedido();
                                 })
                                 .catch(()=>{
-                                    hideWaitForm();    
+                                    hideFacturaPedidoWait();    
                                     
                                     document.getElementById('btnFinalizarPedido').innerHTML = '<i class="fal fa-paper-plane mr-1"></i>Enviar';
                                     document.getElementById('btnFinalizarPedido').disabled = false;
@@ -1615,7 +1591,7 @@ async function fcnFinalizarPedido(){
 
                             }else{
                                             
-                                hideWaitForm();
+                                hideFacturaPedidoWait();
                                 funciones.Aviso('Pedido Generado Exitosamente !!!')
                                 document.getElementById('btnEntregaCancelar').click();                                                           
                                 //actualiza la ubicación del empleado
@@ -1629,7 +1605,7 @@ async function fcnFinalizarPedido(){
                             }
                         }, (error) => {
                             console.log(error);
-                            setLog(`<label class="text-info">Ha ocurrido un error y no se pudo enviar, se intentará guardar en el teléfono</label>`,'rootWait');
+                            showFacturaPedidoWait('Error de conexión. Guardando el pedido en el teléfono...', 'offline');
                                                                 
                             insertVenta(datospedido)
                             .then(async()=>{
@@ -1643,10 +1619,10 @@ async function fcnFinalizarPedido(){
                                 funciones.showToast('El pedido será guardado localmente, recuerde enviarlo');
                                 //prepara todo para un nuevo pedido
                                 fcnNuevoPedido();                                                    
-                                hideWaitForm();
+                                hideFacturaPedidoWait();
                             })
                             .catch(()=>{
-                                hideWaitForm();
+                                hideFacturaPedidoWait();
                                 document.getElementById('btnFinalizarPedido').innerHTML = '<i class="fal fa-paper-plane mr-1"></i>Enviar';
                                 document.getElementById('btnFinalizarPedido').disabled = false;
                                 funciones.AvisoError('No se pudo guardar este pedido')
@@ -1663,12 +1639,11 @@ async function fcnFinalizarPedido(){
         })
         .catch(()=>{
                                             
-                setLog(`<label class="text-info">No se logró Enviar este pedido, se intentará guardarlo en el teléfono</label>`,'rootWait');
-                $('#modalWait').modal('show');
+                showFacturaPedidoWait('No se obtuvo correlativo. Guardando el pedido en el teléfono...', 'offline');
                                                                                 
                 insertVenta(datospedido)
                 .then(async()=>{
-                    hideWaitForm();
+                    hideFacturaPedidoWait();
                     document.getElementById('btnEntregaCancelar').click();                                                                                       
                     //actualiza la ubicación del empleado
                     await classEmpleados.updateMyLocation();
@@ -1685,7 +1660,7 @@ async function fcnFinalizarPedido(){
 
     })
     .catch((error)=>{
-        hideWaitForm();
+        hideFacturaPedidoWait();
         document.getElementById('btnFinalizarPedido').innerHTML = '<i class="fal fa-paper-plane mr-1"></i>Enviar';
         document.getElementById('btnFinalizarPedido').disabled = false;
         funciones.AvisoError('No pude crear la tabla de productos del pedido ' + error);
@@ -1751,6 +1726,7 @@ async function BACKUP_10_03_2023_fcnFinalizarPedido(){
         let docproductos_ped = response;  
 
         //guarda el pedido localmente
+        const localPedidoId = ApiGate.generateLocalId();
         var datospedido = {
                 CODSUCURSAL:GlobalCodSucursal,
                 EMPNIT: GlobalEmpnit,
@@ -1773,7 +1749,8 @@ async function BACKUP_10_03_2023_fcnFinalizarPedido(){
                 CODVEN:Number(cmbVendedor.value),
                 LAT:latdoc,
                 LONG:longdoc,
-                JSONPRODUCTOS:JSON.stringify(docproductos_ped)
+                JSONPRODUCTOS:JSON.stringify(docproductos_ped),
+                LOCAL_ID:localPedidoId
         };
 
         //UNA VEZ OBTENIDO EL DETALLE, PROCEDE A GUARDARSE O ENVIARSE
@@ -1819,7 +1796,8 @@ async function BACKUP_10_03_2023_fcnFinalizarPedido(){
                             codven:cmbVendedor.value,
                             lat:latdoc,
                             long:longdoc,
-                            hora:hora
+                            hora:hora,
+                            local_id:localPedidoId
                         })
                         .then(async(response) => {
                             const data = response.data;

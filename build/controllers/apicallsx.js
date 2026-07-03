@@ -762,14 +762,15 @@ let apigen = {
             lbTotal.innerText = '---';
 
             let strdata = '';
-            let tbl = `<table class="table table-responsive table-hover table-striped table-bordered">
-                        <thead class="bg-trans-gradient text-white"><tr>
-                            <td>Marca</td>
-                            <td>Unidades</td>
-                            <td>Importe</td></tr>
+            let tbl = `<div class="logro-report-table-wrap"><table class="table logro-report-table w-100 mb-0">
+                        <thead class="logro-report-thead"><tr>
+                            <th>Marca</th>
+                            <th>Unidades</th>
+                            <th>Importe</th></tr>
+                        </thead>
                         <tbody>`;
 
-            let tblfoot = `</tbody></table>`;
+            let tblfoot = `</tbody></table></div>`;
 
             axios.post('/ventas/reportemarcasdia', {
                 app:GlobalSistema,
@@ -795,7 +796,7 @@ let apigen = {
                                             </tr>`
                 })
                 container.innerHTML = tbl + strdata + tblfoot;
-                lbTotal.innerHTML =  `<h3 class="negrita text-danger">Importe: ${funciones.setMoneda(total,'Q ')}</h3>` ;
+                lbTotal.innerHTML = `<div class="logro-summary-inline"><span class="text-secondary">Importe:</span> <strong class="text-danger">${funciones.setMoneda(total,'Q ')}</strong></div>`;
             }, (error) => {
                 funciones.AvisoError('Error en la solicitud');
                 strdata = '';
@@ -813,15 +814,16 @@ let apigen = {
             lbTotal.innerText = '---';
 
             let strdata = '';
-            let tbl = `<table class="table table-responsive table-hover table-striped table-bordered">
-                        <thead class="bg-trans-gradient text-white"><tr>
-                            <td>Producto</td>
-                            <td>Unidades</td>
-                            <td>Importe</td>
+            let tbl = `<div class="logro-report-table-wrap"><table class="table logro-report-table w-100 mb-0">
+                        <thead class="logro-report-thead"><tr>
+                            <th>Producto</th>
+                            <th>Unidades</th>
+                            <th>Importe</th>
                             </tr>
+                        </thead>
                         <tbody>`;
 
-            let tblfoot = `</tbody></table>`;
+            let tblfoot = `</tbody></table></div>`;
 
             axios.post('/ventas/reporteproductosdia', {
                 app:GlobalSistema,
@@ -838,7 +840,7 @@ let apigen = {
                                                 <td>
                                                     ${rows.DESPROD}
                                                     <br>
-                                                    <small class="text-danger">${rows.CODPROD}</small>
+                                                    <small class="text-secondary">${rows.CODPROD}</small>
                                                 </td>
                                                 <td>${rows.TOTALUNIDADES}</td>
                                                 <td>
@@ -847,7 +849,7 @@ let apigen = {
                                             </tr>`
                 })
                 container.innerHTML = tbl + strdata + tblfoot;
-                lbTotal.innerHTML = `<h3 class="negrita text-danger">Importe: ${funciones.setMoneda(total,'Q ')}</h3>`;
+                lbTotal.innerHTML = `<div class="logro-summary-inline"><span class="text-secondary">Importe:</span> <strong class="text-danger">${funciones.setMoneda(total,'Q ')}</strong></div>`;
             }, (error) => {
                 funciones.AvisoError('Error en la solicitud');
                 strdata = '';
@@ -865,17 +867,17 @@ let apigen = {
             lbTotal.innerText = '---';
 
             let strdata = '';
-            let tbl = `<table class="table table-responsive table-hover table-striped">
-                            <thead class="bg-trans-gradient text-white">
+            let tbl = `<div class="logro-report-table-wrap"><table class="table logro-report-table w-100 mb-0">
+                            <thead class="logro-report-thead">
                                 <tr>
-                                    <td>Fecha</td>
-                                    <td>Pedidos</td>
-                                    <td>Importe</td>
+                                    <th>Fecha</th>
+                                    <th>Pedidos</th>
+                                    <th>Importe</th>
                                 </tr>
                             </thead>
                             <tbody>`;
 
-            let tblfoot = `</tbody></table>`;
+            let tblfoot = `</tbody></table></div>`;
 
             axios.post('/ventas/reportedinero', {
                 app:GlobalSistema,
@@ -904,16 +906,13 @@ let apigen = {
                 let logro = total / GlobalObjetivoVenta;
                 container.innerHTML = tbl + strdata + tblfoot;
                 lbTotal.innerHTML = `
-                        Vendido: <b class="text-info">${funciones.setMoneda(total,'Q ')}</b>
-                        <br>
-                        Pedidos: <b class="text-info">${pedidos.toString()}</b> 
-                        <br>
-                        Objetivo: <b class="text-danger">${funciones.setMoneda(GlobalObjetivoVenta,'Q')}</b>
-                        <br>
-                        Faltan: <b class="text-danger">${funciones.setMoneda(faltan,'Q')}</b>
-                        <br>
-                        Logro: <b class="text-danger">${funciones.setMargen((logro*100),'%')}</b>
-                                    ` ;
+                    <div class="logro-summary-stats">
+                        <div><span class="text-secondary">Vendido:</span> <strong class="text-danger">${funciones.setMoneda(total,'Q ')}</strong></div>
+                        <div><span class="text-secondary">Pedidos:</span> <strong class="text-secondary">${pedidos.toString()}</strong></div>
+                        <div><span class="text-secondary">Objetivo:</span> <strong class="text-secondary">${funciones.setMoneda(GlobalObjetivoVenta,'Q')}</strong></div>
+                        <div><span class="text-secondary">Faltan:</span> <strong class="text-danger">${funciones.setMoneda(faltan,'Q')}</strong></div>
+                        <div><span class="text-secondary">Logro:</span> <strong class="text-danger">${funciones.setMargen((logro*100),'%')}</strong></div>
+                    </div>`;
             }, (error) => {
                 funciones.AvisoError('Error en la solicitud');
                 strdata = '';
@@ -1046,15 +1045,16 @@ let apigen = {
             lbTotal.innerText = '---';
 
             let strdata = '';
-            let tbl = `<table class="table table-responsive table-hover table-striped">
-                        <thead class="bg-trans-gradient text-white"><tr>
-                            <td>Producto</td>
-                            <td>Unidades</td>
-                            <td>Importe</td>
+            let tbl = `<div class="logro-report-table-wrap"><table class="table logro-report-table w-100 mb-0">
+                        <thead class="logro-report-thead"><tr>
+                            <th>Producto</th>
+                            <th>Unidades</th>
+                            <th>Importe</th>
                             </tr>
+                        </thead>
                         <tbody>`;
 
-            let tblfoot = `</tbody></table>`;
+            let tblfoot = `</tbody></table></div>`;
 
             axios.post('/ventas/reporteproductos', {
                 app:GlobalSistema,
@@ -1072,7 +1072,7 @@ let apigen = {
                                                 <td>
                                                     ${rows.DESPROD}
                                                     <br>
-                                                    <small class="text-danger">${rows.CODPROD}</small>
+                                                    <small class="text-secondary">${rows.CODPROD}</small>
                                                 </td>
                                                 <td>${rows.TOTALUNIDADES}</td>
                                                 <td>
@@ -1081,7 +1081,7 @@ let apigen = {
                                             </tr>`
                 })
                 container.innerHTML = tbl + strdata + tblfoot;
-                lbTotal.innerHTML = `<h3 class="negrita text-danger">Importe: ${funciones.setMoneda(total,'Q ')}</h3>` ;
+                lbTotal.innerHTML = `<div class="logro-summary-inline"><span class="text-secondary">Importe:</span> <strong class="text-danger">${funciones.setMoneda(total,'Q ')}</strong></div>`;
             }, (error) => {
                 funciones.AvisoError('Error en la solicitud');
                 strdata = '';
@@ -1099,16 +1099,16 @@ let apigen = {
             lbTotal.innerText = '---';
 
             let strdata = '';
-            let tbl = `<table class="table table-responsive table-hover table-striped">
-                            <thead class="bg-trans-gradient text-white">
+            let tbl = `<div class="logro-report-table-wrap"><table class="table logro-report-table w-100 mb-0">
+                            <thead class="logro-report-thead">
                                 <tr>
-                                    <td>Marca</td>
-                                    <td>Importe</td>
+                                    <th>Marca</th>
+                                    <th>Importe</th>
                                 </tr>
                             </thead>
                             <tbody>`;
 
-            let tblfoot = `</tbody></table>`;
+            let tblfoot = `</tbody></table></div>`;
 
             axios.post('/ventas/reportemarcas', {
                 app:GlobalSistema,
@@ -1132,7 +1132,7 @@ let apigen = {
                                             </tr>`
                 })
                 container.innerHTML = tbl + strdata + tblfoot;
-                lbTotal.innerHTML = `<h3 class="negrita text-danger">Importe: ${funciones.setMoneda(total,'Q ')}`;
+                lbTotal.innerHTML = `<div class="logro-summary-inline"><span class="text-secondary">Importe:</span> <strong class="text-danger">${funciones.setMoneda(total,'Q ')}</strong></div>`;
             }, (error) => {
                 funciones.AvisoError('Error en la solicitud');
                 strdata = '';
@@ -3584,39 +3584,15 @@ let GF = {
 
     },
     insert_visita:(codclie,motivo,latitud,longitud)=>{
-
-
-        return new Promise((resolve,reject)=>{
-
-            let fecha = funciones.getFecha();
-            let hora = funciones.getHora();
-        
-                axios.post('/clientes/insert_visita',
-                {
-                    sucursal:GlobalCodSucursal,
-                    codclie:codclie,
-                    codemp:GlobalCodUsuario,
-                    motivo:motivo,
-                    hora:hora,
-                    fecha:fecha,
-                    lat: latitud,
-                    long: longitud
-                })
-                .then((response) => {
-                    if(response.status.toString()=='200'){
-                        let data = response.data;
-                        if(Number(data.rowsAffected[0])>0){
-                            resolve(data);
-                        }else{
-                            reject();
-                        }            
-                    }else{
-                        reject();
-                    }             
-                }, (error) => {
-                    reject();
-                });
-        })
-
+        return ApiGate.insertVisita(codclie, motivo, latitud, longitud)
+        .then((data) => {
+            if (data && data.queued) {
+                return data;
+            }
+            if (Number(data.rowsAffected[0]) > 0) {
+                return data;
+            }
+            return Promise.reject();
+        });
     }
 }

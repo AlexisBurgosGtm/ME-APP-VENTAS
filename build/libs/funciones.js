@@ -297,9 +297,10 @@ let funciones = {
             text: msn,
             icon: 'warning',
             buttons: {
-                cancel: true,
-                confirm: true,
-              }})
+                cancel: 'Cancelar',
+                confirm: 'Aceptar',
+            }
+        })
     },
     Aviso: function(msn){
         swal(msn, {
@@ -345,11 +346,17 @@ let funciones = {
     solicitarClave: function(){
       return new Promise((resolve,reject)=>{
           swal({
+            title: 'Confirme',
             text: 'Escriba su contraseña de usuario',
-            content: "input",
-            button: {
-              text: "Contraseña",
-              closeModal: true,
+            input: 'password',
+            inputAttributes: {
+              autocapitalize: 'off',
+              autocorrect: 'off',
+              autocomplete: 'current-password'
+            },
+            buttons: {
+              cancel: 'Cancelar',
+              confirm: 'Aceptar',
             },
           })
           .then(name => {
@@ -972,9 +979,9 @@ let funciones = {
     },
     getHora:()=>{
       let hoy = new Date();
-      let hora = hoy.getHours();
-      let minuto = hoy.getMinutes();
-      return `${hora.toString()}:${minuto.toString()}`;
+      let hora = String(hoy.getHours()).padStart(2, '0');
+      let minuto = String(hoy.getMinutes()).padStart(2, '0');
+      return `${hora}:${minuto}`;
     },
     gotoGoogleMaps:(lat,long)=>{
       window.open(`https://www.google.com/maps?q=${lat},${long}`);

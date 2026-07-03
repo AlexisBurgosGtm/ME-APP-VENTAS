@@ -28,6 +28,7 @@
         <link rel="stylesheet" media="screen, print" href="css/.../styles.css">
         <link rel="stylesheet" media="screen, print" href="./css/btn.css">
         <link rel="stylesheet" media="screen, print" href="./css/personalizado.css">
+        <link rel="stylesheet" media="screen, print" href="./css/modern-design.css">
         <link rel="stylesheet" media="screen, print" href="./libs/animate.min.css">
 
         <link rel="stylesheet" media="screen, print" href="./libs/style.css">
@@ -43,7 +44,7 @@
 
     
     </head>
-    <body class="mod-bg-2 nav-function-top header-function-fixed nav-function-fixed"><!--mod-disable-animation-->
+    <body class="mod-bg-2 nav-function-top header-function-fixed nav-function-fixed theme-modern-glass"><!--mod-disable-animation-->
         
         <!-- libreria de funciones propias
         <script src="https://alexisburgosservice.herokuapp.com/funciones.js"></script>
@@ -128,7 +129,7 @@
                         <div class="ml-auto d-flex">
                                                     
                         <div>
-                            <a href="#" data-toggle="" title="" class="text-white negrita hand header-icon d-flex align-items-center justify-content-center ml-2" id="btnCerrarSesion">
+                            <a href="#" data-toggle="" title="" class="bg-danger btn-circle text-white negrita hand header-icon d-flex align-items-center justify-content-center ml-2" id="btnCerrarSesion">
                                 <i class="fal fa-power-off text-white negrita"></i>
                             </a>
 
@@ -171,10 +172,13 @@
                         <!-- Internet Connection Status-->
                         <div class="internet-connection-status" id="internetStatus"></div>
 
-                    <div id="" class="">
-                         <button class="btn btn-danger btn-xl shadow btn-install" id="btnInstalarApp">
-                             <i class="fal fa-download"></i>Instalar como Aplicación
-                         </button>
+                    <div class="install-banner-shell">
+                        <div class="install-banner hand btn-danger" id="btnInstalarApp">
+                            <span><i class="fal fa-mobile-alt"></i> Instala la app</span>
+                            <button class="btn btn-sm btn-danger btn-install" >
+                                <i class="fal fa-download"></i> Instalar
+                            </button>
+                        </div>
                     </div>
 
                     <div class="leftbutton2">
@@ -569,7 +573,9 @@
         <script src="./libs/noty/noty.min.js"></script>
         
 
-        <script src="./libs/sweetalert.min.js"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+        <script src="./libs/sweetalert2-compat.js"></script>
         <script src="./libs/axios.min.js"></script>
         <script src="./libs/leaflet/leaflet.js"></script>
         
@@ -584,6 +590,7 @@
         <script src="./controllers/GlobalVars.js"></script>
         
         <script src="./controllers/classDb.js"></script>
+       <script src="./controllers/apiGate.js"></script>
         <script src="./models/classEmpleados.js"></script>
         <script src="./models/classTipoDocumentos.js"></script>
 
@@ -592,6 +599,7 @@
 
         
         <script src="./index.js"></script>
+        <script src="./controllers/syncQueue.js"></script>
         <script src="./controllers/dbcalls.js"></script>
         <script src="./controllers/apicallsx.js"></script>
 

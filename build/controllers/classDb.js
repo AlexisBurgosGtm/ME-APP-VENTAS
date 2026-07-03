@@ -26,7 +26,26 @@ var tblDocumentos = {
         CODVEN:{dataType: "number"},
         LAT:{dataType: "string"},
         LONG:{dataType: "string"},
-        JSONPRODUCTOS:{dataType: "string"}
+        JSONPRODUCTOS:{dataType: "string"},
+        LOCAL_ID:{dataType: "string"},
+        ENVIADO:{dataType: "number"}
+    }
+};
+
+var tblVisitasQueue = {
+    name: 'visitas_queue',
+    columns: {
+        ID:{ primaryKey: true, autoIncrement: true },
+        LOCAL_ID:{dataType: "string"},
+        CODSUCURSAL:{dataType: "string"},
+        CODCLIE:{dataType: "string"},
+        CODEMP:{dataType: "number"},
+        MOTIVO:{dataType: "string"},
+        HORA:{dataType: "string"},
+        FECHA:{dataType: "string"},
+        LAT:{dataType: "string"},
+        LONG:{dataType: "string"},
+        CREATED_AT:{dataType: "number"}
     }
 };
 
@@ -156,7 +175,7 @@ var tempcenso = {
 
 var database = {
     name: DbName,
-    tables: [tblDocumentos,tblProductos,tblClientes,tblTempventas,tblCredenciales,tempcenso,tblMunicipios,tblDepartamentos]
+    tables: [tblDocumentos,tblProductos,tblClientes,tblTempventas,tblCredenciales,tempcenso,tblMunicipios,tblDepartamentos,tblVisitasQueue]
 };
 
 //-------------------------------------

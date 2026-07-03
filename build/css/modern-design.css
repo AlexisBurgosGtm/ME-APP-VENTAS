@@ -1,0 +1,1568 @@
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-strong: rgba(255, 255, 255, 0.86);
+  --glass-border: rgba(148, 163, 184, 0.26);
+  --glass-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+  --accent: #2563eb;
+  --accent-2: #38bdf8;
+  --accent-red: #dc2626;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+}
+
+body.theme-modern-glass {
+  background: linear-gradient(135deg, #f8fbff 0%, #eef7ff 30%, #fdfefe 100%);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+body.theme-modern-glass .page-wrapper,
+body.theme-modern-glass .page-inner,
+body.theme-modern-glass .page-content-wrapper,
+body.theme-modern-glass .page-content {
+  background: transparent;
+}
+
+body.theme-modern-glass .page-header,
+body.theme-modern-glass .page-footer,
+body.theme-modern-glass .modal-content,
+body.theme-modern-glass .dropdown-menu,
+body.theme-modern-glass .card,
+body.theme-modern-glass .list-group-item,
+body.theme-modern-glass .table,
+body.theme-modern-glass .form-control,
+body.theme-modern-glass .custom-select,
+body.theme-modern-glass select,
+body.theme-modern-glass textarea,
+body.theme-modern-glass .input-group-text,
+body.theme-modern-glass .nav-tabs .nav-link,
+body.theme-modern-glass .btn {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+body.theme-modern-glass .page-header {
+  border-radius: 0;
+  padding: 1rem 1.25rem;
+  margin: 0;
+  border: 1px solid rgba(37, 99, 235, 0.12);
+}
+
+body.theme-modern-glass .page-footer {
+  border-radius: 24px 24px 0 0;
+  margin: 0.75rem 0.75rem 0;
+  padding: 0.85rem 1rem;
+}
+
+body.theme-modern-glass .page-content {
+  padding: 1rem;
+}
+
+body.theme-modern-glass .modal-content {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+body.theme-modern-glass .modal-backdrop {
+  background: rgba(15, 23, 42, 0.18);
+  backdrop-filter: blur(4px);
+}
+
+body.theme-modern-glass .btn {
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  color: var(--text-main);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+body.theme-modern-glass .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.15);
+}
+
+body.theme-modern-glass .btn-primary,
+body.theme-modern-glass .btn-info,
+body.theme-modern-glass .btn-success {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%) !important;
+  color: white;
+}
+
+body.theme-modern-glass .btn-danger {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #f87171 100%) !important;
+  color: white;
+}
+
+body.theme-modern-glass .form-control,
+body.theme-modern-glass .custom-select,
+body.theme-modern-glass select,
+body.theme-modern-glass textarea {
+  background: rgba(255, 255, 255, 0.75) !important;
+  color: var(--text-main) !important;
+  border: 1px solid rgba(37, 99, 235, 0.16) !important;
+}
+
+body.theme-modern-glass .form-control::placeholder,
+body.theme-modern-glass textarea::placeholder {
+  color: #64748b;
+}
+
+body.theme-modern-glass .table thead th {
+  background: rgba(37, 99, 235, 0.08) !important;
+  color: var(--text-main);
+}
+
+body.theme-modern-glass .table td,
+body.theme-modern-glass .table th {
+  border-color: rgba(37, 99, 235, 0.1);
+}
+
+body.theme-modern-glass .text-dark,
+body.theme-modern-glass .text-black,
+body.theme-modern-glass .text-secondary {
+  color: var(--text-main) !important;
+}
+
+body.theme-modern-glass .text-muted {
+  color: var(--text-muted) !important;
+}
+
+body.theme-modern-glass a {
+  color: #1d4ed8;
+}
+
+body.theme-modern-glass .bg-white,
+body.theme-modern-glass .bg-light {
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+
+body.theme-modern-glass .shadow,
+body.theme-modern-glass .shadow-sm,
+body.theme-modern-glass .shadow-lg {
+  box-shadow: var(--glass-shadow) !important;
+}
+
+body.theme-modern-glass .swal2-popup {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97) !important;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
+  z-index: 2147483647 !important;
+}
+
+body.theme-modern-glass .swal2-container {
+  z-index: 2147483647 !important;
+}
+
+body.theme-modern-glass .swal2-backdrop-show {
+  z-index: 2147483646 !important;
+}
+
+body.theme-modern-glass .swal2-title,
+body.theme-modern-glass .swal2-html-container {
+  color: var(--text-main);
+}
+
+body.theme-modern-glass .swal2-confirm {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%) !important;
+  border-radius: 999px;
+}
+
+body.theme-modern-glass .swal2-cancel {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #f87171 100%) !important;
+  border-radius: 999px;
+}
+
+body.theme-modern-glass .swal2-actions {
+  flex-direction: row !important;
+  gap: 0.5rem;
+}
+
+body.theme-modern-glass .swal2-actions .swal2-cancel {
+  order: 1 !important;
+}
+
+body.theme-modern-glass .swal2-actions .swal2-confirm {
+  order: 2 !important;
+}
+
+body.theme-modern-glass .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 0;
+  margin: 0;
+}
+
+body.theme-modern-glass .table {
+  width: 100%;
+  min-width: 100%;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-collapse: collapse;
+  border-spacing: 0;
+  border-radius: 0;
+  overflow: visible;
+  table-layout: auto;
+}
+
+body.theme-modern-glass .table thead th {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #38bdf8 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+body.theme-modern-glass .table tbody tr {
+  transition: background 0.2s ease;
+}
+
+body.theme-modern-glass .table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.50);
+}
+
+body.theme-modern-glass .table tbody tr:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+body.theme-modern-glass .table td,
+body.theme-modern-glass .table th {
+  border-color: rgba(37, 99, 235, 0.12);
+  padding: 0.65rem 0.75rem;
+  vertical-align: middle;
+  white-space: normal;
+}
+
+body.theme-modern-glass .table td:last-child,
+body.theme-modern-glass .table th:last-child {
+  padding-right: 0.85rem;
+}
+
+body.theme-modern-glass .glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.10);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+body.theme-modern-glass .stat-card {
+  background: rgba(255, 255, 255, 0.68);
+  border: 1px solid rgba(37, 99, 235, 0.12);
+  border-radius: 16px;
+  padding: 0.75rem;
+}
+
+body.theme-modern-glass .stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+body.theme-modern-glass .badge-primary-soft {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+
+body.theme-modern-glass .day-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--text-main);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+body.theme-modern-glass .day-pill:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
+}
+
+body.theme-modern-glass .day-pill.day-active {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: white;
+  border-color: transparent;
+}
+
+body.theme-modern-glass .day-pill-ghost {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(56, 189, 248, 0.1));
+}
+
+body.theme-modern-glass .modern-table {
+  background: transparent;
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+body.theme-modern-glass .modern-table thead th {
+  background:  linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #38bdf8 100%);
+  color: white;
+  font-weight: 700;
+  border: none;
+  white-space: nowrap;
+}
+
+body.theme-modern-glass .modern-table tbody tr {
+  background: rgba(255, 255, 255, 0.72);
+}
+
+body.theme-modern-glass .modern-table tbody tr:nth-child(even) {
+  background: rgba(248, 250, 252, 0.7);
+}
+
+body.theme-modern-glass .modern-table td,
+body.theme-modern-glass .modern-table th {
+  border-bottom: 1px solid rgba(37, 99, 235, 0.12);
+  padding: 0.7rem 0.75rem;
+  vertical-align: middle;
+}
+
+body.theme-modern-glass .modern-loader-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.2rem 1.4rem;
+}
+
+body.theme-modern-glass .modern-loader-shell-sm {
+  padding: 0.6rem 0.8rem;
+  gap: 0.45rem;
+}
+
+body.theme-modern-glass .modern-loader-ring {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(37, 99, 235, 0.16);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin-modern 0.8s linear infinite;
+}
+
+body.theme-modern-glass .modern-loader-shell-sm .modern-loader-ring {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+}
+
+body.theme-modern-glass .modern-loader-text {
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+body.theme-modern-glass .progress-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2147483647;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+body.theme-modern-glass .progress-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.theme-modern-glass .progress-card {
+  width: min(92vw, 320px);
+  padding: 1.1rem;
+  border-radius: 20px;
+}
+
+body.theme-modern-glass .progress-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.6rem;
+}
+
+body.theme-modern-glass .progress-card-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  overflow: hidden;
+}
+
+body.theme-modern-glass .progress-card-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  transition: width 0.25s ease;
+}
+
+body.theme-modern-glass .progress-card-percent {
+  margin-top: 0.55rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+body.theme-modern-glass .progress-card-message {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+body.theme-modern-glass .install-banner-shell {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  pointer-events: none;
+}
+
+body.theme-modern-glass .install-banner {
+  width: min(92vw, 420px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 999px;
+  background: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+
+body.theme-modern-glass .install-banner span {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: white
+}
+
+body.theme-modern-glass .install-banner .btn-install {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+body.theme-modern-glass .vendor-menu-shell {
+  position: fixed;
+  left: 0;
+  bottom: 1rem;
+  z-index: 1200;
+}
+
+body.theme-modern-glass .vendor-menu-toggle {
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: #fff;
+  padding: 0.6rem 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+}
+
+body.theme-modern-glass .vendor-menu-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 0.6rem);
+  width: min(82vw, 260px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 18px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+body.theme-modern-glass .vendor-menu-panel.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.theme-modern-glass .vendor-menu-panel-head {
+  padding: 0.25rem 0.35rem 0.45rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+body.theme-modern-glass .vendor-menu-item {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: rgba(37, 99, 235, 0.06);
+  color: var(--text-main);
+  padding: 0.6rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+body.theme-modern-glass .vendor-menu-item:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+body.theme-modern-glass .day-pill {
+  min-height: 42px;
+  padding: 0.6rem 0.4rem;
+}
+
+body.theme-modern-glass .day-pill.day-active {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 55%, #38bdf8 100%);
+  color: #fff;
+  box-shadow: 0 12px 22px rgba(37, 99, 235, 0.26);
+}
+
+@keyframes spin-modern {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  body.theme-modern-glass .page-content {
+    padding: 0.6rem;
+  }
+
+  body.theme-modern-glass .table td,
+  body.theme-modern-glass .table th {
+    padding: 0.55rem 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* --- Vista Logro / Reportes vendedor --- */
+body.theme-modern-glass .logro-view {
+  width: 100%;
+}
+
+body.theme-modern-glass .logro-summary-card {
+  border: 1px solid rgba(37, 99, 235, 0.18) !important;
+  border-radius: 16px !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  margin-bottom: 0.75rem;
+}
+
+body.theme-modern-glass .logro-summary-card .card-body {
+  padding: 0.5rem 0.75rem !important;
+}
+
+body.theme-modern-glass .logro-summary-logo {
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+body.theme-modern-glass .logro-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  line-height: 1.35;
+}
+
+body.theme-modern-glass .logro-summary-inline,
+body.theme-modern-glass .logro-summary-stats {
+  padding: 0.5rem 0.75rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  margin-bottom: 0.75rem;
+}
+
+body.theme-modern-glass .logro-summary-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.15rem 0;
+}
+
+body.theme-modern-glass .logro-orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  width: 100%;
+}
+
+body.theme-modern-glass .logro-order-card {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+  padding: 0.75rem 0.85rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+body.theme-modern-glass .logro-order-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.1);
+}
+
+body.theme-modern-glass .logro-order-card.border-danger {
+  border-color: rgba(220, 38, 38, 0.45) !important;
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.12);
+}
+
+body.theme-modern-glass .logro-order-doc {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.2rem;
+}
+
+body.theme-modern-glass .logro-order-client {
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+body.theme-modern-glass .logro-order-address,
+body.theme-modern-glass .logro-order-obs {
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+}
+
+body.theme-modern-glass .logro-order-obs {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.12);
+}
+
+body.theme-modern-glass .logro-order-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.65rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+body.theme-modern-glass .logro-order-amounts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.15rem 0.5rem;
+  align-items: center;
+}
+
+body.theme-modern-glass .logro-order-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+body.theme-modern-glass .logro-report-shell {
+  width: 100%;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 0.5rem;
+}
+
+body.theme-modern-glass .logro-report-wrap,
+body.theme-modern-glass .logro-report-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+body.theme-modern-glass .logro-report-table {
+  width: 100% !important;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+body.theme-modern-glass .logro-report-table thead.logro-report-thead th {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: none !important;
+  border-bottom: 2px solid rgba(30, 64, 175, 0.35) !important;
+  padding: 0.65rem 0.75rem !important;
+  white-space: nowrap;
+  -webkit-text-fill-color: #ffffff;
+}
+
+body.theme-modern-glass .logro-report-table td {
+  padding: 0.6rem 0.75rem !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
+  vertical-align: middle;
+  color: var(--text-main);
+}
+
+body.theme-modern-glass .logro-report-table tbody tr:nth-child(even) td {
+  background: rgba(241, 245, 249, 0.55);
+}
+
+body.theme-modern-glass .logro-report-table tbody tr:hover td {
+  background: rgba(219, 234, 254, 0.45);
+}
+
+body.theme-modern-glass .logro-filter-modal .modal-dialog {
+  max-width: 520px;
+}
+
+body.theme-modern-glass .logro-filter-modal-content {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  border-radius: 22px !important;
+}
+
+body.theme-modern-glass .logro-filter-modal .modal-backdrop.show {
+  opacity: 0.35;
+}
+
+/* --- Vista Facturación / Pedidos vendedor --- */
+body.theme-modern-glass .factura-page {
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  padding: 0.5rem 0.65rem 5.5rem;
+  box-sizing: border-box;
+}
+
+body.theme-modern-glass .factura-card-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 130px);
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  overflow: visible;
+}
+
+body.theme-modern-glass .factura-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem 0.65rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(248, 250, 252, 0.75);
+}
+
+body.theme-modern-glass .factura-card-meta {
+  font-size: 0.78rem;
+  margin-top: 0.15rem;
+}
+
+body.theme-modern-glass .factura-card-body {
+  flex: 1;
+  overflow: auto;
+  padding: 0.35rem 0.5rem 0.75rem;
+}
+
+body.theme-modern-glass .factura-card-actions {
+  position: relative;
+  z-index: 2;
+  min-height: 4rem;
+}
+
+body.theme-modern-glass .factura-cart-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+body.theme-modern-glass .factura-cart-table {
+  width: 100% !important;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+body.theme-modern-glass .factura-cart-table thead.factura-cart-thead th {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border: none !important;
+  border-bottom: 2px solid rgba(30, 64, 175, 0.35) !important;
+  padding: 0.65rem 0.75rem !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+body.theme-modern-glass .factura-cart-table td {
+  padding: 0.65rem 0.75rem !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
+  vertical-align: middle;
+}
+
+body.theme-modern-glass .factura-cart-row:nth-child(even) td {
+  background: rgba(241, 245, 249, 0.55);
+}
+
+body.theme-modern-glass .factura-cart-row:hover td {
+  background: rgba(219, 234, 254, 0.45);
+}
+
+body.theme-modern-glass .factura-cart-prod-name {
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+  margin-bottom: 0.15rem;
+}
+
+body.theme-modern-glass .factura-cart-prod-code {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+body.theme-modern-glass .factura-cart-prod-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 0.35rem;
+}
+
+body.theme-modern-glass .factura-cart-actions {
+  display: flex;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+body.theme-modern-glass .factura-cart-subtotal {
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+/* Modal búsqueda productos */
+body.theme-modern-glass .factura-search-modal .modal-dialog,
+body.theme-modern-glass .factura-search-dialog {
+  max-width: 96vw;
+  width: 100%;
+  margin: 0.75rem auto;
+  max-height: calc(100vh - 1.5rem);
+  display: flex;
+  flex-direction: column;
+}
+
+body.theme-modern-glass .factura-search-modal-content {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  border-radius: 22px !important;
+  max-height: calc(100vh - 1.5rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+body.theme-modern-glass .factura-search-header {
+  flex-shrink: 0;
+}
+
+body.theme-modern-glass .factura-search-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 0.5rem !important;
+}
+
+body.theme-modern-glass .factura-search-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+body.theme-modern-glass .factura-price-select {
+  flex: 0 0 5.5rem;
+  max-width: 5.5rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  border-radius: 12px !important;
+  border: 2px solid rgba(37, 99, 235, 0.45) !important;
+  background: linear-gradient(180deg, rgba(219, 234, 254, 0.9), rgba(191, 219, 254, 0.75)) !important;
+  color: #1e3a8a !important;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12);
+}
+
+body.theme-modern-glass .factura-search-input {
+  flex: 1;
+  border-radius: 12px !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+
+body.theme-modern-glass .factura-search-btn {
+  flex: 0 0 2.75rem;
+  border-radius: 12px !important;
+}
+
+body.theme-modern-glass .factura-search-table-wrap {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  padding-bottom: 4.75rem;
+}
+
+body.theme-modern-glass .factura-search-table {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+body.theme-modern-glass .factura-search-table thead.factura-search-thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 50%, #0d9488 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  border: none !important;
+  padding: 0.6rem 0.7rem !important;
+  -webkit-text-fill-color: #ffffff;
+}
+
+body.theme-modern-glass .factura-search-table td {
+  padding: 0.55rem 0.7rem !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
+  vertical-align: middle;
+}
+
+body.theme-modern-glass .factura-search-fab-close {
+  position: fixed;
+  right: 1.1rem;
+  bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 1065;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 50% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  border: 2px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 10px 28px rgba(220, 38, 38, 0.35) !important;
+}
+
+body.theme-modern-glass .factura-search-fab-close:active {
+  transform: scale(0.96);
+}
+
+/* Modal cantidad producto */
+body.theme-modern-glass .factura-qty-modal .modal-dialog {
+  max-width: 340px;
+}
+
+body.theme-modern-glass .factura-qty-modal-content {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.16);
+  border-radius: 20px !important;
+}
+
+body.theme-modern-glass .factura-qty-modal.show ~ .modal-backdrop,
+body.theme-modern-glass .factura-search-modal.show ~ .modal-backdrop {
+  opacity: 0.35;
+}
+
+body.theme-modern-glass .factura-qty-input-group .form-control {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+body.theme-modern-glass .factura-qty-summary {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+/* Loader envío pedido (modalWait en modo factura) */
+body.theme-modern-glass #modalWait.factura-wait-modal .dropdown-header,
+body.theme-modern-glass #modalWait.factura-wait-modal .modal-footer,
+body.theme-modern-glass #modalWait.factura-wait-modal .modal-body > .text-center {
+  display: none !important;
+}
+
+body.theme-modern-glass #modalWait.factura-wait-modal .modal-dialog {
+  max-width: 360px;
+}
+
+body.theme-modern-glass #modalWait.factura-wait-modal .modal-content {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 22px !important;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
+  overflow: hidden;
+}
+
+body.theme-modern-glass #modalWait.factura-wait-modal .modal-body {
+  padding: 1.35rem 1.25rem 1.5rem !important;
+}
+
+body.theme-modern-glass .factura-wait-panel {
+  text-align: center;
+}
+
+body.theme-modern-glass .factura-wait-icon {
+  width: 4.25rem;
+  height: 4.25rem;
+  margin: 0 auto 0.85rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.65rem;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+}
+
+body.theme-modern-glass .factura-wait-offline .factura-wait-icon {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  box-shadow: 0 10px 24px rgba(234, 88, 12, 0.32);
+}
+
+body.theme-modern-glass .factura-wait-error .factura-wait-icon {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  box-shadow: 0 10px 24px rgba(220, 38, 38, 0.32);
+}
+
+body.theme-modern-glass .factura-wait-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.45rem;
+}
+
+body.theme-modern-glass .factura-wait-msg {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.45;
+}
+
+body.theme-modern-glass .factura-wait-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+body.theme-modern-glass .factura-wait-dots span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #93c5fd;
+  animation: factura-wait-bounce 1.2s infinite ease-in-out;
+}
+
+body.theme-modern-glass .factura-wait-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+body.theme-modern-glass .factura-wait-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes factura-wait-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* --- Vista Configuraciones --- */
+body.theme-modern-glass .config-page {
+  width: 100%;
+  padding: 0.5rem 0.65rem 1.5rem;
+  box-sizing: border-box;
+}
+
+body.theme-modern-glass .config-shell {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  border-radius: 20px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+body.theme-modern-glass .config-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.08) 0%, rgba(37, 99, 235, 0.04) 100%);
+}
+
+body.theme-modern-glass .config-title {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 1.25rem;
+}
+
+body.theme-modern-glass .config-subtitle {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+body.theme-modern-glass .config-header-badge {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  color: #1d4ed8;
+  background: rgba(219, 234, 254, 0.85);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+body.theme-modern-glass .config-sections {
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+body.theme-modern-glass .config-section {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 0.9rem 0.95rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(248, 250, 252, 0.75);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+body.theme-modern-glass .config-section:hover {
+  border-color: rgba(37, 99, 235, 0.22);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.06);
+}
+
+body.theme-modern-glass .config-section-highlight {
+  border-color: rgba(217, 119, 6, 0.28);
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.9) 0%, rgba(254, 243, 199, 0.35) 100%);
+}
+
+body.theme-modern-glass .config-section-icon {
+  flex-shrink: 0;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+body.theme-modern-glass .config-icon-success {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28);
+}
+
+body.theme-modern-glass .config-icon-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+}
+
+body.theme-modern-glass .config-icon-info {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.28);
+}
+
+body.theme-modern-glass .config-icon-warning {
+  background: linear-gradient(135deg, #d97706 0%, #ea580c 100%);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.28);
+}
+
+body.theme-modern-glass .config-section-body {
+  flex: 1;
+  min-width: 0;
+}
+
+body.theme-modern-glass .config-section-title {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 0.25rem;
+}
+
+body.theme-modern-glass .config-section-desc {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0 0 0.7rem;
+  line-height: 1.4;
+}
+
+body.theme-modern-glass .config-field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+body.theme-modern-glass .config-input {
+  flex: 1;
+  min-width: 10rem;
+  border-radius: 12px !important;
+}
+
+body.theme-modern-glass .config-action-btn {
+  border-radius: 12px !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+body.theme-modern-glass .config-update-status {
+  margin-top: 0.65rem;
+  font-size: 0.82rem;
+  color: #64748b;
+  min-height: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+body.theme-modern-glass .config-update-status-loading {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+body.theme-modern-glass .config-update-status-success {
+  color: #15803d;
+  font-weight: 600;
+}
+
+body.theme-modern-glass .config-update-status-error {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+@media (max-width: 576px) {
+  body.theme-modern-glass .config-section {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  body.theme-modern-glass .config-field-row {
+    flex-direction: column;
+  }
+
+  body.theme-modern-glass .config-action-btn {
+    width: 100%;
+  }
+}
+
+/* --- Vista Login --- */
+body.login-active {
+  background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 35%, #f8fafc 70%, #fef2f2 100%) !important;
+}
+
+body.login-active .page-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 5.5rem);
+  padding: 0.75rem 1rem 1.25rem !important;
+}
+
+body.login-active .page-footer.foot {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+body.login-active #root {
+  width: 100%;
+}
+
+body.theme-modern-glass .login-page {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+}
+
+body.theme-modern-glass .login-bg-shape {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.theme-modern-glass .login-bg-shape-1 {
+  width: 280px;
+  height: 280px;
+  top: 8%;
+  left: -80px;
+  background: rgba(37, 99, 235, 0.35);
+}
+
+body.theme-modern-glass .login-bg-shape-2 {
+  width: 240px;
+  height: 240px;
+  bottom: 12%;
+  right: -60px;
+  background: rgba(220, 38, 38, 0.22);
+}
+
+body.theme-modern-glass .login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+  padding: 1.35rem 1.25rem 1.1rem;
+  overflow: hidden;
+}
+
+body.theme-modern-glass .login-brand {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+body.theme-modern-glass .login-logo-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.9), rgba(255, 255, 255, 0.95));
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+  margin-bottom: 0.75rem;
+}
+
+body.theme-modern-glass .login-logo-wrap img {
+  border-radius: 14px;
+  object-fit: contain;
+}
+
+body.theme-modern-glass .login-brand-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 45%, #dc2626 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+body.theme-modern-glass .login-brand-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.84rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+body.theme-modern-glass .login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+body.theme-modern-glass .login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+body.theme-modern-glass .login-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #475569;
+  margin: 0;
+}
+
+body.theme-modern-glass .login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+body.theme-modern-glass .login-input-icon {
+  position: absolute;
+  left: 0.85rem;
+  z-index: 2;
+  color: #64748b;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+body.theme-modern-glass .login-input {
+  width: 100%;
+  padding-left: 2.5rem !important;
+  padding-right: 0.85rem !important;
+  min-height: 2.75rem;
+  border-radius: 14px !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 600;
+  color: var(--text-main) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.theme-modern-glass .login-input:focus {
+  border-color: rgba(37, 99, 235, 0.55) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+body.theme-modern-glass .login-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+body.theme-modern-glass .login-share-btn {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(248, 250, 252, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+body.theme-modern-glass .login-share-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+body.theme-modern-glass .login-share-btn img {
+  border-radius: 10px;
+}
+
+body.theme-modern-glass .login-submit-btn {
+  flex: 1;
+  min-height: 3.25rem;
+  border-radius: 14px !important;
+  border: none !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  color: #fff !important;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 55%, #dc2626 130%) !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+body.theme-modern-glass .login-submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.4) !important;
+  color: #fff !important;
+}
+
+body.theme-modern-glass .login-submit-btn:disabled {
+  opacity: 0.75;
+}
+
+body.theme-modern-glass .login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+body.theme-modern-glass .login-version {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+body.theme-modern-glass .login-support-link {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16a34a !important;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+body.theme-modern-glass .login-support-link:hover {
+  color: #15803d !important;
+  text-decoration: none;
+}
+
+@media (max-width: 400px) {
+  body.theme-modern-glass .login-card {
+    padding: 1.1rem 1rem 0.95rem;
+    border-radius: 20px;
+  }
+
+  body.theme-modern-glass .login-brand-title {
+    font-size: 1.2rem;
+  }
+}

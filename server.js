@@ -29,7 +29,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http, { cors: { origin: '*' } });
 
 
-const PORT = process.env.PORT || 5300;
+const PORT = process.env.PORT || 5400;
 
 const cors = require('cors');
 app.use(cors({
@@ -37,6 +37,49 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
+
+function createRateLimiter(options) {
+  const windowMs = options.windowMs || 60000;
+  const max = options.max || 30;
+  const buckets = new Map();
+
+  return function rateLimiter(req, res, next) {
+    const key = options.keyGenerator ? options.keyGenerator(req) : req.ip;
+    const now = Date.now();
+    const hits = (buckets.get(key) || []).filter((t) => now - t < windowMs);
+
+    if (hits.length >= max) {
+      return res.status(429).json({ error: 'too_many_requests', message: 'Demasiadas peticiones. Intente más tarde.' });
+    }
+
+    hits.push(now);
+    buckets.set(key, hits);
+    next();
+  };
+}
+
+const loginLimiter = createRateLimiter({
+  windowMs: 5 * 60 * 1000,
+  max: 5,
+  keyGenerator: (req) => `${req.ip}:${req.query.user || req.body.user || ''}`
+});
+
+const writeLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 15,
+  keyGenerator: (req) => `${req.ip}:${req.body.codven || req.body.usuario || ''}`
+});
+
+const catalogLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  keyGenerator: (req) => `${req.ip}:${req.body.sucursal || req.query.sucursal || ''}`
+});
+
+app.use('/empleados/login', loginLimiter);
+app.use('/ventas/insertventa', writeLimiter);
+app.use('/ventas/descargar_catalogo', catalogLimiter);
+app.use('/clientes/descargar_clientes_ruta', catalogLimiter);
 
 app.use(express.static('build'));
 

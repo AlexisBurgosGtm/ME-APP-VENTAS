@@ -1,5 +1,5 @@
 
-let versionapp = 'Mod:25.02.2026.2';
+let versionapp = 'Mod:03.07.2026.0';
 let GlobalServerUrl = '';
 let GlobalUrlServicePedidos = '';
 
@@ -91,16 +91,18 @@ let GlobalSelectedApp = '';
 let GlobalSistema = 'ISC';
 
 
-let GlobalLoaderMini = `<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>`;
+let GlobalLoaderMini = `<div class="modern-loader-shell modern-loader-shell-sm"><div class="modern-loader-ring"></div><span class="modern-loader-text">Cargando...</span></div>`;
 
-let GlobalLoader = `
-                <div>
-                    <div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>
-                    <div class="spinner-grow text-info" role="status"><span class="sr-only">Loading...</span></div>
-                    <div class="spinner-grow text-danger" role="status"><span class="sr-only">Loading...</span></div>
-                    <div class="spinner-grow text-warning" role="status"><span class="sr-only">Loading...</span></div>
-                </div>
-                `
+function buildModernLoader(message = 'Cargando...') {
+    return `
+        <div class="modern-loader-shell">
+            <div class="modern-loader-ring"></div>
+            <div class="modern-loader-text">${message}</div>
+        </div>
+    `;
+}
+
+let GlobalLoader = buildModernLoader();
 
 //'<div class="spinner-grow text-info" role="status"><span class="sr-only">Loading...</span></div>'
 

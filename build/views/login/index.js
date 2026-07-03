@@ -2,111 +2,66 @@ function getView(){
     let view = {
         login : ()=>{
             return `
-        <div class="row">
-     
-            <div class="col-md-3 col-sm-0 col-lg-3 col-lx-3">
-                
-            </div>
+        <div class="login-page">
+            <div class="login-bg-shape login-bg-shape-1" aria-hidden="true"></div>
+            <div class="login-bg-shape login-bg-shape-2" aria-hidden="true"></div>
 
-            <div class="col-md-5 col-sm-12 col-lg-5 col-lx-5">
-   
-                <div class="card shadow p-2 card-rounded border-secondary">
-
-                    <div class="card-header text-center bg-white">
-                        <div class="row">
-                            <div id="parallax_logo" class="col-6">
-                                <img data-depth="1.0" src="./anuncio.png" width="100" height="100">                            
-                            </div>    
-                            <div class="col-6">
-                                <h3 class="negrita text-personal">MERCADOS EFECTIVOS</h3>                
-                            </div> 
-                        </div>
-                        
+            <div class="login-card">
+                <div class="login-brand">
+                    <div id="parallax_logo" class="login-logo-wrap">
+                        <img data-depth="1.0" src="./anuncio.png" width="88" height="88" alt="Mercados Efectivos">
                     </div>
-                    <div class="card-body">
-                        <div class="" id="" autocomplete="off">
-                            <div class="form-group">
-                                <select class="negrita form-control border-secondary border-top-0 border-right-0 border-left-0" id="cmbSucursal" disabled="true">
-                                    
-                                </select>
-                                
-                            </div>
-                            <div class="form-group">
-                                
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fal fa-user"></i>
-                                        </span>
-                                    </div>
-                                    <input class="form-control border-secondary border-top-0 border-right-0 border-left-0" type="text" id="txtUsr" placeholder="Escriba su usuario" required="true">
-                                </div>
-                                
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <i class="fal fa-lock"></i>
-                                        </span>
-                                    </div>
-                                    <input class="form-control border-secondary border-top-0 border-right-0 border-left-0" type="password" id="txtPass" placeholder="Escriba su contraseña" required="true">
-                                </div>
-                                        
-                            </div>
-                            <br>
-                            <div class="form-group" align="center">
-                                <div class="row">
-                                    
-                                    <div class="col-3">
-                                        <img  
-                                            src="./img/mercados.png" 
-                                            width="50" 
-                                            height="50" 
-                                            onclick="funciones.shareAppWhatsapp()"
-                                            class="btn-share hand"
-                                        > 
+                    <h1 class="login-brand-title">Mercados Efectivos</h1>
+                    <p class="login-brand-sub">Equipo de Ventas</p>
+                </div>
 
-                                    </div>  
-                                    <div class="col-9">
-                                        <button class="btn btn-personal btn-lg shadow col-12 btn-rounded"  type="submit" id="btnIniciar">
-                                            <i class="fal fa-unlock"></i>
-                                            Ingresar
-                                        </button>
-                                    </div> 
-                                                                 
-                                </div>
-
-                                
-                            </div>
-                            <div class="row">
-                                <div class="col-6">
-                                    
-                                </div>
-                                <div class="col-6">
-                                    <small class="">Mercados Efectivos - ${versionapp}</small>
-                                </div>
-                            </div>
-                            <div class="form-group" align="right">
-                                <br>
-                                <small>                             
-                                    <a href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos.2025...%20">
-                                        por Alexis Burgos
-                                    </a>
-                                </small>
-                            </div>
+                <div class="login-form" autocomplete="off">
+                    <div class="login-field">
+                        <label class="login-label" for="cmbSucursal">Sede</label>
+                        <div class="login-input-wrap">
+                            <span class="login-input-icon"><i class="fal fa-building"></i></span>
+                            <select class="form-control login-input" id="cmbSucursal" disabled="true">
+                            </select>
                         </div>
                     </div>
 
+                    <div class="login-field">
+                        <label class="login-label" for="txtUsr">Usuario</label>
+                        <div class="login-input-wrap">
+                            <span class="login-input-icon"><i class="fal fa-user"></i></span>
+                            <input class="form-control login-input" type="text" id="txtUsr" placeholder="Escriba su usuario" required="true">
+                        </div>
+                    </div>
+
+                    <div class="login-field">
+                        <label class="login-label" for="txtPass">Contraseña</label>
+                        <div class="login-input-wrap">
+                            <span class="login-input-icon"><i class="fal fa-lock"></i></span>
+                            <input class="form-control login-input" type="password" id="txtPass" placeholder="Escriba su contraseña" required="true">
+                        </div>
+                    </div>
+
+                    <div class="login-actions">
+                        <button type="button" class="login-share-btn hand" onclick="funciones.shareAppWhatsapp()" title="Compartir app">
+                            <img src="./img/mercados.png" width="40" height="40" alt="Compartir">
+                        </button>
+                        <button class="btn login-submit-btn shadow" type="submit" id="btnIniciar">
+                            <i class="fal fa-unlock"></i>
+                            Ingresar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-footer">
+                    <small class="login-version">Mercados Efectivos · ${versionapp}</small>
+                    <a class="login-support-link" href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos.2025...%20">
+                        <i class="fab fa-whatsapp"></i> Soporte
+                    </a>
                 </div>
             </div>
 
-            <div class="col-md-4 col-sm-12 col-lg-4 col-lx-4"></div>
             <div id="root_efecto"></div>
-
-                         
-
-       
+        </div>
             `
         }
     };
@@ -140,9 +95,11 @@ function addListeners(){
    
     
     let btnIniciar = document.getElementById('btnIniciar');
+    const btnIniciarDefaultHtml = '<i class="fal fa-unlock"></i> Ingresar';
+
     btnIniciar.addEventListener('click',()=>{
       
-            btnIniciar.innerHTML = '<i class="fal fa-unlock fa-spin"></i>';
+            btnIniciar.innerHTML = '<i class="fal fa-unlock fa-spin"></i> Ingresando...';
             btnIniciar.disabled = true;
 
             let suc = document.getElementById('cmbSucursal').value;
@@ -157,7 +114,7 @@ function addListeners(){
             })
             .catch(()=>{
                 btnIniciar.disabled = false;
-                btnIniciar.innerHTML = '<i class="fal fa-unlock"></i>Ingresar'
+                btnIniciar.innerHTML = btnIniciarDefaultHtml;
             });
 
     });
@@ -215,6 +172,7 @@ function get_sede(){
 
 
 function InicializarVista(){
+   document.body.classList.add('login-active');
    getView();
    addListeners();
 

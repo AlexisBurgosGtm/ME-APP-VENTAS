@@ -1148,11 +1148,42 @@ router.post('/rpt_clientes_novisitados',async(req,res)=>{
 // INSERTA UN PEDIDO EN LAS TABLAS DE DOCUMENTOS Y DOCPRODUCTOS
 router.post("/insertventa", async (req,res)=>{
     
-    const {jsondocproductos,codsucursal,empnit,anio,mes,dia,coddoc,correl,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long,hora} = req.body;
+    const {jsondocproductos,codsucursal,empnit,anio,mes,dia,coddoc,correl,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long,hora,local_id} = req.body;
+
+    const localIdRef = (local_id || '').toString().replace(/'/g, "''");
+    const horaDoc = formatHoraDoc(hora);
+
+    if (localIdRef) {
+        try {
+            const existing = await execute.command(
+                `SELECT DOC_NUMERO, CODDOC FROM ME_DOCUMENTOS WHERE CODSUCURSAL='${codsucursal}' AND DOC_REFERENCIA='${localIdRef}'`
+            );
+            if (existing.recordset && existing.recordset.length > 0) {
+                return res.send({
+                    rowsAffected: [1],
+                    duplicate: true,
+                    doc_numero: existing.recordset[0].DOC_NUMERO,
+                    coddoc: existing.recordset[0].CODDOC
+                });
+            }
+        } catch (error) {
+            console.log('idempotencia insertventa: ' + error);
+            return res.send('error');
+        }
+    }
   
     let app = codsucursal;
   
     let tblDocproductos = JSON.parse(jsondocproductos);
+    if (!Array.isArray(tblDocproductos)) {
+        return res.send('error');
+    }
+    tblDocproductos = tblDocproductos.map((p, index) => ({
+        ...p,
+        ID: index + 1,
+        DOC_ITEM: index + 1
+    }));
+    const jsonNormalizado = JSON.stringify(tblDocproductos).replace(/'/g, "''");
    
     let qry = ''; // inserta los datos en la tabla documentos
     let qrydoc = ''; // inserta los datos de la tabla docproductos
@@ -1162,7 +1193,11 @@ router.post("/insertventa", async (req,res)=>{
       //carga los espacios en blanco en el correlativo actual
       correlativo = getCorrelativo(correlativo);
 
-    tblDocproductos.map((p)=>{
+    tblDocproductos.forEach((p, index) => {
+        const docItem = index + 1;
+        const desprod = (p.DESPROD || '').toString().replace(/'/g, "''");
+        const tipoprecio = (p.TIPOPRECIO || 'P').toString().replace(/'/g, "''");
+        const empNitLinea = (p.EMPNIT || empnit || '').toString().replace(/'/g, "''");
         qrydoc = qrydoc + `INSERT INTO ME_DOCPRODUCTOS 
         (EMP_NIT,DOC_ANO,DOC_MES,CODDOC,DOC_NUMERO,
         DOC_ITEM,CODPROD,CODMEDIDA,CANTIDAD,EQUIVALE,
@@ -1176,15 +1211,15 @@ router.post("/insertventa", async (req,res)=>{
         IMPCOMBUSTIBLE,CODVENPROD,COMIVEN,SOBREPRECIO,CODREG,NUMREG,ITEMREG,CANTIDADORIGINAL,CANTIDADMODIFICADA,NSERIETARJETA,
         CODOC,NUMOC,PORTIMBREPRENSA,VALORTIMBREPRENSA,CODTIPODESCU,TOTALPUNTOS,ITEMOC,CODPRODORIGEN,CODMEDIDAORIGEN,
         CANTIDADDEVUELTA,CODARANCEL,TIPOPRECIO,CODSUCURSAL) 
-        VALUES ('${p.EMPNIT}',${anio},${mes},'${coddoc}','${correlativo}',
-        ${p.ID},'${p.CODPROD}','${p.CODMEDIDA}',${p.CANTIDAD},${p.EQUIVALE},
+        VALUES ('${empNitLinea}',${anio},${mes},'${coddoc}','${correlativo}',
+        ${docItem},'${p.CODPROD}','${p.CODMEDIDA}',${p.CANTIDAD},${p.EQUIVALE},
         ${p.TOTALUNIDADES},${p.COSTO},${p.PRECIO},${p.TOTALCOSTO},${p.TOTALPRECIO},
         '','${codbodega}',${p.TOTALPRECIO},0,0,
-        0,0,0,'${p.DESPROD}',${p.TOTALPRECIO},
+        0,0,0,'${desprod}',${p.TOTALPRECIO},
         1,${p.PRECIO},0,'','',
         0,0,0,${p.COSTO},0,${p.TOTALPRECIO},
         ${p.PRECIO},${p.TOTALCOSTO},0,'','',0,'','',0,'P','',
-         0,0,'SN',0,'',0,'',0,0,${p.COSTO},0,${p.TOTALCOSTO},0,0,0,0,'','',0,0,0,'','','',0,0,'',0,0,'','',0,'','${p.TIPOPRECIO}','${codsucursal}' 
+         0,0,'SN',0,'',0,'',0,0,${p.COSTO},0,${p.TOTALCOSTO},0,0,0,0,'','',0,0,0,'','','',0,0,'',0,0,'','',0,'','${tipoprecio}','${codsucursal}' 
         );`
     });
 
@@ -1238,14 +1273,14 @@ router.post("/insertventa", async (req,res)=>{
                 '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
                 '', '${fecha}', '', '${nomclie}', '',
                 '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
-                '${hora}', '${fecha}', 0, '${concre}', 0,
+                '${horaDoc}', '${fecha}', 0, '${concre}', 0,
                 0, 0, 0, ${totalprecio}, ${totalprecio},
                 '${nitclie}', 0, '${codven}', 0, ${saldo}, 
                 0, '${nitclie}', 0, '', 1, 
                 0, 0, '', '', '${obs}',
                 0, 0, 0, 0, 
                 0, '', '${formaentrega}', '', '',
-                '', 0, 0, '${direntrega}', '', 
+                '', 0, 0, '${direntrega}', '${localIdRef}', 
                 '', '', '', 0, '', 
                 '${dirclie}', '', '', '${fechaentrega}', '',
                 ${totalcosto}, 0, '', 0, 0,
@@ -1262,7 +1297,7 @@ router.post("/insertventa", async (req,res)=>{
                 0, 'N', 'C', 0, 0,
                 0, 0, 0, 0, 0,
                 '', '', '', '', '',
-                '', '', 0, ${lat},${long},'${app}','${jsondocproductos}'
+                '', '', 0, ${lat},${long},'${app}','${jsonNormalizado}'
                 );`
                    
                 qrycorrelativo =`   UPDATE ME_TIPODOCUMENTOS 
@@ -1308,14 +1343,14 @@ router.post("/insertventa", async (req,res)=>{
                                             '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
                                             '', '${fecha}', '', '${nomclie}', '',
                                             '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
-                                            '${hora}', '${fecha}', 0, '${concre}', 0,
+                                            '${horaDoc}', '${fecha}', 0, '${concre}', 0,
                                             0, 0, 0, ${totalprecio}, ${totalprecio},
                                             '${nitclie}', 0, '${codven}', 0, ${saldo}, 
                                             0, '${nitclie}', 0, '', 1, 
                                             0, 0, '', '', '${obs}',
                                             0, 0, 0, 0, 
                                             0, '', '${formaentrega}', '', '',
-                                            '', 0, 0, '${direntrega}', '', 
+                                            '', 0, 0, '${direntrega}', '${localIdRef}', 
                                             '', '', '', 0, '', 
                                             '${dirclie}', '', '', '${fechaentrega}', '',
                                             ${totalcosto}, 0, '', 0, 0,
@@ -1332,7 +1367,7 @@ router.post("/insertventa", async (req,res)=>{
                                             0, 'N', 'C', 0, 0,
                                             0, 0, 0, 0, 0,
                                             '', '', '', '', '',
-                                            '', '', 0, ${lat},${long},'${app}','${jsondocproductos}'
+                                            '', '', 0, ${lat},${long},'${app}','${jsonNormalizado}'
                                             );`
  
              let qry_visita = `
@@ -1340,7 +1375,7 @@ router.post("/insertventa", async (req,res)=>{
                     SELECT '${codsucursal}' AS EMPNIT, 
                             ${nitclie} AS CODCLIENTE, 
                             '${fecha}' AS FECHA, 
-                            '${hora}' AS HORA, 
+                            '${horaDoc}' AS HORA, 
                             ${Number(codven)} AS CODEMP, 
                             'VENTA' AS MOTIVO, 
                             ${lat} AS LATITUD,
@@ -1354,6 +1389,7 @@ router.post("/insertventa", async (req,res)=>{
 router.post("/BACKUP3_insertventa", async (req,res)=>{
     
     const {jsondocproductos,codsucursal,empnit,anio,mes,dia,coddoc,correl,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long,hora} = req.body;
+    const horaDoc = formatHoraDoc(hora);
   
     let app = codsucursal;
   
@@ -1443,7 +1479,7 @@ router.post("/BACKUP3_insertventa", async (req,res)=>{
                 '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
                 '', '${fecha}', '', '${nomclie}', '',
                 '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
-                '${hora}', '${fecha}', 0, '${concre}', 0,
+                '${horaDoc}', '${fecha}', 0, '${concre}', 0,
                 0, 0, 0, ${totalprecio}, ${totalprecio},
                 '${nitclie}', 0, '${codven}', 0, ${saldo}, 
                 0, '${nitclie}', 0, '', 1, 
@@ -1513,7 +1549,7 @@ router.post("/BACKUP3_insertventa", async (req,res)=>{
                                             '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
                                             '', '${fecha}', '', '${nomclie}', '',
                                             '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
-                                            '${hora}', '${fecha}', 0, '${concre}', 0,
+                                            '${horaDoc}', '${fecha}', 0, '${concre}', 0,
                                             0, 0, 0, ${totalprecio}, ${totalprecio},
                                             '${nitclie}', 0, '${codven}', 0, ${saldo}, 
                                             0, '${nitclie}', 0, '', 1, 
@@ -1548,6 +1584,7 @@ router.post("/BACKUP3_insertventa", async (req,res)=>{
 router.post("/BACKUP_insertventa", async (req,res)=>{
     
     const {jsondocproductos,codsucursal,empnit,anio,mes,dia,coddoc,correl,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long,hora} = req.body;
+    const horaDoc = formatHoraDoc(hora);
   
     let app = codsucursal;
   
@@ -1637,7 +1674,7 @@ router.post("/BACKUP_insertventa", async (req,res)=>{
                 '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
                 '', '${fecha}', '', '${nomclie}', '',
                 '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
-                '${hora}', '${fecha}', 0, '${concre}', 0,
+                '${horaDoc}', '${fecha}', 0, '${concre}', 0,
                 0, 0, 0, ${totalprecio}, ${totalprecio},
                 '${nitclie}', 0, '${codven}', 0, ${saldo}, 
                 0, '${nitclie}', 0, '', 1, 
@@ -1706,6 +1743,22 @@ router.post("/update_fecha_pedido", async (req,res)=>{
 
 });
 
+
+function formatHoraDoc(hora) {
+    const raw = (hora || '').toString().trim();
+    if (raw && raw !== 'undefined' && raw !== 'null') {
+        const parts = raw.split(':');
+        if (parts.length >= 2) {
+            const h = parts[0].replace(/\D/g, '');
+            const m = parts[1].replace(/\D/g, '');
+            if (h !== '' && m !== '') {
+                return `${h.padStart(2, '0')}:${m.padStart(2, '0')}`;
+            }
+        }
+    }
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+}
 
 function getCorrelativo(correlativo){
     let numdoc = '';

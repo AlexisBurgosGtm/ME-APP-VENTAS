@@ -178,7 +178,7 @@ let execute = {
 			try {
 				const pool1 = new sql.ConnectionPool(config, err => {
 				  new sql.Request(pool1)
-				  .query(sqlqry, (err, result) => {
+				  .query(rsqlqry, (err, result) => {
 						sql.close();
 						if(err){
 							reject(err);		  
