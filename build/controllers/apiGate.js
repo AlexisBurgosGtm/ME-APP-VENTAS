@@ -91,7 +91,7 @@ const ApiGate = (function () {
         return 'ME-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
     }
 
-    function getLocalCatalogCodUpdate() {
+    async function getLocalCatalogCodUpdate() {
         try {
             const rows = await connection.select({
                 from: 'credenciales',
