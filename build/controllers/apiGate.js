@@ -9,11 +9,16 @@ const ApiGate = (function () {
     const inFlight = new Set();
     let state = loadState();
 
+    /** Rutas que nunca deben limitarse (p. ej. verificación de código de catálogo). */
+    const EXEMPT_URLS = [
+        /\/ventas\/get_codupdate/i
+    ];
+
     const RULES = [
         { pattern: /\/empleados\/login/i, key: 'login', minIntervalMs: 3000, maxPerWindow: 5, windowMs: 300000 },
         { pattern: /\/ventas\/insertventa/i, key: 'insertventa', minIntervalMs: 2000, blockConcurrent: true },
         { pattern: /\/ventas\/descargar_catalogo/i, key: 'catalogo', oncePerDay: true },
-        { pattern: /\/clientes\/descargar_clientes/i, key: 'clientes', minIntervalMs: 3600000 },
+        { pattern: /\/clientes\/descargar_clientes/i, key: 'clientes', minIntervalMs: 3600000, perUser: true },
         { pattern: /\/empleados\/location/i, key: 'gps', minIntervalMs: 300000 },
         { pattern: /\/clientes\/insert_visita/i, key: 'visita', minIntervalMs: 1000 }
     ];
@@ -34,18 +39,50 @@ const ApiGate = (function () {
         }
     }
 
+    function isExemptUrl(url) {
+        const target = (url || '').toString();
+        return EXEMPT_URLS.some((pattern) => pattern.test(target));
+    }
+
     function getRule(url) {
         const target = (url || '').toString();
+        if (isExemptUrl(target)) return null;
         return RULES.find((rule) => rule.pattern.test(target)) || null;
+    }
+
+    function getCurrentCodven(body) {
+        const data = body || {};
+        return data.codven || data.codemp || (typeof GlobalCodUsuario !== 'undefined' ? GlobalCodUsuario : '');
+    }
+
+    function getClientesDayKey(codven) {
+        return `clientesDay_${codven || '0'}`;
+    }
+
+    function buildRuleKey(rule, configOrBody) {
+        const body = configOrBody && configOrBody.data ? configOrBody.data : (configOrBody || {});
+        const codven = getCurrentCodven(body);
+
+        if (rule.perUser || rule.key === 'clientes') {
+            return `${rule.key}:${codven}`;
+        }
+
+        if (rule.key === 'login') {
+            const user = body.user || body.usuario || '';
+            return `${rule.key}:${user}`;
+        }
+
+        return `${rule.key}:${codven}`;
     }
 
     function getRequestKey(config) {
         const url = (config.baseURL || '') + (config.url || '');
+        if (isExemptUrl(url)) return null;
+
         const rule = getRule(url);
         if (!rule) return null;
-        const body = config.data || {};
-        const codven = body.codven || body.codemp || (typeof GlobalCodUsuario !== 'undefined' ? GlobalCodUsuario : '');
-        return `${rule.key}:${codven}`;
+
+        return buildRuleKey(rule, config);
     }
 
     function generateLocalId() {
@@ -65,14 +102,16 @@ const ApiGate = (function () {
         saveState();
     }
 
-    function recordClientesDownload() {
-        state.clientesDay = new Date().getDate();
+    function recordClientesDownload(codven) {
+        const userId = codven || getCurrentCodven();
+        state[getClientesDayKey(userId)] = new Date().getDate();
         saveState();
     }
 
-    function clientesAlreadyDownloadedRecently() {
+    function clientesAlreadyDownloadedRecently(codven) {
+        const userId = codven || getCurrentCodven();
         const today = new Date().getDate();
-        return Number(state.clientesDay) === today;
+        return Number(state[getClientesDayKey(userId)]) === today;
     }
 
     function checkRule(rule, key) {
@@ -114,10 +153,14 @@ const ApiGate = (function () {
         saveState();
     }
 
-    function canRequest(url) {
+    function canRequest(url, body) {
+        if (isExemptUrl(url)) return { allowed: true };
+
         const rule = getRule(url);
         if (!rule) return { allowed: true };
-        return checkRule(rule, rule.key);
+
+        const key = buildRuleKey(rule, body || {});
+        return checkRule(rule, key);
     }
 
     function assertCanDownloadCatalog() {
@@ -128,10 +171,17 @@ const ApiGate = (function () {
     }
 
     function assertCanDownloadClientes() {
-        if (clientesAlreadyDownloadedRecently()) {
+        const codven = getCurrentCodven();
+
+        if (clientesAlreadyDownloadedRecently(codven)) {
             throw new Error('La lista de clientes ya fue descargada hoy.');
         }
-        const result = canRequest('/clientes/descargar_clientes_ruta');
+
+        const result = canRequest('/clientes/descargar_clientes_ruta', {
+            codven: codven,
+            sucursal: typeof GlobalCodSucursal !== 'undefined' ? GlobalCodSucursal : ''
+        });
+
         if (!result.allowed) {
             throw new Error(result.reason);
         }
@@ -142,10 +192,13 @@ const ApiGate = (function () {
 
         axios.interceptors.request.use(
             (config) => {
+                const url = (config.baseURL || '') + (config.url || '');
+                if (isExemptUrl(url)) return config;
+
                 const key = getRequestKey(config);
                 if (!key) return config;
 
-                const rule = getRule((config.baseURL || '') + (config.url || ''));
+                const rule = getRule(url);
                 const check = checkRule(rule, key);
                 if (!check.allowed) {
                     return Promise.reject(new Error(check.reason || 'Petición bloqueada por ApiGate'));
@@ -248,6 +301,7 @@ const ApiGate = (function () {
         recordClientesDownload,
         insertVisita,
         queueVisita,
-        getRule
+        getRule,
+        isExemptUrl
     };
 })();

@@ -76,10 +76,20 @@ const catalogLimiter = createRateLimiter({
   keyGenerator: (req) => `${req.ip}:${req.body.sucursal || req.query.sucursal || ''}`
 });
 
+const clientesDownloadLimiter = createRateLimiter({
+  windowMs: 60 * 60 * 1000,
+  max: 5,
+  keyGenerator: (req) => {
+    const codven = req.body.codven || req.body.usuario || req.body.codemp || '';
+    const sucursal = req.body.sucursal || req.query.sucursal || '';
+    return `clientes:${sucursal}:${codven}`;
+  }
+});
+
 app.use('/empleados/login', loginLimiter);
 app.use('/ventas/insertventa', writeLimiter);
 app.use('/ventas/descargar_catalogo', catalogLimiter);
-app.use('/clientes/descargar_clientes_ruta', catalogLimiter);
+app.use('/clientes/descargar_clientes_ruta', clientesDownloadLimiter);
 
 app.use(express.static('build'));
 
