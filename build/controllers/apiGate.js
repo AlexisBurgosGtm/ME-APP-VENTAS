@@ -17,7 +17,6 @@ const ApiGate = (function () {
     const RULES = [
         { pattern: /\/empleados\/login/i, key: 'login', minIntervalMs: 3000, maxPerWindow: 5, windowMs: 300000 },
         { pattern: /\/ventas\/insertventa/i, key: 'insertventa', minIntervalMs: 2000, blockConcurrent: true },
-        { pattern: /\/ventas\/descargar_catalogo/i, key: 'catalogo', oncePerDay: true },
         { pattern: /\/clientes\/descargar_clientes/i, key: 'clientes', minIntervalMs: 3600000, perUser: true },
         { pattern: /\/empleados\/location/i, key: 'gps', minIntervalMs: 300000 },
         { pattern: /\/clientes\/insert_visita/i, key: 'visita', minIntervalMs: 1000 }
@@ -92,14 +91,67 @@ const ApiGate = (function () {
         return 'ME-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
     }
 
-    function catalogAlreadyDownloadedToday() {
-        const today = new Date().getDate();
-        return Number(state.catalogDay) === today;
+    function getLocalCatalogCodUpdate() {
+        try {
+            const rows = await connection.select({
+                from: 'credenciales',
+                limit: 1
+            });
+            if (rows && rows.length > 0 && rows[0].CODUPDATE != null && rows[0].CODUPDATE !== '') {
+                return rows[0].CODUPDATE.toString();
+            }
+        } catch (e) {
+            // IndexedDB no disponible aún
+        }
+
+        if (typeof SelectedLocalCodUpdate !== 'undefined' && SelectedLocalCodUpdate != null && SelectedLocalCodUpdate !== '') {
+            return SelectedLocalCodUpdate.toString();
+        }
+
+        return '';
     }
 
-    function recordCatalogDownload() {
-        state.catalogDay = new Date().getDate();
-        saveState();
+    async function fetchServerCatalogCodUpdate() {
+        const sucursal = typeof GlobalCodSucursal !== 'undefined' ? GlobalCodSucursal : '';
+        const response = await axios.post('/ventas/get_codupdate', { sucursal });
+        const data = response.data;
+
+        if (data && data.recordset && data.recordset.length > 0 && data.recordset[0].CODUPDATE != null) {
+            return data.recordset[0].CODUPDATE.toString();
+        }
+
+        return '';
+    }
+
+    async function compareCatalogCodUpdate() {
+        const localCode = await getLocalCatalogCodUpdate();
+        let serverCode = '';
+
+        try {
+            serverCode = await fetchServerCatalogCodUpdate();
+        } catch (e) {
+            return {
+                localCode,
+                serverCode: '',
+                isUpToDate: false,
+                checkFailed: true
+            };
+        }
+
+        return {
+            localCode,
+            serverCode,
+            isUpToDate: Boolean(localCode && serverCode && localCode === serverCode),
+            checkFailed: false
+        };
+    }
+
+    async function assertCanDownloadCatalog() {
+        const comparison = await compareCatalogCodUpdate();
+
+        if (comparison.isUpToDate) {
+            throw new Error('Ya descargaste los productos');
+        }
     }
 
     function recordClientesDownload(codven) {
@@ -117,10 +169,6 @@ const ApiGate = (function () {
     function checkRule(rule, key) {
         const now = Date.now();
         const entry = state[key] || { last: 0, hits: [] };
-
-        if (rule.oncePerDay && catalogAlreadyDownloadedToday()) {
-            return { allowed: false, reason: 'El catálogo ya fue descargado hoy.' };
-        }
 
         if (rule.minIntervalMs && now - entry.last < rule.minIntervalMs) {
             const waitSec = Math.ceil((rule.minIntervalMs - (now - entry.last)) / 1000);
@@ -161,13 +209,6 @@ const ApiGate = (function () {
 
         const key = buildRuleKey(rule, body || {});
         return checkRule(rule, key);
-    }
-
-    function assertCanDownloadCatalog() {
-        const result = canRequest('/ventas/descargar_catalogo');
-        if (!result.allowed) {
-            throw new Error(result.reason);
-        }
     }
 
     function assertCanDownloadClientes() {
@@ -296,8 +337,10 @@ const ApiGate = (function () {
         canRequest,
         assertCanDownloadCatalog,
         assertCanDownloadClientes,
+        compareCatalogCodUpdate,
+        getLocalCatalogCodUpdate,
+        fetchServerCatalogCodUpdate,
         recordSuccess,
-        recordCatalogDownload,
         recordClientesDownload,
         insertVisita,
         queueVisita,

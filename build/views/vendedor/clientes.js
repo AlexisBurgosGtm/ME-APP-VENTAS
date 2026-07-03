@@ -940,9 +940,9 @@ async function addListeners(){
 
                     })
                 })
-                .catch(()=>{
+                .catch((err)=>{
                    
-                    funciones.AvisoError('No se pudieron descargar los productos');
+                    funciones.AvisoError(err || 'No se pudieron descargar los productos');
                     btnDescargarP.disabled = false;
                     btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
                     hideProgressOverlay();
@@ -1053,8 +1053,11 @@ async function addListeners(){
     .then((code)=>{
         SelectedCodUpdate = code;
         selectDateDownload().then(()=>{
-                if(SelectedCodUpdate.toString()==SelectedLocalCodUpdate.toString()){
-                    funciones.showToast('Su catálogo de precios está actualizado')
+                const localCode = (SelectedLocalCodUpdate || '').toString();
+                const serverCode = (SelectedCodUpdate || '').toString();
+
+                if(serverCode && localCode && serverCode === localCode){
+                    funciones.showToast('Ya descargaste los productos');
                 }else{
                     funciones.showToast('Catálogo de precios desactualizado, iniciando descarga');
                     btnDescargarP.disabled = true;
@@ -1117,9 +1120,9 @@ async function addListeners(){
     
                         })
                     })
-                    .catch(()=>{
+                    .catch((err)=>{
                        
-                        funciones.AvisoError('No se pudieron descargar los productos');
+                        funciones.AvisoError(err || 'No se pudieron descargar los productos');
                         btnDescargarP.disabled = false;
                         btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
     

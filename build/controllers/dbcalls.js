@@ -345,12 +345,12 @@ function selectDateDownload() {
 let update_cod_update = '';
 function downloadProductos(){
 
-    return new Promise((resolve,reject)=>{
+    return new Promise(async (resolve,reject)=>{
 
         try {
-            ApiGate.assertCanDownloadCatalog();
+            await ApiGate.assertCanDownloadCatalog();
         } catch (e) {
-            reject(e.message);
+            reject(e.message || e);
             return;
         }
 
@@ -365,13 +365,12 @@ function downloadProductos(){
                 update_cod_update = data.recordset[0].CODUPDATE.toString();
                 deleteDateDownload().then(()=>{
                     updateDateDownload().then(()=>{
-                        ApiGate.recordCatalogDownload();
+                        resolve(data);
                     });
                 })
-                resolve(data);                         
             }
         }, (error) => {
-           reject();
+           reject(error);
         });
 
         

@@ -70,12 +70,6 @@ const writeLimiter = createRateLimiter({
   keyGenerator: (req) => `${req.ip}:${req.body.codven || req.body.usuario || ''}`
 });
 
-const catalogLimiter = createRateLimiter({
-  windowMs: 60 * 60 * 1000,
-  max: 3,
-  keyGenerator: (req) => `${req.ip}:${req.body.sucursal || req.query.sucursal || ''}`
-});
-
 const clientesDownloadLimiter = createRateLimiter({
   windowMs: 60 * 60 * 1000,
   max: 5,
@@ -88,7 +82,6 @@ const clientesDownloadLimiter = createRateLimiter({
 
 app.use('/empleados/login', loginLimiter);
 app.use('/ventas/insertventa', writeLimiter);
-app.use('/ventas/descargar_catalogo', catalogLimiter);
 app.use('/clientes/descargar_clientes_ruta', clientesDownloadLimiter);
 
 app.use(express.static('build'));
