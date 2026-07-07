@@ -386,6 +386,9 @@
 
                         </div>
                         <div class="text-center">
+                            <button class="btn btn-outline-danger btn-lg shadow mr-2 hand" id="btnVerErroresPedidos">
+                                <i class="fal fa-exclamation-triangle"></i> Ver Errores
+                            </button>
                             <button class="btn btn-xl btn-circle hand btn-danger shadow" data-dismiss="modal">
                                 X
                             </button>
@@ -394,6 +397,35 @@
                     </div>
 
                 
+                </div>
+            </div>
+        </div>
+
+        <!-- ERRORES AL ENVIAR PEDIDOS -->
+        <div class="modal fade modal-with-scroll" id="ModalErroresPedidos" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-right" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger">
+                        <label class="modal-title text-white h4">Errores al Enviar Pedidos</label>
+                    </div>
+
+                    <div class="modal-body">
+                        <p class="text-muted small mb-2">
+                            Aquí se registran los mensajes de error que ocurren cuando un pedido se guarda localmente porque no se logró enviar.
+                        </p>
+                        <hr class="solid">
+                        <label class="text-danger d-block" id="lbErroresPedidos">No hay errores registrados</label>
+                        <hr class="solid">
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary shadow hand" id="btnLimpiarErroresPedidos">
+                                <i class="fal fa-trash"></i> Limpiar
+                            </button>
+                            <button class="btn btn-danger shadow" data-dismiss="modal">
+                                Cerrar (x)
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

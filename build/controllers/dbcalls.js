@@ -1165,10 +1165,13 @@ function dbSendPedido(id,idbtn){
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
                 })
-                .catch(()=>{
+                .catch((err)=>{
                     hideWaitForm();
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fal fa-paper-plane"></i>Enviar';
+                    if(typeof registrarErrorPedido === 'function'){
+                        registrarErrorPedido('No se logró reenviar el pedido pendiente. Detalle: ' + (err && err.message ? err.message : err));
+                    }
                     funciones.AvisoError('No se logró enviar este pedido, verifique su conexión a internet');
                 });
 

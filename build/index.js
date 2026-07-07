@@ -331,6 +331,71 @@ btnPedidosPend.addEventListener('click',()=>{
 });
 
 
+//ERRORES AL ENVIAR PEDIDOS
+const ERRORES_PEDIDOS_KEY = 'me_errores_pedidos';
+
+function registrarErrorPedido(mensaje){
+    try {
+        let errores = JSON.parse(localStorage.getItem(ERRORES_PEDIDOS_KEY) || '[]');
+        errores.unshift({
+            fecha: new Date().toLocaleString(),
+            mensaje: (mensaje == null ? 'Error desconocido' : mensaje).toString()
+        });
+        errores = errores.slice(0, 50);
+        localStorage.setItem(ERRORES_PEDIDOS_KEY, JSON.stringify(errores));
+    } catch (e) {
+        console.log('No se pudo registrar el error del pedido: ' + e);
+    }
+    try { cargarErroresPedidos(); } catch (e) {}
+}
+
+function cargarErroresPedidos(){
+    let label = document.getElementById('lbErroresPedidos');
+    if(!label) return;
+
+    let errores = [];
+    try {
+        errores = JSON.parse(localStorage.getItem(ERRORES_PEDIDOS_KEY) || '[]');
+    } catch (e) {
+        errores = [];
+    }
+
+    if(!errores.length){
+        label.innerHTML = 'No hay errores registrados';
+        return;
+    }
+
+    label.innerHTML = errores.map((e)=>{
+        return `<div class="border-bottom pb-1 mb-2">
+                    <small class="text-muted d-block">${e.fecha}</small>
+                    <span>${e.mensaje}</span>
+                </div>`;
+    }).join('');
+}
+
+function limpiarErroresPedidos(){
+    try {
+        localStorage.removeItem(ERRORES_PEDIDOS_KEY);
+    } catch (e) {}
+    cargarErroresPedidos();
+}
+
+let btnVerErroresPedidos = document.getElementById('btnVerErroresPedidos');
+if(btnVerErroresPedidos){
+    btnVerErroresPedidos.addEventListener('click',()=>{
+        cargarErroresPedidos();
+        $('#ModalErroresPedidos').modal('show');
+    });
+}
+
+let btnLimpiarErroresPedidos = document.getElementById('btnLimpiarErroresPedidos');
+if(btnLimpiarErroresPedidos){
+    btnLimpiarErroresPedidos.addEventListener('click',()=>{
+        limpiarErroresPedidos();
+    });
+}
+
+
 
 //deshabilita los mensajes de consola
 //logger.disableLogger();

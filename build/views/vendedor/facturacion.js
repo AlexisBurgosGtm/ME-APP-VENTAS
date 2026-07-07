@@ -1562,6 +1562,9 @@ async function fcnFinalizarPedido(){
                             
                             if(data.toString()=='error'){
                                 //funciones.beep();
+                                if(typeof registrarErrorPedido === 'function'){
+                                    registrarErrorPedido('El servidor no aceptó el pedido (respuesta: error). Cliente: ' + ClienteNombre + '. El pedido se guardó localmente.');
+                                }
                                 showFacturaPedidoWait('No se logró enviar. Guardando el pedido en el teléfono...', 'offline');
                                                     
                                 insertVenta(datospedido)
@@ -1605,6 +1608,9 @@ async function fcnFinalizarPedido(){
                             }
                         }, (error) => {
                             console.log(error);
+                            if(typeof registrarErrorPedido === 'function'){
+                                registrarErrorPedido('Error de conexión al enviar el pedido. Cliente: ' + ClienteNombre + '. Detalle: ' + (error && error.message ? error.message : error) + '. El pedido se guardó localmente.');
+                            }
                             showFacturaPedidoWait('Error de conexión. Guardando el pedido en el teléfono...', 'offline');
                                                                 
                             insertVenta(datospedido)
@@ -1639,6 +1645,9 @@ async function fcnFinalizarPedido(){
         })
         .catch(()=>{
                                             
+                if(typeof registrarErrorPedido === 'function'){
+                    registrarErrorPedido('No se obtuvo el correlativo del documento. Cliente: ' + ClienteNombre + '. El pedido se guardó localmente.');
+                }
                 showFacturaPedidoWait('No se obtuvo correlativo. Guardando el pedido en el teléfono...', 'offline');
                                                                                 
                 insertVenta(datospedido)
