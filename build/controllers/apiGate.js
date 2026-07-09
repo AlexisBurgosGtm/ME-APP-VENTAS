@@ -9,14 +9,14 @@ const ApiGate = (function () {
     const inFlight = new Set();
     let state = loadState();
 
-    /** Rutas que nunca deben limitarse (p. ej. verificación de código de catálogo). */
+    /** Rutas que nunca deben limitarse (p. ej. verificación de catálogo y envío de pedidos). */
     const EXEMPT_URLS = [
-        /\/ventas\/get_codupdate/i
+        /\/ventas\/get_codupdate/i,
+        /\/ventas\/insertventa/i
     ];
 
     const RULES = [
         { pattern: /\/empleados\/login/i, key: 'login', minIntervalMs: 3000, maxPerWindow: 5, windowMs: 300000 },
-        { pattern: /\/ventas\/insertventa/i, key: 'insertventa', minIntervalMs: 2000, blockConcurrent: true },
         { pattern: /\/clientes\/descargar_clientes/i, key: 'clientes', minIntervalMs: 3600000, perUser: true },
         { pattern: /\/empleados\/location/i, key: 'gps', minIntervalMs: 300000 },
         { pattern: /\/clientes\/insert_visita/i, key: 'visita', minIntervalMs: 1000 }
