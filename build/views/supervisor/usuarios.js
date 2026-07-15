@@ -3,7 +3,7 @@ function getView(){
     let view = {
         body:()=>{
             return `
-                <div class="col-12 p-0 bg-white">
+                <div class="supervisor-page">
                     <div class="tab-content" id="myTabHomeContent">
                         <div class="tab-pane fade show active" id="uno" role="tabpanel" aria-labelledby="receta-tab">
                             ${view.vista_listado()}
@@ -37,67 +37,67 @@ function getView(){
         },
         vista_listado:()=>{
             return `
-            <div class="card card-rounded shadow col-12">
-                <div class="card-body p-2">
-                    <div class="table-responsive col-12">
-                        <h4 class="negrita text-danger">Gestion de Usuarios</h4>
-                        <table class="table table-responsive table-hover col-12">
-                            <thead class="bg-primary text-white">
-                                <tr>
-                                    <td>USUARIO-TIPO</td>
-                                    <td>CLAVE</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody id="tblDataUsuarios">
-                            </tbody>
-                        </table>
-                    </div>
+            <div class="supervisor-card">
+                <div class="supervisor-card-head">
+                    <h4 class="supervisor-title text-danger">Gestión de Usuarios</h4>
+                    <p class="supervisor-subtitle">Vendedores y supervisores</p>
+                </div>
+                <div class="supervisor-table-wrap">
+                    <table class="table table-sm supervisor-table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>USUARIO-TIPO</th>
+                                <th>CLAVE</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblDataUsuarios">
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            
             `
         },
         vista_editar:()=>{
 
             return `
             
-            <div class="card card-rounded shadow col-md-5 col-lg-5 col-xl-5 col-sm-1212">
-                <div class="card-body p-4">
-            
-                    <div class="form-group">
-                        <label class="negrita">Usuario</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control negrita" id="txtUsuario">
-                            <button class="btn btn-primary btn-md hand shadow" id="btnGuardarUsuario">
-                                <i class="fal fa-save"></i>
-                            </button>
-                        </div>                    
-                    </div>
+            <div class="supervisor-card">
+                <div class="supervisor-card-head">
+                    <h5 class="supervisor-title">Editar usuario</h5>
+                </div>
 
-                    <div class="form-group">
-                        <label class="negrita">Clave</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control negrita" id="txtClave">
-                            <button class="btn btn-primary btn-md hand shadow" id="btnGuardarClave">
+                <div class="form-group">
+                    <label class="negrita">Usuario</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control negrita" id="txtUsuario">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary hand shadow" id="btnGuardarUsuario">
                                 <i class="fal fa-save"></i>
                             </button>
                         </div>
-                                            
-                    </div>
-
-                
-            
-                    <input type="text" class="form-control negrita hidden" id="txtId" disabled="true">
-            
+                    </div>                    
                 </div>
+
+                <div class="form-group mb-0">
+                    <label class="negrita">Clave</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control negrita" id="txtClave">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary hand shadow" id="btnGuardarClave">
+                                <i class="fal fa-save"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="text" class="form-control negrita hidden" id="txtId" disabled="true">
             </div>
 
 
 
-            <button class="btn btn-secondary btn-xl btn-circle btn-bottom-l hand shadow" onclick="document.getElementById('tab-uno').click()">
+            <button class="btn btn-secondary btn-circle btn-bottom-l hand shadow" onclick="document.getElementById('tab-uno').click()">
                 <i class="fal fa-arrow-left"></i>
             </button>
             `

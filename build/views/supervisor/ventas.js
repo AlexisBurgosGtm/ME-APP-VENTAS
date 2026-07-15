@@ -2,57 +2,34 @@ function getView(){
     let view = {
         encabezado : ()=>{
             return `
-                <div class="row">
-                    <div class="card card-rounded shadow col-12">
-                        <div class="card-body p-4">
-                            
-                            <h5 class="text-danger negrita">Reportes de Ventas (Pedidos levantados)</h5>
+                <div class="supervisor-card">
+                    <div class="supervisor-card-head">
+                        <h4 class="supervisor-title text-danger">Reportes de Ventas</h4>
+                        <p class="supervisor-subtitle">Pedidos levantados</p>
+                    </div>
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>Mes</label>
-                                        <select class="form-control" id="cmbMes">
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <label>Año</label>
-                                        <select class="form-control" id="cmbAnio">
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="col-4">
-                                    <button class="btn btn-info shadow hand" id="btnVentasDia">
-                                        Ventas del Día
-                                    </button>
-                                </div>
-                                <div class="col-4">
-                                    <button class="btn btn-success shadow hand" id="btnVentasMarca">
-                                        Ventas Mes/Marca
-                                    </button>
-                                </div>
-                                <div class="col-4">
-                                    <button class="btn btn-warning shadow hand" id="btnVentasVendedor">
-                                        Ventas Mes/Vendedor
-                                    </button>
-                                </div>
-                            </div>
-
+                    <div class="supervisor-filters">
+                        <div class="supervisor-field">
+                            <label>Mes</label>
+                            <select class="form-control form-control-sm" id="cmbMes"></select>
+                        </div>
+                        <div class="supervisor-field">
+                            <label>Año</label>
+                            <select class="form-control form-control-sm" id="cmbAnio"></select>
                         </div>
                     </div>
-                </div>
 
-                <hr class="solid">
+                    <div class="supervisor-actions-row mt-2">
+                        <button class="btn btn-info shadow hand" id="btnVentasDia">Ventas del Día</button>
+                        <button class="btn btn-success shadow hand" id="btnVentasMarca">Mes / Marca</button>
+                        <button class="btn btn-warning shadow hand" id="btnVentasVendedor">Mes / Vendedor</button>
+                    </div>
+                </div>
             `
         },
         body:()=>{
             return `
-                 <div class="col-12 p-0 shadow bg-white card-rounded">
+                 <div class="supervisor-card p-0 overflow-hidden">
 
                     <div class="tab-content" id="myTabHomeContent">
                         <div class="tab-pane fade show active" id="inicio" role="tabpanel" aria-labelledby="inicio-tab">    
@@ -96,105 +73,113 @@ function getView(){
                                 
                     </ul>
 
-                  
-
                 </div>
                
             `
         },
         dia:()=>{
             return `  
-                <div class="form-group p-4">
-                    <label>Seleccione una fecha:</label>
-                    <input type="date" class="form-control col-6" id="txtFecha">
-                </div>
+                <div class="p-2">
+                    <div class="supervisor-field">
+                        <label>Seleccione una fecha</label>
+                        <input type="date" class="form-control form-control-sm" id="txtFecha">
+                    </div>
 
-                <div class="row text-right">
-                    <label>Total Venta:</label>
-                    <h5 class="text-danger negrita" id="lbTotalVentadia">---</h5>
-                </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="supervisor-subtitle mb-0">Total Venta</span>
+                        <h5 class="text-danger negrita mb-0" id="lbTotalVentadia">---</h5>
+                    </div>
 
-                <table class="table table-responsive table-striped table-hover table-bordered">
-                    <thead class="bg-trans-gradient text-white">
-                        <tr>
-                            <td>Vendedor</td>
-                            <td>Venta</td>
-                            <td>Pedidos</td>
-                            <td>Promedio</td>
-                            <td></td>
-                        </tr>
-                    </thead>
-                    <tbody id="tblVtaDia"></tbody>
-                </table>
-                
-                <hr class="solid">
-                
-                <div class="row text-right">
-                    <label>Total Marcas:</label>
-                    <h5 class="text-danger negrita" id="lbTotalVentadiaMarcas">---</h5>
+                    <div class="supervisor-table-wrap">
+                        <table class="table table-sm supervisor-table table-striped table-hover mb-2">
+                            <thead>
+                                <tr>
+                                    <th>Vendedor</th>
+                                    <th>Venta</th>
+                                    <th>Pedidos</th>
+                                    <th>Promedio</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblVtaDia"></tbody>
+                        </table>
+                    </div>
+                    
+                    <hr class="solid">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="supervisor-subtitle mb-0">Total Marcas</span>
+                        <h5 class="text-danger negrita mb-0" id="lbTotalVentadiaMarcas">---</h5>
+                    </div>
+                    
+                    <div class="supervisor-table-wrap">
+                        <table class="table table-sm supervisor-table table-striped table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Marca</th>
+                                    <th>Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblVtaDiaMarcas"></tbody>
+                        </table>
+                    </div>
                 </div>
-                
-                <table class="table table-responsive table-striped table-hover table-bordered">
-                        <thead class="bg-trans-gradient text-white">
-                        <tr>
-                            <td>Marca</td>
-                            <td>Importe</td>
-                        </tr>
-                        </thead>
-                        <tbody id="tblVtaDiaMarcas"></tbody>
-                </table>
 
                 `
         },
         marcas_mes: ()=>{
             return `
-                    <div class="row">
-                        <label>Total Venta:</label>
-                        <h5 class="text-danger negrita" id="lbtotalMesMarcas">---</h5>
-                    </div>
+                    <div class="p-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="supervisor-subtitle mb-0">Total Venta</span>
+                            <h5 class="text-danger negrita mb-0" id="lbtotalMesMarcas">---</h5>
+                        </div>
 
-                    <table class="table table-responsive table-striped table-hover table-bordered">
-                        <thead class="bg-trans-gradient text-white">
-                        <tr>
-                            <td>Marca</td>
-                            <td>Importe</td>
-                        </tr>
-                        </thead>
-                        <tbody id="tblMesMarcas"></tbody>
-                    </table>
+                        <div class="supervisor-table-wrap">
+                            <table class="table table-sm supervisor-table table-striped table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Marca</th>
+                                        <th>Importe</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblMesMarcas"></tbody>
+                            </table>
+                        </div>
+                    </div>
             `
         },
         vendedores_mes: ()=>{
             return `
-            <div class="row text-right">
-                <label>Total Venta:</label>
-                <h5 class="text-danger negrita" id="lbTotalVentaVendedoresMes">---</h5>
-            </div>
+            <div class="p-2">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="supervisor-subtitle mb-0">Total Venta</span>
+                    <h5 class="text-danger negrita mb-0" id="lbTotalVentaVendedoresMes">---</h5>
+                </div>
 
-            <table class="table table-responsive table-striped table-hover table-bordered">
-                <thead class="bg-trans-gradient text-white">
-                    <tr>
-                        <td>Vendedor</td>
-                        <td>Venta</td>
-                        <td>Pedidos</td>
-                        <td>Promedio</td>
-                    </tr>
-                </thead>
-                <tbody id="tblVentasVendedoresMes"></tbody>
-            </table>
+                <div class="supervisor-table-wrap">
+                    <table class="table table-sm supervisor-table table-striped table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Vendedor</th>
+                                <th>Venta</th>
+                                <th>Pedidos</th>
+                                <th>Promedio</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblVentasVendedoresMes"></tbody>
+                    </table>
+                </div>
+            </div>
             `
         },
         data_vendedor:()=>{
             return `
-            <div class="card card-rounded col-12 shadow">
-                <div class="card-body p-2">
-
-                    <h3 class="negrita text-danger">Pedidos del Vendedor</h3>
-                    <div class="col-12" id="rpt_pedidos"></div>
-
-                </div>
+            <div class="p-2">
+                <h5 class="supervisor-title text-danger">Pedidos del Vendedor</h5>
+                <div id="rpt_pedidos"></div>
             </div>
-            <button class="btn btn-secondary btn-circle btn-hand shadow btn-bottom-l btn-xl" onclick="document.getElementById('tab-inicio').click()">
+            <button class="btn btn-secondary btn-circle btn-hand shadow btn-bottom-l" onclick="document.getElementById('tab-inicio').click()">
                 <i class="fal fa-arrow-left"></i>
             </button>
             `
@@ -205,37 +190,29 @@ function getView(){
                 <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <label class="modal-title text-danger h3">Cambiar Fecha a Pedido</label>
-                            <br>
-                            <label>No cambiar entre meses</label>
+                            <label class="modal-title text-danger h5 mb-0">Cambiar Fecha a Pedido</label>
                         </div>
 
                         <div class="modal-body">
+                            <p class="supervisor-subtitle">No cambiar entre meses</p>
 
                             <div class="form-group">
                                 <label>Fecha Actual</label>
-                                <input type="date" class="form-control" id="txtFechaActual">
+                                <input type="date" class="form-control form-control-sm" id="txtFechaActual">
                             </div>
 
                             <div class="form-group">
                                 <label>Nueva Fecha</label>
-                                <input type="date" class="form-control" id="txtFechaNueva">
+                                <input type="date" class="form-control form-control-sm" id="txtFechaNueva">
                             </div>
 
-
-
-                            <div class="row">
-                                <div class="col-6 text-left">
-                                    <button class="btn btn-secondary btn-xl btn-circle hand shadow" data-dismiss="modal">
-                                        <i class="fal fa-arrow-left"></i>
-                                    </button>
-                                </div>
-                                <div class="col-6 text-right">
-                                    <button class="btn btn-success btn-xl btn-circle hand shadow" id="btnGuardarCambioFecha">
-                                        <i class="fal fa-check"></i>
-                                    </button>
-                                </div>
-                           
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-secondary btn-circle hand shadow" data-dismiss="modal">
+                                    <i class="fal fa-arrow-left"></i>
+                                </button>
+                                <button class="btn btn-success btn-circle hand shadow" id="btnGuardarCambioFecha">
+                                    <i class="fal fa-check"></i>
+                                </button>
                             </div>
                         
                         </div>
@@ -247,7 +224,7 @@ function getView(){
         }
     }
 
-    root .innerHTML = view.encabezado() + view.body();
+    root.innerHTML = `<div class="supervisor-page">${view.encabezado()}${view.body()}</div>`;
 
 };
 

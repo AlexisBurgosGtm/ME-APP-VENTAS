@@ -2,7 +2,7 @@ function getView(){
     let view ={
         body:()=>{
             return `
-                <div class="col-12 p-0 bg-white">
+                <div class="supervisor-page">
                     <div class="tab-content" id="myTabHomeContent">
                         <div class="tab-pane fade show active" id="uno" role="tabpanel" aria-labelledby="receta-tab">
                                 ${view.vista_listado()}
@@ -35,79 +35,61 @@ function getView(){
         },
         vista_listado:()=>{
             return `
-            <div class="card card-rounded shadow col-12 p-2">
-                <div class="card-body">
+            <div class="supervisor-card">
+                <div class="supervisor-card-head">
+                    <h4 class="supervisor-title">Precios</h4>
+                    <p class="supervisor-subtitle">Consulta y revisión de productos</p>
+                </div>
 
-                    <div class="row">
-                        <div class="col-6">
-                           
-                        </div>
-                        <div class="col-6">
-                            <label class="negrita">Precios Descargados:</label>
-                            <button class="btn btn-sm btn-info btn-circle" id="btnDescargarP"><i class="fal fa-download"></i></button>
-                            <h5 class="negrita text-danger" id="lbTotalProductos">0</h5>
-                        </div>    
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="supervisor-subtitle mb-0">Precios descargados</span>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-info btn-circle mr-2" id="btnDescargarP"><i class="fal fa-download"></i></button>
+                        <h5 class="negrita text-danger mb-0" id="lbTotalProductos">0</h5>
                     </div>
+                </div>
 
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label class="negrita">Búsqueda de productos</label>
-                                <div class="input-group">
-                                    <input type="text" id="txtBuscar" class="form-control border-info text-info" placeholder="Escriba para buscar...">
-                                    
-                                    <select class="form-control border-info negrita text-danger" id="cmbTipoPrecio">
-                                        <option value="P">DETALLE (C)</option>
-                                        <option value="C">PRECIO B</option>
-                                        <option value="B">PRECIO A</option>
-                                        <option value="A">MAYORISTA</option>
-                                    </select>
-
-                                    <button class="btn btn-info hand" id="btnBuscar">
-                                        <i class="fal fa-search"></i>
-                                    </button>
-
-                                </div>
-                            </div>
+                <div class="form-group mb-2">
+                    <label class="negrita">Búsqueda de productos</label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" id="txtBuscar" class="form-control border-info text-info" placeholder="Escriba para buscar...">
+                        <select class="form-control border-info negrita text-danger" id="cmbTipoPrecio">
+                            <option value="P">DETALLE (C)</option>
+                            <option value="C">PRECIO B</option>
+                            <option value="B">PRECIO A</option>
+                            <option value="A">MAYORISTA</option>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-info hand" id="btnBuscar">
+                                <i class="fal fa-search"></i>
+                            </button>
                         </div>
                     </div>
-                    <br>
-                    <div class="row">
-                        <table class="table table-responsive table-striped table-hover col-12">
-                            <thead class="bg-secondary text-white">
-                                <tr>
-                                    <td>Producto</td>
-                                    <td>Precio</td>                         
-                                    <td>Existencia</td>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody id="tblResultadoBusqueda">
-                            
+                </div>
 
-                            </tbody>
-                        </table>
-                    </div>
-
+                <div class="supervisor-table-wrap">
+                    <table class="table table-sm supervisor-table table-striped table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Existencia</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblResultadoBusqueda"></tbody>
+                    </table>
                 </div>
             </div>
             `
         },
         vista_detalle:()=>{
             return `
-
-            <div class="card card-rounded shadow col-12 p-2">
-                <div class="card-body">
-
-
-                
-                </div>
+            <div class="supervisor-card">
+                <button class="btn btn-secondary btn-circle hand shadow" onclick="document.getElementById('tab-uno').click()">
+                    <i class="fal fa-arrow-left"></i>
+                </button>
             </div>
-
-            
-            <button class="btn btn-bottom-left btn-circle btn-hand btn-secondary btn-xl shadow" onclick="document.getElementById('tab-uno').click()">
-                <i class="fal fa-arrow-left"></i>
-            </button>
             `
         }
     };

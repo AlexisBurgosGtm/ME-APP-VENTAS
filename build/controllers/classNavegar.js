@@ -8,6 +8,7 @@ let classNavegar = {
         GlobalUsuario = '';
         GlobalPassUsuario = '';
         GlobalTipoUsuario ='';
+        document.body.classList.remove('supervisor-active');
         
             funciones.loadScript('../views/login/index.js','root')
             .then(()=>{
@@ -29,6 +30,7 @@ let classNavegar = {
     },
     inicio : async(tipousuario)=>{
         document.body.classList.remove('login-active');
+        document.body.classList.remove('supervisor-active');
         divUsuario.innerText = GlobalUsuario;
         lbTipo.innerText = GlobalTipoUsuario;
 
@@ -308,6 +310,9 @@ let classNavegar = {
         })
     },
     inicio_supervisor : async ()=>{
+        document.body.classList.remove('login-active');
+        document.body.classList.add('supervisor-active');
+
         const supervisorItems = `
                     <button class="vendor-menu-item" id="btnMenu2SuperMapa">
                         <i class="fal fa-map-marker-alt"></i>
@@ -332,6 +337,10 @@ let classNavegar = {
                     <button class="vendor-menu-item" id="btnMenu2SuperUsuarios">
                         <i class="fal fa-unlock"></i>
                         <span>Usuarios</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperObjetivos">
+                        <i class="fal fa-bullseye"></i>
+                        <span>Gestión Objetivos</span>
                     </button>
         `;
 
@@ -368,6 +377,11 @@ let classNavegar = {
                 document.getElementById('btnMenu2SuperUsuarios').addEventListener('click', () => {
                     closeMenu();
                     classNavegar.supervisor_usuarios();
+                });
+
+                document.getElementById('btnMenu2SuperObjetivos').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_objetivos();
                 });
             },
             onReady: async () => {
@@ -422,6 +436,13 @@ let classNavegar = {
             GlobalSelectedForm ='SUPERVISOR';
             initView();
             //window.history.pushState({"page":2}, "facturacion", GlobalUrl + '/facturacion')
+        })
+    },
+    supervisor_objetivos:()=>{
+        funciones.loadScript('./views/supervisor/objetivos.js','root')
+        .then(()=>{
+            GlobalSelectedForm ='SUPERVISOR';
+            initView();
         })
     },
     inicio_repartidor : async ()=>{

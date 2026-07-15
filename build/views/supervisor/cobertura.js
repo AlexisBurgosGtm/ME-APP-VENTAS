@@ -4,16 +4,24 @@ function getView(){
     let view = {
         body:()=>{
             return `
-                <div class="form-group">
-                    <label class="negrita">Seleccione Mes / Año</label>
-                    <div class="input-group">
-                        <select class="form-control" id="cmbMes">
-                        </select>
-                        <select class="form-control" id="cmbAnio">
-                        </select>
+                <div class="supervisor-page">
+                    <div class="supervisor-card">
+                        <div class="supervisor-card-head">
+                            <h4 class="supervisor-title">Cobertura</h4>
+                            <p class="supervisor-subtitle">Alcance de clientes por vendedor</p>
+                        </div>
+                        <div class="supervisor-filters">
+                            <div class="supervisor-field">
+                                <label>Mes</label>
+                                <select class="form-control form-control-sm" id="cmbMes"></select>
+                            </div>
+                            <div class="supervisor-field">
+                                <label>Año</label>
+                                <select class="form-control form-control-sm" id="cmbAnio"></select>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-12 p-0 bg-white">
+
                     <div class="tab-content" id="myTabHomeContent">
                         <div class="tab-pane fade show active" id="uno" role="tabpanel" aria-labelledby="receta-tab">
                                 ${view.vista_listado()}
@@ -46,17 +54,17 @@ function getView(){
         },
         vista_listado:()=>{
             return `
-            <div class="card card-rounded shadow col-12">
-                <div class="card-body p-2">
-                    <table class="table table-responsive">
-                        <thead class="bg-secondary text-white">
+            <div class="supervisor-card">
+                <div class="supervisor-table-wrap">
+                    <table class="table table-sm supervisor-table mb-0">
+                        <thead>
                             <tr>
-                                <td>VENDEDOR</td>
-                                <td>UNIVERSO</td>
-                                <td>ALCANCE</td>
-                                <td>FALTAN</td>
-                                <td>LOGRO</td>
-                                <td></td>
+                                <th>VENDEDOR</th>
+                                <th>UNIVERSO</th>
+                                <th>ALCANCE</th>
+                                <th>FALTAN</th>
+                                <th>LOGRO</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tblDataLista">
@@ -69,29 +77,26 @@ function getView(){
         },
         vista_detalle:()=>{
             return `
-            <div class="card card-rounded shadow col-12">
-                <div class="card-body p-2">
-                    <h1 class="negrita text-danger" id="lbNomven">VENDEDOR</h1>
-                    <hr class="solid">
-                        
-                    <table class="table table-responsive">
-                        <thead class="bg-info text-white">
+            <div class="supervisor-card">
+                <h5 class="supervisor-title text-danger" id="lbNomven">VENDEDOR</h5>
+                <div class="supervisor-table-wrap">
+                    <table class="table table-sm supervisor-table mb-0">
+                        <thead>
                             <tr>
-                                <td>CLIENTE</td>
-                                <td>VISITA</td>
-                                <td>IMPORTE</td>
-                                <td></td>
-                                <td></td>
+                                <th>CLIENTE</th>
+                                <th>VISITA</th>
+                                <th>IMPORTE</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="tblDataDetalle">
                         </tbody>
                     </table>
-                
                 </div>
             </div>
 
-            <button class="btn btn-secondary btn-circle btn-xl btn-bottom-left hand shadow" onclick="document.getElementById('tab-uno').click()">
+            <button class="btn btn-secondary btn-circle btn-bottom-left hand shadow" onclick="document.getElementById('tab-uno').click()">
                 <i class="fal fa-arrow-left"></i>
             </button>
             `

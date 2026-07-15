@@ -1326,6 +1326,71 @@ body.login-active .page-footer.foot {
   box-shadow: none !important;
 }
 
+body.supervisor-active .page-footer.foot,
+body.supervisor-active #footContainer {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  transform: none !important;
+  position: fixed !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20050 !important;
+  pointer-events: none !important;
+}
+
+body.supervisor-active .page-footer.foot::before,
+body.supervisor-active .page-footer.foot::after,
+body.supervisor-active #footContainer::before,
+body.supervisor-active #footContainer::after {
+  display: none !important;
+  content: none !important;
+}
+
+body.supervisor-active #rootMenuFooter {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  pointer-events: none !important;
+}
+
+body.supervisor-active .vendor-menu-shell {
+  left: 0.75rem;
+  bottom: 1rem;
+  z-index: 20060 !important;
+  pointer-events: auto !important;
+}
+
+body.supervisor-active .vendor-menu-toggle,
+body.supervisor-active .vendor-menu-panel {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 20061 !important;
+}
+
+body.theme-modern-glass.supervisor-active .leaflet-container,
+body.theme-modern-glass.supervisor-active .mapcontainer,
+body.theme-modern-glass.supervisor-active .mapcontainer2,
+body.theme-modern-glass.supervisor-active .mapcontainer4 {
+  z-index: 1 !important;
+}
+
+body.theme-modern-glass.supervisor-active .supervisor-page {
+  padding-bottom: 4.25rem;
+}
+
 body.login-active #root {
   width: 100%;
 }
@@ -1564,5 +1629,277 @@ body.theme-modern-glass .login-support-link:hover {
 
   body.theme-modern-glass .login-brand-title {
     font-size: 1.2rem;
+  }
+}
+
+/* =========================
+   SUPERVISOR VIEWS (compact)
+   ========================= */
+body.theme-modern-glass .supervisor-page {
+  padding: 0.45rem 0.55rem 5.5rem;
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+body.theme-modern-glass .supervisor-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  padding: 0.7rem 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+body.theme-modern-glass .supervisor-card-head {
+  margin-bottom: 0.55rem;
+}
+
+body.theme-modern-glass .supervisor-card-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+body.theme-modern-glass .supervisor-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+body.theme-modern-glass .supervisor-subtitle {
+  margin: 0.15rem 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+body.theme-modern-glass .supervisor-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.45rem;
+  align-items: end;
+}
+
+body.theme-modern-glass .supervisor-field label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+body.theme-modern-glass .supervisor-page .form-control,
+body.theme-modern-glass .supervisor-page .form-control-sm,
+body.theme-modern-glass .supervisor-page select.form-control,
+body.theme-modern-glass .supervisor-page input.form-control {
+  min-height: 2rem;
+  height: auto;
+  font-size: 0.82rem !important;
+  padding: 0.28rem 0.5rem;
+  border-radius: 8px;
+}
+
+body.theme-modern-glass .supervisor-page .btn {
+  font-size: 0.78rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 8px;
+}
+
+body.theme-modern-glass .supervisor-page .btn-circle {
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.theme-modern-glass .supervisor-page .btn-sm.btn-circle {
+  width: 1.7rem;
+  height: 1.7rem;
+}
+
+body.theme-modern-glass .supervisor-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.theme-modern-glass .supervisor-table {
+  width: 100%;
+  margin-bottom: 0;
+  font-size: 0.8rem;
+}
+
+body.theme-modern-glass .supervisor-table thead th,
+body.theme-modern-glass .supervisor-table thead td,
+body.theme-modern-glass .supervisor-page table thead th,
+body.theme-modern-glass .supervisor-page table thead td {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 0.4rem 0.45rem;
+  vertical-align: middle;
+  background: #1e3a8a !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+body.theme-modern-glass .supervisor-table tbody td,
+body.theme-modern-glass .supervisor-page table tbody td {
+  padding: 0.38rem 0.45rem;
+  vertical-align: middle;
+  border-color: rgba(226, 232, 240, 0.95);
+  font-size: 0.8rem;
+}
+
+body.theme-modern-glass .supervisor-cell-title {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+body.theme-modern-glass .supervisor-page .card,
+body.theme-modern-glass .supervisor-page .card-rounded,
+body.theme-modern-glass .supervisor-page .panel {
+  border-radius: 14px !important;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05) !important;
+  margin-bottom: 0.65rem;
+}
+
+body.theme-modern-glass .supervisor-page .card-body,
+body.theme-modern-glass .supervisor-page .panel-content {
+  padding: 0.65rem 0.7rem !important;
+}
+
+body.theme-modern-glass .supervisor-page .panel-hdr {
+  padding: 0.45rem 0.7rem;
+}
+
+body.theme-modern-glass .supervisor-page .panel-hdr h2 {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+body.theme-modern-glass .supervisor-page h1,
+body.theme-modern-glass .supervisor-page h3,
+body.theme-modern-glass .supervisor-page h4,
+body.theme-modern-glass .supervisor-page h5 {
+  font-size: 0.95rem;
+  margin-bottom: 0.45rem;
+}
+
+body.theme-modern-glass .supervisor-page label {
+  font-size: 0.75rem;
+  margin-bottom: 0.2rem;
+}
+
+body.theme-modern-glass .supervisor-page .form-group {
+  margin-bottom: 0.55rem;
+}
+
+body.theme-modern-glass .supervisor-page .table-responsive {
+  margin-bottom: 0.35rem;
+}
+
+body.theme-modern-glass .supervisor-page hr.solid {
+  margin: 0.55rem 0;
+}
+
+body.theme-modern-glass .supervisor-money-input .input-group-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 8px 0 0 8px;
+  padding: 0.28rem 0.5rem;
+}
+
+body.theme-modern-glass .supervisor-objetivos-marcas {
+  max-height: 52vh;
+  overflow-y: auto;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 10px;
+}
+
+body.theme-modern-glass .supervisor-objetivos-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.7rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+body.theme-modern-glass .supervisor-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+body.theme-modern-glass .supervisor-actions-row .btn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (max-width: 576px) {
+  body.theme-modern-glass .supervisor-page {
+    padding: 0.35rem 0.4rem 5.75rem;
+    font-size: 0.8rem;
+  }
+
+  body.theme-modern-glass .supervisor-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body.theme-modern-glass .supervisor-field-action {
+    grid-column: 1 / -1;
+  }
+
+  body.theme-modern-glass .supervisor-field-action .btn {
+    width: 100%;
+  }
+
+  body.theme-modern-glass .supervisor-card {
+    padding: 0.55rem 0.6rem;
+    border-radius: 12px;
+  }
+
+  body.theme-modern-glass .supervisor-page .card-body,
+  body.theme-modern-glass .supervisor-page .panel-content {
+    padding: 0.5rem 0.55rem !important;
+  }
+
+  body.theme-modern-glass .supervisor-table,
+  body.theme-modern-glass .supervisor-page table {
+    font-size: 0.74rem;
+  }
+
+  body.theme-modern-glass .supervisor-table thead th,
+  body.theme-modern-glass .supervisor-table thead td,
+  body.theme-modern-glass .supervisor-page table thead th,
+  body.theme-modern-glass .supervisor-page table thead td,
+  body.theme-modern-glass .supervisor-table tbody td,
+  body.theme-modern-glass .supervisor-page table tbody td {
+    padding: 0.3rem 0.35rem;
+  }
+
+  body.theme-modern-glass .supervisor-objetivos-marcas {
+    max-height: 46vh;
+  }
+
+  body.theme-modern-glass .supervisor-objetivos-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body.theme-modern-glass .supervisor-objetivos-footer .btn {
+    width: 100%;
   }
 }

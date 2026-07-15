@@ -23,6 +23,7 @@ let routerDigitacion = require('./router/routerDigitacion');
 let routerUsuarios = require('./router/routerUsuarios');
 let routerCenso = require('./router/routerCenso');
 let router_reportes= require('./router/router_reportes');
+let routerObjetivos = require('./router/routerObjetivos');
 
 var http = require('http').Server(app);
 //var io = require('socket.io')(http);
@@ -140,6 +141,9 @@ app.use('/digitacion', routerDigitacion);
 
 // Router para usuarios
 app.use('/usuarios', routerUsuarios);
+
+// Router para objetivos de vendedores
+app.use('/objetivos', routerObjetivos);
 
 
 // Router para reportes de bi
