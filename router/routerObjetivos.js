@@ -2,6 +2,11 @@ const execute = require('./connection');
 const express = require('express');
 const router = express.Router();
 
+/**
+ * Objetivos y marcas: base BI (configBi en connection.js).
+ * Empleados/vendedores: base principal (.env / config).
+ */
+
 function getSucursal() {
     return (process.env.SUCURSAL || '').toString().replace(/^['"]|['"]$/g, '');
 }
@@ -15,35 +20,72 @@ function toNumber(value, fallback) {
     return Number.isFinite(n) ? n : fallback;
 }
 
-// Listado agrupado por vendedor para mes/año
+// Listado agrupado por vendedor (BI) + nombres desde BD principal
 router.post('/listado', async (req, res) => {
     const sucursal = getSucursal();
     const mes = toNumber(req.body.mes, 0);
     const anio = toNumber(req.body.anio, 0);
 
-    const qry = `
-        SELECT
-            O.CODUSUARIO,
-            ISNULL(U.NOMBRE, 'SIN NOMBRE') AS NOMBRE,
-            O.MES,
-            O.ANIO,
-            COUNT(O.ID) AS MARCAS,
-            ISNULL(SUM(O.OBJETIVO), 0) AS TOTAL
-        FROM OBJETIVOS_VENDEDORES O
-        LEFT JOIN ME_USUARIOS U
-            ON U.CODSUCURSAL = O.CODSUCURSAL
-           AND U.CODUSUARIO = O.CODUSUARIO
-        WHERE O.CODSUCURSAL = '${esc(sucursal)}'
-          AND O.MES = ${mes}
-          AND O.ANIO = ${anio}
-        GROUP BY O.CODUSUARIO, U.NOMBRE, O.MES, O.ANIO
-        ORDER BY U.NOMBRE
-    `;
+    try {
+        const qryBi = `
+            SELECT
+                O.CODUSUARIO,
+                O.MES,
+                O.ANIO,
+                COUNT(O.ID) AS MARCAS,
+                ISNULL(SUM(O.OBJETIVO), 0) AS TOTAL
+            FROM OBJETIVOS_VENDEDORES O
+            WHERE O.CODSUCURSAL = '${esc(sucursal)}'
+              AND O.MES = ${mes}
+              AND O.ANIO = ${anio}
+            GROUP BY O.CODUSUARIO, O.MES, O.ANIO
+            ORDER BY O.CODUSUARIO
+        `;
 
-    execute.Query(res, qry);
+        const biResult = await execute.QueryBiData(qryBi);
+        const rows = (biResult && biResult.recordset) ? biResult.recordset : [];
+
+        if (!rows.length) {
+            return res.send({ recordset: [] });
+        }
+
+        const ids = rows.map((r) => Number(r.CODUSUARIO)).filter((n) => Number.isFinite(n));
+        let nameMap = {};
+
+        if (ids.length) {
+            const qryUsers = `
+                SELECT CODUSUARIO, NOMBRE
+                FROM ME_USUARIOS
+                WHERE CODSUCURSAL = '${esc(sucursal)}'
+                  AND CODUSUARIO IN (${ids.join(',')})
+            `;
+            try {
+                const usersResult = await execute.QueryData(qryUsers);
+                (usersResult.recordset || []).forEach((u) => {
+                    nameMap[Number(u.CODUSUARIO)] = u.NOMBRE;
+                });
+            } catch (e) {
+                console.log('objetivos listado nombres: ' + e);
+            }
+        }
+
+        const recordset = rows.map((r) => ({
+            CODUSUARIO: r.CODUSUARIO,
+            NOMBRE: nameMap[Number(r.CODUSUARIO)] || ('Código ' + r.CODUSUARIO),
+            MES: r.MES,
+            ANIO: r.ANIO,
+            MARCAS: r.MARCAS,
+            TOTAL: r.TOTAL
+        })).sort((a, b) => String(a.NOMBRE).localeCompare(String(b.NOMBRE)));
+
+        res.send({ recordset });
+    } catch (e) {
+        console.log('objetivos listado: ' + e);
+        res.send('error');
+    }
 });
 
-// Vendedores activos de la sucursal
+// Vendedores: BD principal (.env)
 router.post('/vendedores', async (req, res) => {
     const sucursal = getSucursal();
     const qry = `
@@ -56,19 +98,17 @@ router.post('/vendedores', async (req, res) => {
     execute.Query(res, qry);
 });
 
-// Marcas de la sucursal
+// Marcas generales: BD BI (sin filtro de sucursal)
 router.post('/marcas', async (req, res) => {
-    const sucursal = getSucursal();
     const qry = `
         SELECT CODMARCA, DESMARCA
-        FROM ME_MARCAS
-        WHERE CODSUCURSAL = '${esc(sucursal)}'
+        FROM BI_GENERALES_MARCAS
         ORDER BY DESMARCA
     `;
-    execute.Query(res, qry);
+    execute.query_bi(res, qry);
 });
 
-// Detalle de objetivos (todas las marcas + valor existente o 0)
+// Detalle: marcas BI + objetivos BI
 router.post('/detalle', async (req, res) => {
     const sucursal = getSucursal();
     const mes = toNumber(req.body.mes, 0);
@@ -77,25 +117,24 @@ router.post('/detalle', async (req, res) => {
 
     const qry = `
         SELECT
-            M.CODMARCA,
+            CAST(M.CODMARCA AS VARCHAR(10)) AS CODMARCA,
             M.DESMARCA,
             ISNULL(O.OBJETIVO, 0) AS OBJETIVO,
             O.ID
-        FROM ME_MARCAS M
+        FROM BI_GENERALES_MARCAS M
         LEFT JOIN OBJETIVOS_VENDEDORES O
-            ON O.CODSUCURSAL = M.CODSUCURSAL
-           AND O.CODMARCA = M.CODMARCA
+            ON O.CODMARCA = CAST(M.CODMARCA AS VARCHAR(10))
            AND O.CODUSUARIO = ${codusuario}
            AND O.MES = ${mes}
            AND O.ANIO = ${anio}
-        WHERE M.CODSUCURSAL = '${esc(sucursal)}'
+           AND O.CODSUCURSAL = '${esc(sucursal)}'
         ORDER BY M.DESMARCA
     `;
 
-    execute.Query(res, qry);
+    execute.query_bi(res, qry);
 });
 
-// Guardar (reemplaza objetivos del vendedor/mes/año)
+// Guardar en BD BI
 router.post('/guardar', async (req, res) => {
     const sucursal = getSucursal();
     const mes = toNumber(req.body.mes, 0);
@@ -130,10 +169,10 @@ router.post('/guardar', async (req, res) => {
         ${inserts}
     `;
 
-    execute.Query(res, qry);
+    execute.query_bi(res, qry);
 });
 
-// Eliminar objetivos de un vendedor/mes/año
+// Eliminar en BD BI
 router.post('/eliminar', async (req, res) => {
     const sucursal = getSucursal();
     const mes = toNumber(req.body.mes, 0);
@@ -148,7 +187,7 @@ router.post('/eliminar', async (req, res) => {
           AND CODUSUARIO = ${codusuario};
     `;
 
-    execute.Query(res, qry);
+    execute.query_bi(res, qry);
 });
 
 module.exports = router;

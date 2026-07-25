@@ -173,6 +173,33 @@ let execute = {
 
 		
 	},
+	QueryBiData : (sqlqry)=>{
+		return new Promise((resolve, reject) => {
+			try {
+				const poolBi = new sql.ConnectionPool(configBi, err => {
+					new sql.Request(poolBi)
+					.query(sqlqry, (err, result) => {
+						if (err) {
+							console.log(err.message);
+							reject(err.message);
+						} else {
+							resolve(result);
+						}
+					})
+					sql.close();
+				})
+				poolBi.on('error', err => {
+					console.log('error sql bi = ' + err);
+					reject(err);
+					sql.close();
+				})
+			} catch (error) {
+				console.log(error);
+				reject(error);
+				sql.close();
+			}
+		})
+	},
 	command : (rsqlqry)=>{			
 		return new Promise((resolve,reject)=>{
 			try {

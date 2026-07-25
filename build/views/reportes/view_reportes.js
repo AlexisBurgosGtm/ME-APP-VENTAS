@@ -1,450 +1,726 @@
+let objetivosVendedorChartDia = null;
+let objetivosVendedorChartMarca = null;
+let objetivosVendedorSection = 'dashboard';
 
-function getView(){
-    let view = {
-        body:()=>{
-            return `
-                <div class="col-12 p-0 bg-white">
-                    <div class="tab-content" id="myTabHomeContent">
-                        <div class="tab-pane fade show active" id="uno" role="tabpanel" aria-labelledby="receta-tab">
-                            ${view.frag_parametros()}
-                            <br>
-                            ${view.frag_fechas()}
-                        </div>
-                        <div class="tab-pane fade" id="dos" role="tabpanel" aria-labelledby="home-tab">
-                           ${view.frag_detalle_fecha()}
-                            
-                        </div>
-                        <div class="tab-pane fade" id="tres" role="tabpanel" aria-labelledby="home-tab">
-                            
-                        </div>    
+function getView() {
+    root.innerHTML = `
+        <div class="objetivos-vendedor-page">
+            <div class="objetivos-vendedor-header" id="objetivosVendedorHeader">
+                <div class="objetivos-vendedor-filters">
+                    <label>Mes y año</label>
+                    <div class="input-group input-group-sm">
+                        <select class="form-control negrita text-danger" id="cmbMes"></select>
+                        <select class="form-control negrita text-danger" id="cmbAnio"></select>
                     </div>
-
-                    <ul class="nav nav-tabs hidden" id="myTabHome" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active negrita text-success" id="tab-uno" data-toggle="tab" href="#uno" role="tab" aria-controls="profile" aria-selected="false">
-                                <i class="fal fa-list"></i></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link negrita text-danger" id="tab-dos" data-toggle="tab" href="#dos" role="tab" aria-controls="home" aria-selected="true">
-                                <i class="fal fa-comments"></i></a>
-                        </li>  
-                        <li class="nav-item">
-                            <a class="nav-link negrita text-danger" id="tab-tres" data-toggle="tab" href="#tres" role="tab" aria-controls="home" aria-selected="true">
-                                <i class="fal fa-comments"></i></a>
-                        </li>         
-                    </ul>
                 </div>
-               
-            `
-        },
-        frag_parametros:()=>{
-            return `
-            <div class="card card-rounded col-12">
-                <div class="card-body p-4">
-                    
-                    <div class="row">
-                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                            
-                            <div class="form-group">
-                                <label>Mes y año</label>
-                                <div class="input-group">
-                                    <select class="form-control negrita text-danger" id="cmbMes">
-                                    </select>
-                                    <select class="form-control negrita text-danger" id="cmbAnio">
-                                    </select>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        </div>
-                    </div>
-
+                <div class="objetivos-vendedor-nav">
+                    <button type="button" class="btn btn-sm objetivos-vendedor-nav-btn active" data-section="dashboard">DASHBOARD</button>
+                    <button type="button" class="btn btn-sm objetivos-vendedor-nav-btn" data-section="marcas">OBJETIVOS MARCA</button>
+                    <button type="button" class="btn btn-sm objetivos-vendedor-nav-btn" data-section="venta">VENTA/DEVOLUCION</button>
                 </div>
             </div>
-            `
-        },
-        frag_fechas:()=>{
-            return `
-           
-            <div class="card card-rounded shadow">
-                <div class="card-body p-2">
+            <div id="objetivosVendedorContent" class="objetivos-vendedor-content"></div>
+        </div>
+    `;
+}
 
-                    <h4 class="negrita text-danger">VENTAS POR FECHAS</h4>
-                    <small>Clic en la fecha para ver mas detalles</small>
-                    <br>
-                    <h5 class="negrita text-personal">
-                        Objetivo venta ${funciones.setMoneda(GlobalObjetivoVenta,'Q')}
-                    </h5>
-                    <div class="col-12" id="container_progreso">
-                    </div>
-                    <br>
-
-                    <div class="table-responsive col-12">
-
-                        <table class="table table-bordered h-full col-12">
-                            <thead class="bg-personal text-white fontsmall2">
-                                <tr>
-                                    <td>FECHA</td>
-                                    <td>VENTA</td>
-                                    <td>DEVOLUCION</td>
-                                    <td>SUBTOTAL</td>
-                                </tr>
-                            </thead>
-                            <tbody id="tbl_data_fechas">
-                            </tbody>
-                            <tfoot class="bg-personal text-warning negrita fontsmall2">
-                                <tr>
-                                    <td></td>
-                                    <td><small id="lbTotalVentas"></small></td>
-                                    <td><small id="lbTotalDevoluciones"></small></td>
-                                    <td ><small id="lbTotalImporte"></small></td>
-                                </tr>
-                            </thead>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            `
-        },
-        frag_detalle_fecha:()=>{
-            return `
-            <h3 class="negrita text-personal text-center" id="lbDetalleFecha"></h3>
-            <div class="row">
-                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                    
-                    <div class="card card-rounded shadow">
-                        <div class="card-body p-2">
-
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="text-success negrita">VENTAS</label>
-                                </div>
-                                <div class="col-6">
-                                    <h5 class="negrita text-success" id="lbFechaVenta"></h5>
-                                </div>
-                            </div>
-
-                            
-
-                            <div class="table-responsive col-12">
-                                <table class="table h-full table-hover col-12">
-                                    <thead class="bg-success text-white">
-                                        <tr>
-                                            <td>DOCUMENTO</td>
-                                            <td>CLIENTE</td>
-                                            <td>IMPORTE</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbl_data_detalle_facturas">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                
-                    <div class="card card-rounded shadow">
-                        <div class="card-body p-2">
-                            
-                            <div class="row">
-                                <div class="col-6">
-                                    <label class="text-danger negrita">DEVOLUCIONES</label>
-                                </div>
-                                <div class="col-6">
-                                    <h5 class="negrita text-danger" id="lbFechaDevolucion"></h5>
-                                </div>
-                            </div>
-
-                            
-
-                            <div class="table-responsive col-12">
-                                <table class="table  table-hover h-full col-12">
-                                    <thead class="bg-danger text-white">
-                                        <tr>
-                                            <td>DOCUMENTO</td>
-                                            <td>CLIENTE</td>
-                                            <td>IMPORTE</td>                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody id="tbl_data_detalle_devoluciones">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <button class="btn btn-secondary btn-xl btn-circle btn-bottom-left hand shadow" id="btnAtrasDetalle">
-                <i class="fal fa-arrow-left"></i>
-            </button>
-            `
-        },
-        backup:()=>{
-            return `
-            <div class="card card-rounded shadow">
-                <div class="card-body p-2">
-                    <div class="table-responsive col-12">
-                        <table class="table table-responsive table-hover col-12">
-                            <thead class="bg-naranja text-white">
-                                <tr>
-                                    <td>PEDIDO</td>
-                                    <td>VENDEDOR</td>
-                                    <td>CLIENTE</td>
-                                    <td>IMPORTE</td>
-                                    <td></td>
-                                </tr>
-                            </thead>
-                            <tbody id="tblPedidos">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            `
+function destroyObjetivosCharts() {
+    [objetivosVendedorChartDia, objetivosVendedorChartMarca].forEach((chart) => {
+        if (chart) {
+            try { chart.destroy(); } catch (e) {}
         }
+    });
+    objetivosVendedorChartDia = null;
+    objetivosVendedorChartMarca = null;
+}
+
+function ensureChartJs() {
+    return new Promise((resolve, reject) => {
+        if (typeof Chart !== 'undefined') {
+            resolve();
+            return;
+        }
+        const existing = document.querySelector('script[data-objetivos-chart]');
+        if (existing) {
+            existing.addEventListener('load', () => resolve());
+            existing.addEventListener('error', () => reject(new Error('No se pudo cargar Chart.js')));
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = './libs/chartjs.bundle.js';
+        script.setAttribute('data-objetivos-chart', '1');
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('No se pudo cargar Chart.js'));
+        document.head.appendChild(script);
+    });
+}
+
+function setObjetivosNavActive(section) {
+    document.querySelectorAll('.objetivos-vendedor-nav-btn').forEach((btn) => {
+        btn.classList.toggle('active', btn.getAttribute('data-section') === section);
+    });
+}
+
+function getContentRoot() {
+    return document.getElementById('objetivosVendedorContent');
+}
+
+function getPeriodo() {
+    return {
+        mes: document.getElementById('cmbMes').value,
+        anio: document.getElementById('cmbAnio').value
+    };
+}
+
+function showObjetivosSection(section) {
+    objetivosVendedorSection = section || 'dashboard';
+    setObjetivosNavActive(objetivosVendedorSection);
+    destroyObjetivosCharts();
+
+    const content = getContentRoot();
+    if (!content) return;
+
+    if (objetivosVendedorSection === 'dashboard') {
+        renderDashboard(content);
+    } else if (objetivosVendedorSection === 'marcas') {
+        renderObjetivosMarca(content);
+    } else {
+        renderVentaDevolucion(content);
     }
+}
 
-    root.innerHTML = view.body();
-
-};
-
-function addListeners(){
-
-
-    funciones.slideAnimationTabs();
-
-    selected_tab = 'tab_fechas';
-
-
-    let cmbMes = document.getElementById('cmbMes');
-    cmbMes.innerHTML = funciones.ComboMeses();
-    let cmbAnio = document.getElementById('cmbAnio');
-    cmbAnio.innerHTML = funciones.ComboAnio();
-
-    let f = new Date();
-    cmbMes.value = f.getUTCMonth()+1;
-    cmbAnio.value = f.getFullYear();
-
-    cmbMes.addEventListener('change',()=>{
-        tbl_fechas();    
+function postBiReport(url, extra) {
+    const { mes, anio } = getPeriodo();
+    return axios.post(url, Object.assign({
+        sucursal: GlobalCodSucursal,
+        codemp: GlobalCodUsuario,
+        mes,
+        anio
+    }, extra || {}))
+    .then((response) => {
+        const data = response.data;
+        if (!data || data === 'error') {
+            throw new Error('error');
+        }
+        return data;
     });
-    cmbAnio.addEventListener('change',()=>{
-        tbl_fechas();    
+}
+
+function data_rpt_fechas() {
+    return postBiReport('/reportes/rpt_fechas').then((data) => {
+        if (!data.recordset || !data.recordset.length) throw new Error('empty');
+        return data;
     });
+}
 
-    
-   
-    document.getElementById('btnAtrasDetalle').addEventListener('click',()=>{
-        
-        document.getElementById('tab-uno').click();
+function data_rpt_marcas() {
+    return postBiReport('/reportes/rpt_marcas').then((data) => {
+        return (data && data.recordset) ? data.recordset : [];
+    }).catch(() => []);
+}
 
+function data_rpt_top_productos() {
+    return postBiReport('/reportes/rpt_top_productos').then((data) => {
+        return (data && data.recordset) ? data.recordset : [];
+    }).catch(() => []);
+}
 
+function data_objetivos_marca() {
+    const { mes, anio } = getPeriodo();
+    return axios.post('/objetivos/detalle', {
+        mes,
+        anio,
+        codusuario: GlobalCodUsuario
+    }).then((response) => {
+        const data = response.data;
+        if (!data || data === 'error' || !data.recordset) throw new Error('error');
+        return data.recordset;
     });
+}
 
+function sumObjetivosMarca(rows) {
+    return (rows || []).reduce((acc, r) => acc + (Number(r.OBJETIVO) || 0), 0);
+}
 
+function normalizeMarcaKey(value) {
+    return (value == null ? '' : value).toString().trim().toUpperCase();
+}
+
+function chartMoneyTooltip() {
+    return {
+        callbacks: {
+            label: function (tooltipItem, chartData) {
+                const dataset = chartData.datasets[tooltipItem.datasetIndex];
+                return dataset.label + ': ' + funciones.setMoneda(tooltipItem.yLabel != null ? tooltipItem.yLabel : tooltipItem.xLabel, 'Q');
+            }
+        }
+    };
+}
+
+function renderDashboard(content) {
+    content.innerHTML = `
+        <div class="objetivos-vendedor-card">
+            <div class="objetivos-vendedor-card-head">
+                <h4 class="objetivos-vendedor-title">Dashboard</h4>
+                <small class="objetivos-vendedor-hint">Ventas y devoluciones del período</small>
+            </div>
+            <div class="objetivos-vendedor-kpi">
+                <div class="objetivos-vendedor-kpi-item">
+                    <span>Ventas</span>
+                    <strong id="dashTotalVenta">---</strong>
+                </div>
+                <div class="objetivos-vendedor-kpi-item">
+                    <span>Devoluciones</span>
+                    <strong id="dashTotalDev">---</strong>
+                </div>
+                <div class="objetivos-vendedor-kpi-item">
+                    <span>Subtotal</span>
+                    <strong id="dashTotalSub">---</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="objetivos-vendedor-card">
+            <h5 class="objetivos-vendedor-title mb-2">Ventas y devoluciones por día</h5>
+            <div class="objetivos-vendedor-chart-wrap">
+                <canvas id="chartVentasDia"></canvas>
+            </div>
+            <div id="dashEmptyDia" class="text-muted text-center py-2" style="display:none;">Sin datos diarios</div>
+        </div>
+
+        <div class="objetivos-vendedor-card">
+            <h5 class="objetivos-vendedor-title mb-2">Ventas y devoluciones por marca</h5>
+            <div class="objetivos-vendedor-chart-wrap objetivos-vendedor-chart-marca">
+                <canvas id="chartVentasMarca"></canvas>
+            </div>
+            <div id="dashEmptyMarca" class="text-muted text-center py-2" style="display:none;">Sin datos por marca</div>
+        </div>
+
+        <div class="objetivos-vendedor-card">
+            <h5 class="objetivos-vendedor-title mb-2">Top 5 productos más vendidos</h5>
+            <div class="objetivos-vendedor-table-wrap">
+                <table class="table table-sm objetivos-vendedor-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>PRODUCTO</th>
+                            <th class="text-right">UNIDADES</th>
+                            <th class="text-right">TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblTopProductos">
+                        <tr><td colspan="4" class="text-center">${GlobalLoader}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    Promise.all([
+        data_rpt_fechas().catch(() => null),
+        data_rpt_marcas(),
+        data_rpt_top_productos(),
+        ensureChartJs().catch(() => null)
+    ]).then(([dataFechas, marcas, topProductos]) => {
+        let totalVenta = 0;
+        let totalDev = 0;
+
+        if (dataFechas && dataFechas.recordset && dataFechas.recordset.length) {
+            const labels = [];
+            const ventas = [];
+            const devoluciones = [];
+
+            dataFechas.recordset.forEach((r) => {
+                labels.push(funciones.convertDateNormal(r.FECHA));
+                const v = Number(r.VENTA) || 0;
+                const d = Number(r.DEVOLUCION) || 0;
+                ventas.push(v);
+                devoluciones.push(d);
+                totalVenta += v;
+                totalDev += d;
+            });
+
+            if (typeof Chart !== 'undefined') {
+                const ctxDia = document.getElementById('chartVentasDia');
+                objetivosVendedorChartDia = new Chart(ctxDia.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Ventas',
+                                backgroundColor: 'rgba(37, 99, 235, 0.75)',
+                                borderColor: '#1d4ed8',
+                                borderWidth: 1,
+                                data: ventas
+                            },
+                            {
+                                label: 'Devoluciones',
+                                backgroundColor: 'rgba(220, 38, 38, 0.7)',
+                                borderColor: '#b91c1c',
+                                borderWidth: 1,
+                                data: devoluciones
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        legend: { position: 'bottom' },
+                        tooltips: chartMoneyTooltip(),
+                        scales: {
+                            xAxes: [{ ticks: { autoSkip: true, maxRotation: 45 } }],
+                            yAxes: [{ ticks: { beginAtZero: true } }]
+                        }
+                    }
+                });
+            }
+        } else {
+            document.getElementById('dashEmptyDia').style.display = 'block';
+        }
+
+        document.getElementById('dashTotalVenta').innerText = funciones.setMoneda(totalVenta, 'Q');
+        document.getElementById('dashTotalDev').innerText = funciones.setMoneda(totalDev, 'Q');
+        document.getElementById('dashTotalSub').innerText = funciones.setMoneda(totalVenta - totalDev, 'Q');
+
+        // Si no hubo fechas, calcular KPIs desde marcas
+        if (!dataFechas && marcas.length) {
+            totalVenta = marcas.reduce((a, r) => a + (Number(r.VENTA) || 0), 0);
+            totalDev = marcas.reduce((a, r) => a + (Number(r.DEVOLUCION) || 0), 0);
+            document.getElementById('dashTotalVenta').innerText = funciones.setMoneda(totalVenta, 'Q');
+            document.getElementById('dashTotalDev').innerText = funciones.setMoneda(totalDev, 'Q');
+            document.getElementById('dashTotalSub').innerText = funciones.setMoneda(totalVenta - totalDev, 'Q');
+        }
+
+        if (marcas.length && typeof Chart !== 'undefined') {
+            const labelsM = marcas.map((r) => r.DESMARCA || 'SIN MARCA');
+            const ventasM = marcas.map((r) => Number(r.VENTA) || 0);
+            const devM = marcas.map((r) => Number(r.DEVOLUCION) || 0);
+            const chartHeight = Math.max(220, labelsM.length * 28);
+            const wrap = document.querySelector('.objetivos-vendedor-chart-marca');
+            if (wrap) wrap.style.height = chartHeight + 'px';
+
+            const ctxMarca = document.getElementById('chartVentasMarca');
+            objetivosVendedorChartMarca = new Chart(ctxMarca.getContext('2d'), {
+                type: 'horizontalBar',
+                data: {
+                    labels: labelsM,
+                    datasets: [
+                        {
+                            label: 'Ventas',
+                            backgroundColor: 'rgba(37, 99, 235, 0.75)',
+                            borderColor: '#1d4ed8',
+                            borderWidth: 1,
+                            data: ventasM
+                        },
+                        {
+                            label: 'Devoluciones',
+                            backgroundColor: 'rgba(220, 38, 38, 0.7)',
+                            borderColor: '#b91c1c',
+                            borderWidth: 1,
+                            data: devM
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: { position: 'bottom' },
+                    tooltips: chartMoneyTooltip(),
+                    scales: {
+                        xAxes: [{ ticks: { beginAtZero: true } }],
+                        yAxes: [{ ticks: { autoSkip: false } }]
+                    }
+                }
+            });
+        } else {
+            document.getElementById('dashEmptyMarca').style.display = 'block';
+        }
+
+        const tbody = document.getElementById('tblTopProductos');
+        if (!topProductos.length) {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Sin productos en el período</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = topProductos.map((r, idx) => `
+            <tr>
+                <td>${idx + 1}</td>
+                <td>
+                    <div class="negrita">${r.PRODUCTO || ''}</div>
+                    <small class="text-muted">${r.CODPRODUCTO || ''}</small>
+                </td>
+                <td class="text-right align-middle">${funciones.setMoneda(r.TOTALUNIDADES || 0, '')}</td>
+                <td class="text-right align-middle">${funciones.setMoneda(r.TOTALPRECIO || 0, 'Q')}</td>
+            </tr>
+        `).join('');
+    }).catch((err) => {
+        console.log(err);
+        document.getElementById('dashEmptyDia').style.display = 'block';
+        document.getElementById('dashEmptyMarca').style.display = 'block';
+        document.getElementById('tblTopProductos').innerHTML =
+            `<tr><td colspan="4" class="text-center text-muted">No se cargaron datos</td></tr>`;
+    });
+}
+
+function renderObjetivosMarca(content) {
+    content.innerHTML = `
+        <div class="objetivos-vendedor-card">
+            <div class="objetivos-vendedor-card-head">
+                <h4 class="objetivos-vendedor-title">Objetivos por marca</h4>
+                <small class="objetivos-vendedor-hint">Venta neta vs objetivo del período</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="objetivos-vendedor-hint mb-0">Totales</span>
+                <div class="text-right">
+                    <div><small class="text-muted">Venta neta</small> <strong id="lbTotalVentaNetaMarcas">---</strong></div>
+                    <div><small class="text-muted">Objetivo</small> <strong class="text-danger" id="lbTotalObjMarcas">---</strong></div>
+                </div>
+            </div>
+            <div id="tblObjMarcasCompare">
+                <div class="text-center py-3">${GlobalLoader}</div>
+            </div>
+        </div>
+    `;
+
+    Promise.all([
+        data_objetivos_marca().catch(() => []),
+        data_rpt_marcas()
+    ]).then(([objetivos, ventasMarca]) => {
+        const ventasMap = {};
+        ventasMarca.forEach((r) => {
+            ventasMap[normalizeMarcaKey(r.DESMARCA)] = Number(r.VENTA_NETA != null
+                ? r.VENTA_NETA
+                : ((Number(r.VENTA) || 0) - (Number(r.DEVOLUCION) || 0)));
+        });
+
+        // Preferir marcas con objetivo > 0; si ninguna, mostrar todas
+        let rows = (objetivos || []).filter((r) => Number(r.OBJETIVO) > 0);
+        if (!rows.length) rows = objetivos || [];
+
+        // Incluir marcas con venta pero sin objetivo explícito
+        const known = new Set(rows.map((r) => normalizeMarcaKey(r.DESMARCA)));
+        ventasMarca.forEach((v) => {
+            const key = normalizeMarcaKey(v.DESMARCA);
+            if (!known.has(key) && Number(v.VENTA_NETA || ((Number(v.VENTA) || 0) - (Number(v.DEVOLUCION) || 0))) !== 0) {
+                rows.push({
+                    CODMARCA: '',
+                    DESMARCA: v.DESMARCA,
+                    OBJETIVO: 0
+                });
+                known.add(key);
+            }
+        });
+
+        let totalNeta = 0;
+        let totalObj = 0;
+
+        if (!rows.length) {
+            document.getElementById('lbTotalVentaNetaMarcas').innerText = 'Q 0.00';
+            document.getElementById('lbTotalObjMarcas').innerText = 'Q 0.00';
+            document.getElementById('tblObjMarcasCompare').innerHTML =
+                `<div class="text-center text-muted py-3">Sin datos de objetivos/ventas para este período</div>`;
+            return;
+        }
+
+        const html = rows.map((r) => {
+            const objetivo = Number(r.OBJETIVO) || 0;
+            const ventaNeta = Number(ventasMap[normalizeMarcaKey(r.DESMARCA)] || 0);
+            const pct = objetivo > 0 ? (ventaNeta / objetivo) * 100 : (ventaNeta > 0 ? 100 : 0);
+            const pctShow = Math.max(0, pct);
+            const barWidth = Math.min(100, Math.max(0, pctShow));
+            const barColor = pctShow >= 100 ? 'success' : (pctShow >= 60 ? 'info' : 'warning');
+
+            totalNeta += ventaNeta;
+            totalObj += objetivo;
+
+            return `
+                <div class="objetivos-marca-row">
+                    <div class="objetivos-marca-row-top">
+                        <div>
+                            <div class="negrita">${r.DESMARCA || 'SIN MARCA'}</div>
+                            <small class="text-muted">${r.CODMARCA || ''}</small>
+                        </div>
+                        <div class="objetivos-marca-metrics">
+                            <div><span>Venta neta</span><strong>${funciones.setMoneda(ventaNeta, 'Q')}</strong></div>
+                            <div><span>Objetivo</span><strong>${funciones.setMoneda(objetivo, 'Q')}</strong></div>
+                            <div><span>Logrado</span><strong>${funciones.setMoneda(ventaNeta, 'Q')} · ${pctShow.toFixed(1)}%</strong></div>
+                        </div>
+                    </div>
+                    <div class="progress objetivos-marca-progress">
+                        <div class="progress-bar bg-${barColor} progress-bar-animated"
+                            role="progressbar"
+                            style="width:${barWidth}%"
+                            aria-valuenow="${pctShow}"
+                            aria-valuemin="0"
+                            aria-valuemax="100">
+                            ${pctShow.toFixed(1)}%
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('lbTotalVentaNetaMarcas').innerText = funciones.setMoneda(totalNeta, 'Q');
+        document.getElementById('lbTotalObjMarcas').innerText = funciones.setMoneda(totalObj, 'Q');
+        document.getElementById('tblObjMarcasCompare').innerHTML = html;
+    }).catch((err) => {
+        console.log(err);
+        document.getElementById('tblObjMarcasCompare').innerHTML =
+            `<div class="text-center text-danger py-3">No se pudo cargar la comparación</div>`;
+    });
+}
+
+function renderVentaDevolucion(content) {
+    content.innerHTML = `
+        <div class="objetivos-vendedor-card">
+            <div class="objetivos-vendedor-card-head">
+                <h4 class="objetivos-vendedor-title">Ventas por fechas</h4>
+                <small class="objetivos-vendedor-hint">Clic en la fecha para ver más detalles</small>
+            </div>
+            <div id="container_progreso" class="objetivos-vendedor-progress"></div>
+            <div class="objetivos-vendedor-table-wrap">
+                <table class="table table-sm objetivos-vendedor-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>FECHA</th>
+                            <th>VENTA</th>
+                            <th>DEVOLUCION</th>
+                            <th>SUBTOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbl_data_fechas">
+                        <tr><td colspan="4" class="text-center">${GlobalLoader}</td></tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td><span id="lbTotalVentas"></span></td>
+                            <td><span id="lbTotalDevoluciones"></span></td>
+                            <td><span id="lbTotalImporte"></span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    `;
 
     tbl_fechas();
+}
 
+function renderDetalleFecha(fecha) {
+    destroyObjetivosCharts();
+    setObjetivosNavActive('venta');
 
-};
+    const content = getContentRoot();
+    content.innerHTML = `
+        <div class="objetivos-vendedor-card mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="objetivos-vendedor-title mb-0">Resumen ${funciones.convertDateNormal(fecha)}</h4>
+                <button class="btn btn-sm btn-outline-secondary hand" id="btnAtrasDetalle">
+                    <i class="fal fa-arrow-left"></i> Volver
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-6">
+                <div class="objetivos-vendedor-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="text-success negrita mb-0">VENTAS</label>
+                        <h5 class="negrita text-success mb-0" id="lbFechaVenta"></h5>
+                    </div>
+                    <div class="objetivos-vendedor-table-wrap">
+                        <table class="table table-sm objetivos-vendedor-table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>DOCUMENTO</th>
+                                    <th>CLIENTE</th>
+                                    <th>IMPORTE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl_data_detalle_facturas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6">
+                <div class="objetivos-vendedor-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="text-danger negrita mb-0">DEVOLUCIONES</label>
+                        <h5 class="negrita text-danger mb-0" id="lbFechaDevolucion"></h5>
+                    </div>
+                    <div class="objetivos-vendedor-table-wrap">
+                        <table class="table table-sm objetivos-vendedor-table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>DOCUMENTO</th>
+                                    <th>CLIENTE</th>
+                                    <th>IMPORTE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl_data_detalle_devoluciones"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
-function initView(){
+    document.getElementById('btnAtrasDetalle').addEventListener('click', () => {
+        showObjetivosSection('venta');
+    });
 
+    tbl_fechas_detalle(fecha);
+}
+
+function addListeners() {
+    const cmbMes = document.getElementById('cmbMes');
+    const cmbAnio = document.getElementById('cmbAnio');
+
+    cmbMes.innerHTML = funciones.ComboMeses();
+    cmbAnio.innerHTML = funciones.ComboAnio();
+
+    const f = new Date();
+    cmbMes.value = f.getUTCMonth() + 1;
+    cmbAnio.value = f.getFullYear();
+
+    const reloadCurrent = () => showObjetivosSection(objetivosVendedorSection);
+    cmbMes.addEventListener('change', reloadCurrent);
+    cmbAnio.addEventListener('change', reloadCurrent);
+
+    document.querySelectorAll('.objetivos-vendedor-nav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            showObjetivosSection(btn.getAttribute('data-section'));
+        });
+    });
+
+    showObjetivosSection('dashboard');
+}
+
+function initView() {
     getView();
     addListeners();
+}
 
-};
+function tbl_fechas() {
+    const container = document.getElementById('tbl_data_fechas');
+    const prog = document.getElementById('container_progreso');
+    if (!container) return;
 
+    container.innerHTML = `<tr><td colspan="4" class="text-center">${GlobalLoader}</td></tr>`;
+    if (prog) prog.innerHTML = '';
 
+    Promise.all([
+        data_rpt_fechas().catch(() => null),
+        data_objetivos_marca().catch(() => [])
+    ]).then(([dataFechas, rowsObj]) => {
+        const totalObjetivo = sumObjetivosMarca(rowsObj);
+        let var_total_venta = 0;
+        let var_total_devolucion = 0;
+        let var_total_importe = 0;
 
-function data_rpt_fechas(){
+        if (!dataFechas || !dataFechas.recordset) {
+            container.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No se cargaron datos...</td></tr>`;
+            document.getElementById('lbTotalVentas').innerText = '---';
+            document.getElementById('lbTotalDevoluciones').innerText = '---';
+            document.getElementById('lbTotalImporte').innerText = '---';
+            if (prog) {
+                prog.innerHTML = totalObjetivo > 0
+                    ? funciones.barra_progreso('success', 0, totalObjetivo, 0, 'Logro vs objetivos marca ')
+                    : `<small class="text-muted">Sin objetivos de marca para comparar</small>`;
+            }
+            return;
+        }
 
-    return new Promise((resolve,reject)=>{
-
-            let mes = document.getElementById('cmbMes').value;
-            let anio = document.getElementById('cmbAnio').value;
-        
-                axios.post('/reportes/rpt_fechas',
-                {
-                    sucursal:GlobalCodSucursal,
-                    codemp:GlobalCodUsuario,
-                    mes:mes,
-                    anio:anio
-                })
-                .then((response) => {
-                    if(response.status.toString()=='200'){
-                        let data = response.data;
-                        if(Number(data.rowsAffected[0])>0){
-                            resolve(data);
-                        }else{
-                            reject();
-                        }            
-                    }else{
-                        reject();
-                    }             
-                }, (error) => {
-                    reject();
-                });
-    })
-
-};
-function tbl_fechas(){
-
-    let container = document.getElementById('tbl_data_fechas');
-    container.innerHTML = GlobalLoader;
-
-    document.getElementById('container_progreso').innerHTML = '';
-
-    let var_total_venta = 0;
-    let var_total_devolucion = 0;
-    let var_total_importe = 0;
-
-    data_rpt_fechas()
-    .then((data)=>{
         let str = '';
-
-        data.recordset.map((r)=>{
-            let importe = Number(r.VENTA)-Number(r.DEVOLUCION);
-
+        dataFechas.recordset.forEach((r) => {
+            const importe = Number(r.VENTA) - Number(r.DEVOLUCION);
             var_total_venta += Number(r.VENTA);
             var_total_devolucion += Number(r.DEVOLUCION);
             var_total_importe += Number(importe);
-            
 
             str += `
-            <tr class="hand"
-                onclick="get_detalle_fecha('${r.FECHA}')">
+            <tr class="hand" onclick="get_detalle_fecha('${r.FECHA}')">
                 <td><small>${funciones.convertDateNormal(r.FECHA)}</small></td>
-                <td><small>${funciones.setMoneda(r.VENTA,'Q')}</small></td>
-                <td><small>${funciones.setMoneda(r.DEVOLUCION,'Q')}</small></td>
-                <td><small>${funciones.setMoneda(importe,'Q')}</small></td>
-            </tr>
-            `
-        })
+                <td><small>${funciones.setMoneda(r.VENTA, 'Q')}</small></td>
+                <td><small>${funciones.setMoneda(r.DEVOLUCION, 'Q')}</small></td>
+                <td><small>${funciones.setMoneda(importe, 'Q')}</small></td>
+            </tr>`;
+        });
+
         container.innerHTML = str;
+        document.getElementById('lbTotalVentas').innerText = funciones.setMoneda(var_total_venta, 'Q');
+        document.getElementById('lbTotalDevoluciones').innerText = funciones.setMoneda(var_total_devolucion, 'Q');
+        document.getElementById('lbTotalImporte').innerText = funciones.setMoneda(var_total_importe, 'Q');
 
-        document.getElementById('lbTotalVentas').innerText = funciones.setMoneda(var_total_venta,'Q');
-        document.getElementById('lbTotalDevoluciones').innerText = funciones.setMoneda(var_total_devolucion,'Q');
-        document.getElementById('lbTotalImporte').innerText = funciones.setMoneda(var_total_importe,'Q');
-        
-        document.getElementById('container_progreso').innerHTML = funciones.barra_progreso('success',0,GlobalObjetivoVenta,var_total_importe,'Logro actual ')
-    })
-    .catch((err)=>{
+        if (prog) {
+            if (totalObjetivo > 0) {
+                prog.innerHTML = funciones.barra_progreso('success', 0, totalObjetivo, var_total_importe, 'Logro vs objetivos marca ');
+            } else {
+                prog.innerHTML = `<small class="text-muted">Sin objetivos de marca para este período (total objetivo Q 0.00)</small>`;
+            }
+        }
+    });
+}
 
-        console.log(err)
-        
-        container.innerHTML ='No se cargaron datos...';
+function get_detalle_fecha(fecha) {
+    renderDetalleFecha(fecha);
+}
 
-        document.getElementById('lbTotalVentas').innerText = '---';
-        document.getElementById('lbTotalDevoluciones').innerText = '---';
-        document.getElementById('lbTotalImporte').innerText = '---'
-        document.getElementById('container_progreso').innerHTML = '';
-    })
+function data_fecha_movimientos(fecha) {
+    return postBiReport('/reportes/rpt_fecha_movimientos', { fecha }).then((data) => {
+        if (!data.recordset || !Number(data.rowsAffected && data.rowsAffected[0])) {
+            throw new Error('empty');
+        }
+        return data;
+    });
+}
 
-
-};
-function get_detalle_fecha(fecha){
-    
-    document.getElementById('tab-dos').click();
-
-    document.getElementById('lbDetalleFecha').innerText = `Resumen ${funciones.convertDateNormal(fecha)}`;
-
-    tbl_fechas_detalle(fecha);
-    //funciones.convertDateNormal(fecha).replace('/','-')
-}   
-
-function data_fecha_movimientos(fecha){
-
-      return new Promise((resolve,reject)=>{
-
-        
-                axios.post('/reportes/rpt_fecha_movimientos',
-                {
-                    sucursal:GlobalCodSucursal,
-                    codemp:GlobalCodUsuario,
-                    fecha:fecha
-                })
-                .then((response) => {
-                    if(response.status.toString()=='200'){
-                        let data = response.data;
-                        if(Number(data.rowsAffected[0])>0){
-                            resolve(data);
-                        }else{
-                            reject();
-                        }            
-                    }else{
-                        reject();
-                    }             
-                }, (error) => {
-                    reject();
-                });
-    })
-
-};
-
-function tbl_fechas_detalle(fecha){
-
-    let container1 = document.getElementById('tbl_data_detalle_facturas');
+function tbl_fechas_detalle(fecha) {
+    const container1 = document.getElementById('tbl_data_detalle_facturas');
+    const container2 = document.getElementById('tbl_data_detalle_devoluciones');
     container1.innerHTML = GlobalLoader;
-
-    let container2 = document.getElementById('tbl_data_detalle_devoluciones');
     container2.innerHTML = GlobalLoader;
-
     document.getElementById('lbFechaVenta').innerText = '';
     document.getElementById('lbFechaDevolucion').innerText = '';
 
-    let varTotalVenta = 0; let varTotalDevolucion = 0;
-    
+    let varTotalVenta = 0;
+    let varTotalDevolucion = 0;
+
     data_fecha_movimientos(fecha)
-    .then((data)=>{
-        let strFac = ''; let strDev = '';
+        .then((data) => {
+            let strFac = '';
+            let strDev = '';
 
-        data.recordset.map((r)=>{
+            data.recordset.forEach((r) => {
+                let importe = Number(r.IMPORTE);
+                if (r.TIPO === 'FAC') {
+                    varTotalVenta += Number(importe);
+                    strFac += `
+                        <tr>
+                            <td>${r.CODDOC}-${r.CORRELATIVO}</td>
+                            <td>${r.CLIENTE}</td>
+                            <td>${funciones.setMoneda(importe, 'Q')}</td>
+                        </tr>`;
+                } else {
+                    importe = (importe * -1);
+                    varTotalDevolucion += Number(importe);
+                    strDev += `
+                        <tr>
+                            <td>${r.CODDOC}-${r.CORRELATIVO}</td>
+                            <td>${r.CLIENTE}</td>
+                            <td>${funciones.setMoneda(importe, 'Q')}</td>
+                        </tr>`;
+                }
+            });
 
-            let importe = Number(r.IMPORTE);
-            if(r.TIPO=='FAC'){
-                varTotalVenta += Number(importe);
-                 strFac += `
-                    <tr>
-                        <td>${r.CODDOC}-${r.CORRELATIVO}</td>
-                        <td>${r.CLIENTE}</td>
-                        <td>${funciones.setMoneda(importe,'Q')}</td>                                            
-                    </tr>
-                    `
-                    
-            }else{
-                importe = (importe * -1);
-                varTotalDevolucion += Number(importe);
-                strDev += `
-                    <tr>
-                        <td>${r.CODDOC}-${r.CORRELATIVO}</td>
-                        <td>${r.CLIENTE}</td>
-                        <td>${funciones.setMoneda(importe,'Q')}</td>                                            
-                    </tr>
-                    `
-            }
-                     
-           
+            container1.innerHTML = strFac || `<tr><td colspan="3" class="text-muted text-center">Sin ventas</td></tr>`;
+            container2.innerHTML = strDev || `<tr><td colspan="3" class="text-muted text-center">Sin devoluciones</td></tr>`;
+            document.getElementById('lbFechaVenta').innerText = funciones.setMoneda(varTotalVenta, 'Q');
+            document.getElementById('lbFechaDevolucion').innerText = funciones.setMoneda(varTotalDevolucion, 'Q');
         })
-        container1.innerHTML = strFac;
-        document.getElementById('lbFechaVenta').innerText = funciones.setMoneda(varTotalVenta,'Q');
-        container2.innerHTML = strDev;
-        document.getElementById('lbFechaDevolucion').innerText = funciones.setMoneda(varTotalDevolucion,'Q');
-
-    })
-    .catch((err)=>{
-        console.log(err)
-        container1.innerHTML = 'No se cargaron datos...';
-        container2.innerHTML = 'No se cargaron datos...';
-        document.getElementById('lbFechaVenta').innerText = '';
-        document.getElementById('lbFechaDevolucion').innerText = '';
-    })
-
-
-};
+        .catch(() => {
+            container1.innerHTML = 'No se cargaron datos...';
+            container2.innerHTML = 'No se cargaron datos...';
+        });
+}

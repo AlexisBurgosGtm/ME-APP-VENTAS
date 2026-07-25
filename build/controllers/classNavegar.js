@@ -9,6 +9,7 @@ let classNavegar = {
         GlobalPassUsuario = '';
         GlobalTipoUsuario ='';
         document.body.classList.remove('supervisor-active');
+        classNavegar.removeFloatingMenu();
         
             funciones.loadScript('../views/login/index.js','root')
             .then(()=>{
@@ -50,6 +51,64 @@ let classNavegar = {
             InicializarVista();
         })
     },
+    removeFloatingMenu() {
+        if (classNavegar._menuViewportCleanup) {
+            classNavegar._menuViewportCleanup();
+            classNavegar._menuViewportCleanup = null;
+        }
+        const existing = document.getElementById('vendorMenuShell');
+        if (existing && existing.parentNode) {
+            existing.parentNode.removeChild(existing);
+        }
+        if (typeof rootMenuFooter !== 'undefined' && rootMenuFooter) {
+            rootMenuFooter.innerHTML = '';
+        }
+    },
+    syncFloatingMenuToViewport() {
+        const shell = document.getElementById('vendorMenuShell');
+        if (!shell) return;
+
+        const isSmall = window.innerWidth <= 576;
+        const gap = isSmall ? 20 : 16;
+        let bottomPx = gap;
+
+        const vv = window.visualViewport;
+        if (vv) {
+            // Compensa la barra del navegador / viewport visual más corto que el layout
+            const hiddenBelow = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+            bottomPx = gap + hiddenBelow;
+        }
+
+        shell.style.setProperty('bottom', bottomPx + 'px', 'important');
+        shell.style.setProperty('left', (isSmall ? 0.65 : 0.75) + 'rem', 'important');
+        shell.style.setProperty('top', 'auto', 'important');
+        shell.style.setProperty('right', 'auto', 'important');
+    },
+    bindFloatingMenuViewport() {
+        if (classNavegar._menuViewportCleanup) {
+            classNavegar._menuViewportCleanup();
+        }
+
+        const sync = () => classNavegar.syncFloatingMenuToViewport();
+        sync();
+
+        const vv = window.visualViewport;
+        if (vv) {
+            vv.addEventListener('resize', sync);
+            vv.addEventListener('scroll', sync);
+        }
+        window.addEventListener('resize', sync);
+        window.addEventListener('orientationchange', sync);
+
+        classNavegar._menuViewportCleanup = () => {
+            if (vv) {
+                vv.removeEventListener('resize', sync);
+                vv.removeEventListener('scroll', sync);
+            }
+            window.removeEventListener('resize', sync);
+            window.removeEventListener('orientationchange', sync);
+        };
+    },
     setupMenuFooter(options = {}) {
         const {
             itemsHtml = '',
@@ -59,8 +118,10 @@ let classNavegar = {
             bindEvents = null
         } = options;
 
+        classNavegar.removeFloatingMenu();
+
         const strFooter = `
-            <div class="vendor-menu-shell">
+            <div class="vendor-menu-shell" id="vendorMenuShell">
                 <button class="vendor-menu-toggle" id="btnToggleMenuVendedor" type="button">
                     <i class="fal fa-bars"></i> Menu
                 </button>
@@ -73,7 +134,16 @@ let classNavegar = {
             </div>
         `;
 
-        rootMenuFooter.innerHTML = strFooter;
+        // Montado en body para que quede fijo al viewport (no atrapado por el footer)
+        const wrap = document.createElement('div');
+        wrap.innerHTML = strFooter;
+        document.body.appendChild(wrap.firstElementChild);
+
+        if (typeof rootMenuFooter !== 'undefined' && rootMenuFooter) {
+            rootMenuFooter.innerHTML = '';
+        }
+
+        classNavegar.bindFloatingMenuViewport();
 
         const vendorMenuPanel = document.getElementById('vendorMenuPanel');
         const btnToggleMenuVendedor = document.getElementById('btnToggleMenuVendedor');
@@ -100,6 +170,7 @@ let classNavegar = {
 
         if (onReady) {
             return Promise.resolve(onReady({ closeMenu })).then(() => {
+                classNavegar.syncFloatingMenuToViewport();
                 if (autoNavigateId) {
                     const autoBtn = document.getElementById(autoNavigateId);
                     if (autoBtn) autoBtn.click();

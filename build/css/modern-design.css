@@ -466,10 +466,32 @@ body.theme-modern-glass .install-banner .btn-install {
 }
 
 body.theme-modern-glass .vendor-menu-shell {
-  position: fixed;
-  left: 0;
-  bottom: 1rem;
-  z-index: 1200;
+  position: fixed !important;
+  left: 0.75rem !important;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+  top: auto !important;
+  right: auto !important;
+  z-index: 20060 !important;
+  margin: 0 !important;
+  pointer-events: auto !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+@media (max-width: 576px) {
+  body.theme-modern-glass .vendor-menu-shell {
+    left: 0.65rem !important;
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  body.theme-modern-glass .vendor-menu-toggle {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  body.theme-modern-glass .vendor-menu-panel {
+    max-height: min(60dvh, 360px);
+  }
 }
 
 body.theme-modern-glass .vendor-menu-toggle {
@@ -477,9 +499,10 @@ body.theme-modern-glass .vendor-menu-toggle {
   border-radius: 999px;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   color: #fff;
-  padding: 0.6rem 0.95rem;
+  padding: 0.65rem 1rem;
   font-weight: 700;
-  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+  pointer-events: auto !important;
 }
 
 body.theme-modern-glass .vendor-menu-panel {
@@ -487,7 +510,9 @@ body.theme-modern-glass .vendor-menu-panel {
   left: 0;
   bottom: calc(100% + 0.6rem);
   width: min(82vw, 260px);
-  background: rgba(255, 255, 255, 0.95);
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(37, 99, 235, 0.16);
   border-radius: 18px;
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
@@ -499,6 +524,7 @@ body.theme-modern-glass .vendor-menu-panel {
   opacity: 0;
   pointer-events: none;
   transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: 20061;
 }
 
 body.theme-modern-glass .vendor-menu-panel.open {
@@ -1366,20 +1392,6 @@ body.supervisor-active #rootMenuFooter {
   pointer-events: none !important;
 }
 
-body.supervisor-active .vendor-menu-shell {
-  left: 0.75rem;
-  bottom: 1rem;
-  z-index: 20060 !important;
-  pointer-events: auto !important;
-}
-
-body.supervisor-active .vendor-menu-toggle,
-body.supervisor-active .vendor-menu-panel {
-  pointer-events: auto !important;
-  position: relative;
-  z-index: 20061 !important;
-}
-
 body.theme-modern-glass.supervisor-active .leaflet-container,
 body.theme-modern-glass.supervisor-active .mapcontainer,
 body.theme-modern-glass.supervisor-active .mapcontainer2,
@@ -1903,3 +1915,283 @@ body.theme-modern-glass .supervisor-actions-row .btn {
     width: 100%;
   }
 }
+
+/* =========================
+   VENDEDOR - OBJETIVOS
+   ========================= */
+body.theme-modern-glass .objetivos-vendedor-page {
+  margin: -1rem;
+  padding: 0;
+  min-height: calc(100vh - 4.5rem);
+  font-size: 0.86rem;
+  display: flex;
+  flex-direction: column;
+}
+
+body.theme-modern-glass .objetivos-vendedor-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(248, 250, 252, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+  padding: 0.55rem 0.55rem 0.5rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-filters {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.45rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-filters label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+body.theme-modern-glass .objetivos-vendedor-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-nav-btn {
+  border-radius: 10px !important;
+  font-size: 0.68rem !important;
+  font-weight: 700 !important;
+  padding: 0.45rem 0.3rem !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid rgba(37, 99, 235, 0.22) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #1e3a8a !important;
+}
+
+body.theme-modern-glass .objetivos-vendedor-nav-btn.active {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.28);
+}
+
+body.theme-modern-glass .objetivos-vendedor-content {
+  padding: 0.55rem 0.55rem 5.5rem;
+  flex: 1;
+}
+
+body.theme-modern-glass .objetivos-vendedor-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.55rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+body.theme-modern-glass .objetivos-vendedor-hint {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+body.theme-modern-glass .objetivos-vendedor-progress {
+  margin: 0.45rem 0 0.55rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-kpi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.5rem 0 0.65rem;
+}
+
+body.theme-modern-glass .objetivos-vendedor-kpi-item {
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 10px;
+  padding: 0.45rem 0.5rem;
+  text-align: center;
+}
+
+body.theme-modern-glass .objetivos-vendedor-kpi-item span {
+  display: block;
+  font-size: 0.68rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+body.theme-modern-glass .objetivos-vendedor-kpi-item strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  color: #0f172a;
+}
+
+body.theme-modern-glass .objetivos-vendedor-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: min(52vh, 340px);
+}
+
+body.theme-modern-glass .objetivos-vendedor-chart-marca {
+  height: min(60vh, 420px);
+}
+
+body.theme-modern-glass .objetivos-marca-row {
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 10px;
+  padding: 0.55rem 0.6rem;
+  margin-bottom: 0.45rem;
+  background: rgba(248, 250, 252, 0.9);
+}
+
+body.theme-modern-glass .objetivos-marca-row-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.4rem;
+}
+
+body.theme-modern-glass .objetivos-marca-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+body.theme-modern-glass .objetivos-marca-metrics > div {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 8px;
+  padding: 0.3rem 0.4rem;
+}
+
+body.theme-modern-glass .objetivos-marca-metrics span {
+  display: block;
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+body.theme-modern-glass .objetivos-marca-metrics strong {
+  display: block;
+  font-size: 0.75rem;
+  color: #0f172a;
+  margin-top: 0.1rem;
+}
+
+body.theme-modern-glass .objetivos-marca-progress {
+  height: 1.15rem;
+  border-radius: 999px;
+  background: rgba(226, 232, 240, 0.95);
+  overflow: hidden;
+}
+
+body.theme-modern-glass .objetivos-marca-progress .progress-bar {
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+body.theme-modern-glass .objetivos-vendedor-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(100vh - 16rem);
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+body.theme-modern-glass .objetivos-vendedor-table {
+  width: 100%;
+  margin-bottom: 0;
+  font-size: 0.8rem;
+  background: transparent !important;
+}
+
+body.theme-modern-glass .objetivos-vendedor-table thead th,
+body.theme-modern-glass .objetivos-vendedor-table thead td {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #1e3a8a !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.45rem 0.5rem;
+  border: none !important;
+  white-space: nowrap;
+}
+
+body.theme-modern-glass .objetivos-vendedor-table tfoot td {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: #0f172a !important;
+  background-image: none !important;
+  color: #fde68a !important;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.45rem 0.5rem;
+  border: none !important;
+}
+
+body.theme-modern-glass .objetivos-vendedor-table tbody td {
+  padding: 0.38rem 0.5rem;
+  vertical-align: middle;
+  border-color: rgba(226, 232, 240, 0.95);
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: #0f172a;
+}
+
+@media (max-width: 576px) {
+  body.theme-modern-glass .objetivos-vendedor-page {
+    margin: -0.75rem -0.75rem 0;
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-nav-btn {
+    font-size: 0.62rem !important;
+    padding: 0.4rem 0.2rem !important;
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-content {
+    padding: 0.4rem 0.4rem 5.75rem;
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-chart-wrap {
+    height: min(46vh, 280px);
+  }
+
+  body.theme-modern-glass .objetivos-marca-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-table-wrap {
+    max-height: calc(100dvh - 15rem);
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-table,
+  body.theme-modern-glass .objetivos-vendedor-table tbody td {
+    font-size: 0.74rem;
+  }
+
+  body.theme-modern-glass .objetivos-vendedor-kpi-item strong {
+    font-size: 0.74rem;
+  }
+}
+
