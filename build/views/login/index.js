@@ -53,10 +53,17 @@ function getView(){
                 </div>
 
                 <div class="login-footer">
-                    <small class="login-version">Mercados Efectivos · ${versionapp}</small>
-                    <a class="login-support-link" href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos.2025...%20">
-                        <i class="fab fa-whatsapp"></i> Soporte
-                    </a>
+                    <div class="login-footer-row">
+                        <small class="login-version">Mercados Efectivos · ${versionapp}</small>
+                        <a class="login-support-link" href="https://apigen.whatsapp.com/send?phone=50257255092&text=Ayudame%20con%20la%20app%20de%20Mercados%20Efectivos.2025...%20">
+                            <i class="fab fa-whatsapp"></i> Soporte
+                        </a>
+                    </div>
+                    <button type="button" class="btn login-force-update-btn hand shadow" id="btnLoginForzarActualizacion">
+                        <i class="fal fa-redo"></i>
+                        Forzar actualización
+                    </button>
+                    <small class="login-force-update-status" id="loginForceUpdateStatus"></small>
                 </div>
             </div>
 
@@ -140,11 +147,84 @@ function addListeners(){
     
     var parallax_logo = document.getElementById('parallax_logo');
     var parallaxInstance = new Parallax(parallax_logo);
-   
 
-
-
+    const btnLoginForzarActualizacion = document.getElementById('btnLoginForzarActualizacion');
+    if (btnLoginForzarActualizacion) {
+        btnLoginForzarActualizacion.addEventListener('click', () => {
+            funciones.Confirmacion('¿Forzar la actualización de la aplicación? Se limpiará el caché y se recargará.')
+                .then((value) => {
+                    if (value === true) {
+                        fcnLoginForzarActualizacion();
+                    }
+                });
+        });
+    }
 };
+
+
+
+async function fcnLoginForzarActualizacion() {
+    const btn = document.getElementById('btnLoginForzarActualizacion');
+    const status = document.getElementById('loginForceUpdateStatus');
+    const defaultHtml = '<i class="fal fa-redo"></i> Forzar actualización';
+
+    const setBusy = (msg) => {
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fal fa-spinner fa-spin"></i> ${msg}`;
+        }
+        if (status) {
+            status.textContent = msg;
+            status.classList.add('is-visible');
+        }
+    };
+
+    try {
+        setBusy('Limpiando caché local...');
+
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map((name) => caches.delete(name)));
+        }
+
+        setBusy('Actualizando service worker...');
+
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map((reg) => reg.unregister()));
+
+            try {
+                await navigator.serviceWorker.register('./sw.js?force=' + Date.now());
+            } catch (regError) {
+                console.warn('Re-registro SW:', regError);
+            }
+        }
+
+        setBusy('Recargando aplicación...');
+        if (status) {
+            status.textContent = 'Actualización completada. Recargando...';
+        }
+
+        const reloadUrl = new URL(window.location.href);
+        reloadUrl.searchParams.set('_refresh', Date.now().toString());
+        reloadUrl.searchParams.delete('nocache');
+
+        setTimeout(() => {
+            window.location.replace(reloadUrl.toString());
+        }, 600);
+    } catch (error) {
+        console.error('Forzar actualización (login):', error);
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = defaultHtml;
+        }
+        if (status) {
+            status.textContent = 'No se pudo actualizar. Intente de nuevo.';
+            status.classList.add('is-visible', 'is-error');
+        }
+        funciones.AvisoError('No se pudo forzar la actualización');
+    }
+}
 
 function get_sede(){
             
