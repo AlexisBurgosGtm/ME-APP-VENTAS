@@ -108,28 +108,53 @@ router.post('/marcas', async (req, res) => {
     execute.query_bi(res, qry);
 });
 
-// Detalle: marcas BI + objetivos BI
+// Detalle: marcas BI + objetivos BI (un vendedor o todos)
 router.post('/detalle', async (req, res) => {
     const sucursal = getSucursal();
     const mes = toNumber(req.body.mes, 0);
     const anio = toNumber(req.body.anio, 0);
     const codusuario = toNumber(req.body.codusuario, 0);
+    const todos = req.body.todos === true || req.body.todos === 'SI' || req.body.todos === 1 || req.body.todos === '1';
 
-    const qry = `
-        SELECT
-            CAST(M.CODMARCA AS VARCHAR(10)) AS CODMARCA,
-            M.DESMARCA,
-            ISNULL(O.OBJETIVO, 0) AS OBJETIVO,
-            O.ID
-        FROM BI_GENERALES_MARCAS M
-        LEFT JOIN OBJETIVOS_VENDEDORES O
-            ON O.CODMARCA = CAST(M.CODMARCA AS VARCHAR(10))
-           AND O.CODUSUARIO = ${codusuario}
-           AND O.MES = ${mes}
-           AND O.ANIO = ${anio}
-           AND O.CODSUCURSAL = '${esc(sucursal)}'
-        ORDER BY M.DESMARCA
-    `;
+    let qry = '';
+
+    if (todos || !codusuario) {
+        qry = `
+            SELECT
+                CAST(M.CODMARCA AS VARCHAR(10)) AS CODMARCA,
+                M.DESMARCA,
+                ISNULL(O.OBJETIVO, 0) AS OBJETIVO,
+                NULL AS ID
+            FROM BI_GENERALES_MARCAS M
+            LEFT JOIN (
+                SELECT
+                    CODMARCA,
+                    SUM(ISNULL(OBJETIVO, 0)) AS OBJETIVO
+                FROM OBJETIVOS_VENDEDORES
+                WHERE CODSUCURSAL = '${esc(sucursal)}'
+                  AND MES = ${mes}
+                  AND ANIO = ${anio}
+                GROUP BY CODMARCA
+            ) O ON O.CODMARCA = CAST(M.CODMARCA AS VARCHAR(10))
+            ORDER BY M.DESMARCA
+        `;
+    } else {
+        qry = `
+            SELECT
+                CAST(M.CODMARCA AS VARCHAR(10)) AS CODMARCA,
+                M.DESMARCA,
+                ISNULL(O.OBJETIVO, 0) AS OBJETIVO,
+                O.ID
+            FROM BI_GENERALES_MARCAS M
+            LEFT JOIN OBJETIVOS_VENDEDORES O
+                ON O.CODMARCA = CAST(M.CODMARCA AS VARCHAR(10))
+               AND O.CODUSUARIO = ${codusuario}
+               AND O.MES = ${mes}
+               AND O.ANIO = ${anio}
+               AND O.CODSUCURSAL = '${esc(sucursal)}'
+            ORDER BY M.DESMARCA
+        `;
+    }
 
     execute.query_bi(res, qry);
 });

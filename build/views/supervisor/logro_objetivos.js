@@ -7,10 +7,11 @@ function getView() {
         <div class="objetivos-vendedor-page">
             <div class="objetivos-vendedor-header" id="objetivosVendedorHeader">
                 <div class="objetivos-vendedor-filters">
-                    <label>Mes y año</label>
+                    <label>Mes, año y vendedor</label>
                     <div class="input-group input-group-sm">
                         <select class="form-control negrita text-danger" id="cmbMes"></select>
                         <select class="form-control negrita text-danger" id="cmbAnio"></select>
+                        <select class="form-control negrita text-info" id="cmbVendedorLogro"></select>
                     </div>
                 </div>
                 <div class="objetivos-vendedor-nav">
@@ -72,6 +73,16 @@ function getPeriodo() {
     };
 }
 
+function getFiltroVendedor() {
+    const cmb = document.getElementById('cmbVendedorLogro');
+    const value = cmb ? cmb.value : 'ALL';
+    const todos = !value || value === 'ALL';
+    return {
+        todos,
+        codemp: todos ? 'ALL' : Number(value)
+    };
+}
+
 function showObjetivosSection(section) {
     objetivosVendedorSection = section || 'dashboard';
     setObjetivosNavActive(objetivosVendedorSection);
@@ -91,9 +102,11 @@ function showObjetivosSection(section) {
 
 function postBiReport(url, extra) {
     const { mes, anio } = getPeriodo();
+    const filtro = getFiltroVendedor();
     return axios.post(url, Object.assign({
         sucursal: GlobalCodSucursal,
-        codemp: GlobalCodUsuario,
+        codemp: filtro.codemp,
+        todos: filtro.todos,
         mes,
         anio
     }, extra || {}))
@@ -127,10 +140,12 @@ function data_rpt_top_productos() {
 
 function data_objetivos_marca() {
     const { mes, anio } = getPeriodo();
+    const filtro = getFiltroVendedor();
     return axios.post('/objetivos/detalle', {
         mes,
         anio,
-        codusuario: GlobalCodUsuario
+        todos: filtro.todos,
+        codusuario: filtro.todos ? 0 : filtro.codemp
     }).then((response) => {
         const data = response.data;
         if (!data || data === 'error' || !data.recordset) throw new Error('error');
@@ -573,6 +588,7 @@ function renderDetalleFecha(fecha) {
 function addListeners() {
     const cmbMes = document.getElementById('cmbMes');
     const cmbAnio = document.getElementById('cmbAnio');
+    const cmbVendedor = document.getElementById('cmbVendedorLogro');
 
     cmbMes.innerHTML = funciones.ComboMeses();
     cmbAnio.innerHTML = funciones.ComboAnio();
@@ -584,6 +600,7 @@ function addListeners() {
     const reloadCurrent = () => showObjetivosSection(objetivosVendedorSection);
     cmbMes.addEventListener('change', reloadCurrent);
     cmbAnio.addEventListener('change', reloadCurrent);
+    cmbVendedor.addEventListener('change', reloadCurrent);
 
     document.querySelectorAll('.objetivos-vendedor-nav-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -591,7 +608,21 @@ function addListeners() {
         });
     });
 
-    showObjetivosSection('dashboard');
+    cmbVendedor.innerHTML = `<option value="ALL">Todos</option>`;
+    axios.post('/objetivos/vendedores', {})
+        .then((response) => {
+            const data = response.data;
+            if (data && data !== 'error' && data.recordset) {
+                cmbVendedor.innerHTML = `<option value="ALL">Todos</option>` +
+                    data.recordset.map((r) =>
+                        `<option value="${r.CODUSUARIO}">${r.NOMBRE}</option>`
+                    ).join('');
+            }
+            showObjetivosSection('dashboard');
+        })
+        .catch(() => {
+            showObjetivosSection('dashboard');
+        });
 }
 
 function initView() {

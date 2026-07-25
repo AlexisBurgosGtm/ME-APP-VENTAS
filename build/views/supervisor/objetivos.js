@@ -107,7 +107,7 @@ function getView() {
     root.innerHTML = view.body();
 }
 
-let modoEdicion = false;
+var modoEdicion = false;
 
 function getPeriodo() {
     return {
@@ -182,7 +182,8 @@ function cargarListado() {
                 btn.addEventListener('click', () => {
                     eliminarObjetivos(
                         Number(btn.getAttribute('data-codusuario')),
-                        decodeURIComponent(btn.getAttribute('data-nombre') || '')
+                        decodeURIComponent(btn.getAttribute('data-nombre') || ''),
+                        btn
                     );
                 });
             });
@@ -304,23 +305,45 @@ function editarObjetivos(codusuario, nombre) {
     abrirFormulario(codusuario, nombre);
 }
 
-function eliminarObjetivos(codusuario, nombre) {
+function eliminarObjetivos(codusuario, nombre, btnEl) {
     const { mes, anio } = getPeriodo();
 
     funciones.Confirmacion(`¿Eliminar los objetivos de ${nombre} para este período?`)
         .then((value) => {
             if (value !== true) return;
 
+            const btn = btnEl || null;
+            const prevHtml = btn ? btn.innerHTML : '';
+            const allDeleteBtns = document.querySelectorAll('.btn-eliminar-objetivo, .btn-editar-objetivo');
+
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fal fa-spinner fa-spin"></i>';
+            }
+            allDeleteBtns.forEach((b) => { b.disabled = true; });
+
             axios.post('/objetivos/eliminar', { mes, anio, codusuario })
                 .then((response) => {
                     if (response.data === 'error') {
                         funciones.AvisoError('No se pudo eliminar');
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = prevHtml;
+                        }
+                        allDeleteBtns.forEach((b) => { b.disabled = false; });
                         return;
                     }
                     funciones.Aviso('Objetivos eliminados');
                     cargarListado();
                 })
-                .catch(() => funciones.AvisoError('Error de conexión'));
+                .catch(() => {
+                    funciones.AvisoError('Error de conexión');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = prevHtml;
+                    }
+                    allDeleteBtns.forEach((b) => { b.disabled = false; });
+                });
         });
 }
 

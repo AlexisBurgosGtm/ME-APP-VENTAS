@@ -409,6 +409,10 @@ let classNavegar = {
                         <i class="fal fa-unlock"></i>
                         <span>Usuarios</span>
                     </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperLogroObjetivos">
+                        <i class="fal fa-chart-pie"></i>
+                        <span>Logro de Objetivos</span>
+                    </button>
                     <button class="vendor-menu-item" id="btnMenu2SuperObjetivos">
                         <i class="fal fa-bullseye"></i>
                         <span>Gestión Objetivos</span>
@@ -448,6 +452,11 @@ let classNavegar = {
                 document.getElementById('btnMenu2SuperUsuarios').addEventListener('click', () => {
                     closeMenu();
                     classNavegar.supervisor_usuarios();
+                });
+
+                document.getElementById('btnMenu2SuperLogroObjetivos').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_logro_objetivos();
                 });
 
                 document.getElementById('btnMenu2SuperObjetivos').addEventListener('click', () => {
@@ -511,6 +520,13 @@ let classNavegar = {
     },
     supervisor_objetivos:()=>{
         funciones.loadScript('./views/supervisor/objetivos.js','root')
+        .then(()=>{
+            GlobalSelectedForm ='SUPERVISOR';
+            initView();
+        })
+    },
+    supervisor_logro_objetivos:()=>{
+        funciones.loadScript('./views/supervisor/logro_objetivos.js','root')
         .then(()=>{
             GlobalSelectedForm ='SUPERVISOR';
             initView();
