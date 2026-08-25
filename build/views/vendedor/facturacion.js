@@ -261,8 +261,8 @@ function getView(){
         },
         modalBusquedaProductos :()=>{
             return `
-            <div class="modal fade factura-search-modal modal-with-scroll" id="ModalBusqueda" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered factura-search-dialog" role="document">
+            <div class="modal fade factura-search-modal" id="ModalBusqueda" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg factura-search-dialog" role="document">
                     <div class="modal-content factura-search-modal-content">
                         <div class="modal-header border-0 pb-0 factura-search-header">
                             <label class="modal-title text-secondary h5 mb-0">Búsqueda de Productos</label>

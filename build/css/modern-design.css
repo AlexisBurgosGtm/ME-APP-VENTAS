@@ -891,29 +891,43 @@ body.theme-modern-glass .factura-cart-subtotal {
   white-space: nowrap;
 }
 
-/* Modal búsqueda productos */
+/* Modal búsqueda productos — pantalla completa desde arriba */
+body.theme-modern-glass .factura-search-modal {
+  padding: 0 !important;
+}
+
 body.theme-modern-glass .factura-search-modal .modal-dialog,
 body.theme-modern-glass .factura-search-dialog {
-  max-width: 96vw;
+  max-width: 100%;
   width: 100%;
-  margin: 0.75rem auto;
-  max-height: calc(100vh - 1.5rem);
+  height: 100%;
+  margin: 0;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: none !important;
 }
 
 body.theme-modern-glass .factura-search-modal-content {
-  background: rgba(255, 255, 255, 0.82) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  border-radius: 22px !important;
-  max-height: calc(100vh - 1.5rem);
+  border: none;
+  box-shadow: none;
+  border-radius: 0 !important;
+  height: 100%;
+  max-height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 body.theme-modern-glass .factura-search-header {
@@ -1024,8 +1038,17 @@ body.theme-modern-glass .factura-qty-modal .modal-dialog {
   max-width: 340px;
 }
 
+@media (max-width: 576px) {
+  body.theme-modern-glass .factura-qty-modal .modal-dialog {
+    max-width: calc(100vw - 1.25rem);
+    width: calc(100vw - 1.25rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 body.theme-modern-glass .factura-qty-modal-content {
-  background: rgba(255, 255, 255, 0.85) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.55);
@@ -1033,7 +1056,13 @@ body.theme-modern-glass .factura-qty-modal-content {
   border-radius: 20px !important;
 }
 
-body.theme-modern-glass .factura-qty-modal.show ~ .modal-backdrop,
+body.theme-modern-glass .factura-qty-modal.show ~ .modal-backdrop {
+  opacity: 1 !important;
+  background-color: rgba(15, 23, 42, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 body.theme-modern-glass .factura-search-modal.show ~ .modal-backdrop {
   opacity: 0.35;
 }

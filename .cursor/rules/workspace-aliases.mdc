@@ -1,0 +1,13 @@
+---
+description: Alias de proyectos en este workspace
+alwaysApply: true
+---
+
+# Alias de proyectos
+
+En este workspace usa estos nombres:
+
+- **APPVENTAS** = carpeta `ME-APP-VENTAS`
+- **APPBI** = carpeta `ME-BUSINESS INTELLIGENCE`
+
+Al hablar con el usuario y al elegir en qué repo trabajar, usa APPVENTAS y APPBI. No uses los nombres de carpeta salvo que haga falta aclarar una ruta.
