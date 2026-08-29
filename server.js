@@ -1,6 +1,5 @@
 try {
-  process.loadEnvFile() //process.loadEnvFile(['./dev.env','./dev2.env'])
-  
+  process.loadEnvFile() //process.loadEnvFile(['./dev.env','./dev2.env']) 
 } catch (error) {
   
 }
@@ -26,7 +25,6 @@ let router_reportes= require('./router/router_reportes');
 let routerObjetivos = require('./router/routerObjetivos');
 
 var http = require('http').Server(app);
-//var io = require('socket.io')(http);
 var io = require('socket.io')(http, { cors: { origin: '*' } });
 
 
@@ -105,7 +103,18 @@ app.get("/login",function(req,res){
 }); 
 
 app.get("/test_service",function(req,res){
-  res.send('ONLINE')
+
+  const lineasAgenda = [
+    "Tienes una reunión de equipo a las 9 de la mañana",
+    "Recordatorio para revisar la base de datos a las 2 de la tarde",
+    "Comprar café al salir de la oficina"
+  ];
+
+  // Une el arreglo de líneas en un solo texto separado por puntos
+  res.json({
+    mensaje: lineasAgenda.join(". ")
+  });
+
 }); 
 
 
@@ -154,7 +163,7 @@ app.use("/",router);
 
 app.use("*",function(req,res){
   res.redirect('/');
-  //res.send('<h1 class="text-danger">NO DISPONIBLE</h1>');
+ 
 });
 
 

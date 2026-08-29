@@ -150,6 +150,25 @@ router.post('/eliminarpedidocargado',async(req,res)=>{
 
     const {sucursal,coddoc,correlativo} = req.body;
 
+    let qryRestoreStock = `
+    UPDATE P
+    SET P.EXISTENCIA = ISNULL(P.EXISTENCIA, 0) + X.QTY
+    FROM ME_PRODUCTOS P
+    INNER JOIN (
+        SELECT DP.CODPROD, SUM(ISNULL(DP.CANTIDADINV, 0)) AS QTY
+        FROM ME_DOCPRODUCTOS DP
+        INNER JOIN ME_DOCUMENTOS D
+            ON D.CODSUCURSAL = DP.CODSUCURSAL
+           AND D.CODDOC = DP.CODDOC
+           AND D.DOC_NUMERO = DP.DOC_NUMERO
+        WHERE DP.CODSUCURSAL='${sucursal}'
+          AND DP.CODDOC='${coddoc}'
+          AND DP.DOC_NUMERO='${correlativo}'
+          AND D.DOC_ESTATUS='O'
+        GROUP BY DP.CODPROD
+    ) X ON P.CODPROD = X.CODPROD AND P.CODSUCURSAL = '${sucursal}';
+    `;
+
     let qry = `DELETE FROM ME_DOCUMENTOS 
     WHERE CODSUCURSAL='${sucursal}' 
     AND CODDOC='${coddoc}' AND DOC_NUMERO='${correlativo}'
@@ -158,7 +177,7 @@ router.post('/eliminarpedidocargado',async(req,res)=>{
         WHERE CODSUCURSAL='${sucursal}' AND CODDOC='${coddoc}' 
         AND DOC_NUMERO='${correlativo}' ;`
 
-    execute.Query(res, qry + qryprods);
+    execute.Query(res, qryRestoreStock + qry + qryprods);
 
 })
 
@@ -666,9 +685,29 @@ router.post('/historialcliente',async (req,res)=>{
 router.post("/deletepedidovendedor",async(req,res)=>{
     const {sucursal,fecha,codven,coddoc,correlativo} = req.body;
 
+    let qryRestoreStock = `
+    UPDATE P
+    SET P.EXISTENCIA = ISNULL(P.EXISTENCIA, 0) + X.QTY
+    FROM ME_PRODUCTOS P
+    INNER JOIN (
+        SELECT DP.CODPROD, SUM(ISNULL(DP.CANTIDADINV, 0)) AS QTY
+        FROM ME_DOCPRODUCTOS DP
+        INNER JOIN ME_DOCUMENTOS D
+            ON D.CODSUCURSAL = DP.CODSUCURSAL
+           AND D.CODDOC = DP.CODDOC
+           AND D.DOC_NUMERO = DP.DOC_NUMERO
+        WHERE DP.CODSUCURSAL='${sucursal}'
+          AND DP.CODDOC='${coddoc}'
+          AND DP.DOC_NUMERO='${correlativo}'
+          AND D.DOC_FECHA='${fecha}'
+          AND D.DOC_ESTATUS='O'
+        GROUP BY DP.CODPROD
+    ) X ON P.CODPROD = X.CODPROD AND P.CODSUCURSAL = '${sucursal}';
+    `;
+
     let qry = `DELETE FROM ME_DOCUMENTOS WHERE CODSUCURSAL='${sucursal}' AND CODDOC='${coddoc}' AND DOC_FECHA='${fecha}' AND DOC_NUMERO='${correlativo}' AND DOC_ESTATUS='O'; `
     let qryprods = `DELETE FROM ME_DOCPRODUCTOS WHERE CODSUCURSAL='${sucursal}' AND CODDOC='${coddoc}' AND DOC_NUMERO='${correlativo}' ;`
-    execute.Query(res, qry + qryprods);
+    execute.Query(res, qryRestoreStock + qry + qryprods);
 
 })
 
@@ -1382,7 +1421,19 @@ router.post("/insertventa", async (req,res)=>{
                             ${long} AS LONGITUD;
                         `;
 
-    execute.Query(res, qrycorrelativo + qry + qrydoc + qry_visita + qryBackup);
+    execute.Query(res, qrycorrelativo + qry + qrydoc + `
+        UPDATE P
+        SET P.EXISTENCIA = ISNULL(P.EXISTENCIA, 0) - X.QTY
+        FROM ME_PRODUCTOS P
+        INNER JOIN (
+            SELECT CODPROD, SUM(ISNULL(CANTIDADINV, 0)) AS QTY
+            FROM ME_DOCPRODUCTOS
+            WHERE CODSUCURSAL = '${codsucursal}'
+              AND CODDOC = '${coddoc}'
+              AND DOC_NUMERO = '${correlativo}'
+            GROUP BY CODPROD
+        ) X ON P.CODPROD = X.CODPROD AND P.CODSUCURSAL = '${codsucursal}';
+    ` + qry_visita + qryBackup);
     
 });
 
