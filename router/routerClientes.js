@@ -299,6 +299,37 @@ router.get("/buscarcliente", async(req,res)=>{
 
 });
 
+// BUSCA CLIENTE PARA COTIZACIONES (NIT, nombre, negocio)
+router.get("/buscarcliente_cotizacion", async(req,res)=>{
+    const {app, filtro} = req.query;
+    const sede = String(app || '').replace(/'/g, "''");
+    const q = String(filtro || '').replace(/'/g, "''").trim();
+
+    const qry = `
+        SELECT TOP 50
+            ME_Clientes.NITCLIE AS CODCLIE,
+            ME_Clientes.NITFACTURA AS NIT,
+            ME_Clientes.NOMCLIE,
+            ISNULL(ME_Clientes.NOMFAC, '') AS NEGOCIO,
+            ME_Clientes.DIRCLIE,
+            ISNULL(ME_Municipios.DESMUNI, '') AS DESMUNICIPIO
+        FROM ME_Clientes
+        LEFT OUTER JOIN ME_Municipios
+            ON ME_Clientes.CODSUCURSAL = ME_Municipios.CODSUCURSAL
+           AND ME_Clientes.CODMUNI = ME_Municipios.CODMUNI
+        WHERE ME_Clientes.CODSUCURSAL = '${sede}'
+          AND (
+                ME_Clientes.NITFACTURA LIKE '%${q}%'
+             OR ME_Clientes.NITCLIE LIKE '%${q}%'
+             OR ME_Clientes.NOMCLIE LIKE '%${q}%'
+             OR ME_Clientes.NOMFAC LIKE '%${q}%'
+          )
+        ORDER BY ME_Clientes.NOMCLIE
+    `;
+
+    execute.Query(res, qry);
+});
+
 // AGREGA UN NUEVO CLIENTE
 router.post("/clientenuevo", async(req,res)=>{
     const {app,fecha,codven,empnit,codclie,nitclie,nomclie,nomfac,dirclie,coddepto,codmunicipio,codpais,telclie,emailclie,codbodega,tipoprecio,lat,long} = req.body;

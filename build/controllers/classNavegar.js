@@ -405,6 +405,10 @@ let classNavegar = {
                         <i class="fal fa-box"></i>
                         <span>Precios</span>
                     </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperCotizaciones">
+                        <i class="fal fa-file-alt"></i>
+                        <span>Cotizaciones</span>
+                    </button>
                     <button class="vendor-menu-item" id="btnMenu2SuperUsuarios">
                         <i class="fal fa-unlock"></i>
                         <span>Usuarios</span>
@@ -447,6 +451,11 @@ let classNavegar = {
                 document.getElementById('btnMenu2SuperPrecios').addEventListener('click', () => {
                     closeMenu();
                     classNavegar.supervisor_precios();
+                });
+
+                document.getElementById('btnMenu2SuperCotizaciones').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_cotizaciones();
                 });
 
                 document.getElementById('btnMenu2SuperUsuarios').addEventListener('click', () => {
@@ -508,6 +517,15 @@ let classNavegar = {
             GlobalSelectedForm ='SUPERVISOR';
             initView();
             //window.history.pushState({"page":2}, "facturacion", GlobalUrl + '/facturacion')
+        })
+    },
+    supervisor_cotizaciones:()=>{
+        funciones.loadScript('./views/supervisor/cotizaciones.js','root')
+        .then(()=>{
+            detener_efecto();
+            GlobalSelectedForm ='COTIZACIONES';
+            GlobalSelectedCodCliente = '';
+            iniciarVistaCotizaciones();
         })
     },
     supervisor_usuarios:()=>{

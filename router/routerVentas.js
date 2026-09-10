@@ -1795,6 +1795,371 @@ router.post("/update_fecha_pedido", async (req,res)=>{
 });
 
 
+router.get("/listcotizaciones", async (req, res) => {
+    const { codsucursal, fechaini, fechafin } = req.query;
+    const sede = String(codsucursal || '').replace(/'/g, "''");
+    const ini = String(fechaini || '').replace(/'/g, "''");
+    const fin = String(fechafin || '').replace(/'/g, "''");
+
+    const qry = `
+        SELECT
+            D.FECHA,
+            ISNULL(D.HORA, 0) AS HORA,
+            ISNULL(D.MINUTO, 0) AS MINUTO,
+            D.CODDOC,
+            D.CORRELATIVO,
+            ISNULL(D.DOC_NOMCLIE, '') AS CLIENTE,
+            ISNULL(D.DOC_NIT, '') AS DOC_NIT,
+            ISNULL(D.DOC_DIRCLIE, '') AS DOC_DIRCLIE,
+            ISNULL(D.CODCLIENTE, 0) AS CODCLIENTE,
+            ISNULL(D.TOTALPRECIO, 0) AS TOTALPRECIO,
+            ISNULL(D.TOTALCOSTO, 0) AS TOTALCOSTO,
+            ISNULL(D.OBS, '') AS OBS,
+            ISNULL(D.CONCRE, '') AS CONCRE,
+            ISNULL(D.TIPOPAGO, '') AS TIPOPAGO,
+            ISNULL(D.PRIORIDAD, 'NORMAL') AS PRIORIDAD,
+            ISNULL(D.CODVEN, 0) AS CODVEN
+        FROM DOCUMENTOS D
+        WHERE D.CODDOC = 'cotiz'
+          AND D.CODSUCURSAL = '${sede}'
+          AND CAST(D.FECHA AS DATE) >= CAST('${ini}' AS DATE)
+          AND CAST(D.FECHA AS DATE) <= CAST('${fin}' AS DATE)
+        ORDER BY D.FECHA DESC, D.HORA DESC, D.MINUTO DESC, D.CORRELATIVO DESC
+    `;
+    execute.Query(res, qry);
+});
+
+router.get("/cotizaciondetalle", async (req, res) => {
+    const { codsucursal, coddoc, correlativo } = req.query;
+    const sede = String(codsucursal || '').replace(/'/g, "''");
+    const doc = String(coddoc || 'cotiz').replace(/'/g, "''");
+    const corr = Number(correlativo) || 0;
+
+    try {
+        const cab = await execute.command(`
+            SELECT TOP 1
+                FECHA, HORA, MINUTO, CODDOC, CORRELATIVO,
+                ISNULL(DOC_NOMCLIE, '') AS CLIENTE,
+                ISNULL(DOC_NIT, '') AS DOC_NIT,
+                ISNULL(DOC_DIRCLIE, '') AS DOC_DIRCLIE,
+                ISNULL(CODCLIENTE, 0) AS CODCLIENTE,
+                ISNULL(TOTALPRECIO, 0) AS TOTALPRECIO,
+                ISNULL(TOTALCOSTO, 0) AS TOTALCOSTO,
+                ISNULL(OBS, '') AS OBS,
+                ISNULL(CONCRE, '') AS CONCRE,
+                ISNULL(TIPOPAGO, '') AS TIPOPAGO,
+                ISNULL(PRIORIDAD, 'NORMAL') AS PRIORIDAD,
+                ISNULL(CODVEN, 0) AS CODVEN
+            FROM DOCUMENTOS
+            WHERE CODDOC = '${doc}'
+              AND CORRELATIVO = ${corr}
+              AND CODSUCURSAL = '${sede}'
+        `);
+        const det = await execute.command(`
+            SELECT
+                CODPROD, DESPROD, CODMEDIDA,
+                ISNULL(CANTIDAD, 0) AS CANTIDAD,
+                ISNULL(EQUIVALE, 1) AS EQUIVALE,
+                ISNULL(TOTALUNIDADES, 0) AS TOTALUNIDADES,
+                ISNULL(COSTO, 0) AS COSTO,
+                ISNULL(PRECIO, 0) AS PRECIO,
+                ISNULL(TOTALCOSTO, 0) AS TOTALCOSTO,
+                ISNULL(TOTALPRECIO, 0) AS TOTALPRECIO,
+                ISNULL(EXENTO, 0) AS EXENTO,
+                ISNULL(TIPOPRECIO, 'P') AS TIPOPRECIO
+            FROM DOCPRODUCTOS
+            WHERE CODDOC = '${doc}'
+              AND CORRELATIVO = ${corr}
+              AND CODSUCURSAL = '${sede}'
+            ORDER BY ID
+        `);
+        res.send({
+            cabecera: (cab.recordset && cab.recordset[0]) || null,
+            productos: det.recordset || []
+        });
+    } catch (error) {
+        console.log('cotizaciondetalle: ' + error);
+        res.send('error');
+    }
+});
+
+router.post("/deletecotizacion", async (req, res) => {
+    const { codsucursal, coddoc, correlativo } = req.body;
+    const sede = String(codsucursal || '').replace(/'/g, "''");
+    const doc = String(coddoc || 'cotiz').replace(/'/g, "''");
+    const corr = Number(correlativo) || 0;
+
+    const qry = `
+        SET XACT_ABORT ON;
+        BEGIN TRAN;
+        DELETE FROM DOCPRODUCTOS
+        WHERE CODDOC = '${doc}' AND CORRELATIVO = ${corr}
+          AND CODSUCURSAL = '${sede}';
+        DELETE FROM DOCUMENTOS
+        WHERE CODDOC = '${doc}' AND CORRELATIVO = ${corr}
+          AND CODSUCURSAL = '${sede}';
+        COMMIT TRAN;
+    `;
+    execute.Query(res, qry);
+});
+
+router.post("/updatecotizacion", async (req, res) => {
+    const {
+        jsondocproductos, codsucursal, correlativo,
+        totalcosto, totalprecio, obs, formaentrega, prioridad, usuario
+    } = req.body;
+
+    const sede = String(codsucursal || '').replace(/'/g, "''");
+    const docType = 'cotiz';
+    const corr = Number(correlativo) || 0;
+    const clip = (v, max) => String(v == null ? '' : v).substring(0, max);
+    const esc = (v, max) => clip(v, max == null ? 8000 : max).replace(/'/g, "''");
+    const num = (v, d = 0) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : d;
+    };
+    const mapConcre = (forma) => {
+        const f = String(forma || '').toUpperCase().trim();
+        if (f.startsWith('CRE')) return 'CRE';
+        if (f.startsWith('VAL')) return 'VAL';
+        if (f.startsWith('FAC')) return 'FAC';
+        if (f.startsWith('CON')) return 'CON';
+        return clip(f, 3) || 'CON';
+    };
+    // DOCUMENTOS.PRIORIDAD (varchar 10): NORMAL | BAJA | ALTA
+    const mapPrioridad = (p) => {
+        const u = String(p || 'NORMAL').toUpperCase().trim();
+        if (u.startsWith('ALT')) return 'ALTA';
+        if (u.startsWith('BAJ')) return 'BAJA';
+        return 'NORMAL';
+    };
+
+    let tblDocproductos;
+    try {
+        tblDocproductos = JSON.parse(jsondocproductos);
+    } catch (e) {
+        return res.send('error');
+    }
+    if (!Array.isArray(tblDocproductos) || tblDocproductos.length === 0 || !corr) {
+        return res.send('error');
+    }
+
+    const concre = esc(mapConcre(formaentrega), 3);
+    const tipopago = esc(formaentrega || 'CONTADO', 10);
+    const prioridadSql = esc(mapPrioridad(prioridad), 10);
+    const obsSql = esc(obs, 255);
+    const usr = esc(usuario, 100);
+    const totCosto = num(totalcosto);
+    const totPrecio = num(totalprecio);
+
+    try {
+        let qrydoc = '';
+        tblDocproductos.forEach((p) => {
+            const desprod = esc(p.DESPROD, 255);
+            const tipoprecio = esc(p.TIPOPRECIO || 'P', 1);
+            const codprod = esc(p.CODPROD, 100);
+            const codmedida = esc(p.CODMEDIDA, 50);
+            const cantidad = num(p.CANTIDAD);
+            const equivale = Math.trunc(num(p.EQUIVALE, 1));
+            const totalunidades = num(p.TOTALUNIDADES, cantidad * equivale);
+            const costo = num(p.COSTO);
+            const precio = num(p.PRECIO);
+            const totalcostoL = num(p.TOTALCOSTO, costo * cantidad);
+            const totalprecioL = num(p.TOTALPRECIO, precio * cantidad);
+            const exento = num(p.EXENTO);
+
+            qrydoc += `
+                INSERT INTO DOCPRODUCTOS (
+                    CODSUCURSAL, EMPNIT, ANIO, MES, DIA,
+                    CODDOC, CORRELATIVO, CODPROD, DESPROD, CODMEDIDA,
+                    CANTIDAD, EQUIVALE, TOTALUNIDADES, COSTO, PRECIO,
+                    TOTALCOSTO, TOTALPRECIO, EXENTO, TIPOPRECIO, SOLICITADO
+                )
+                SELECT
+                    CODSUCURSAL, EMPNIT, ANIO, MES, DIA,
+                    CODDOC, CORRELATIVO, '${codprod}', '${desprod}', '${codmedida}',
+                    ${cantidad}, ${equivale}, ${totalunidades}, ${costo}, ${precio},
+                    ${totalcostoL}, ${totalprecioL}, ${exento}, '${tipoprecio}', 0
+                FROM DOCUMENTOS
+                WHERE CODDOC = '${docType}' AND CORRELATIVO = ${corr}
+                  AND CODSUCURSAL = '${sede}';
+            `;
+        });
+
+        const qry = `
+            SET XACT_ABORT ON;
+            BEGIN TRAN;
+            DELETE FROM DOCPRODUCTOS
+            WHERE CODDOC = '${docType}' AND CORRELATIVO = ${corr}
+              AND CODSUCURSAL = '${sede}';
+
+            UPDATE DOCUMENTOS SET
+                TOTALCOSTO = ${totCosto},
+                TOTALPRECIO = ${totPrecio},
+                DOC_SALDO = ${totPrecio},
+                OBS = '${obsSql}',
+                CONCRE = '${concre}',
+                TIPOPAGO = '${tipopago}',
+                PRIORIDAD = '${prioridadSql}',
+                USUARIO = '${usr}'
+            WHERE CODDOC = '${docType}' AND CORRELATIVO = ${corr}
+              AND CODSUCURSAL = '${sede}';
+
+            ${qrydoc}
+            SELECT ${corr} AS CORRELATIVO;
+            COMMIT TRAN;
+        `;
+
+        const result = await execute.command(qry);
+        const correlOut = result.recordset && result.recordset[0]
+            ? num(result.recordset[0].CORRELATIVO, corr)
+            : corr;
+        res.send({ rowsAffected: [1], correlativo: correlOut, coddoc: docType });
+    } catch (error) {
+        console.log('updatecotizacion: ' + error);
+        res.send('error');
+    }
+});
+
+router.post("/insertcotizacion", async (req,res)=>{
+
+    const {
+        jsondocproductos, codsucursal, empnit, anio, mes, dia, coddoc,
+        fecha, fechaentrega, formaentrega, prioridad, codcliente, nomclie,
+        totalcosto, totalprecio, nitclie, dirclie, obs, direntrega,
+        usuario, codven, lat, long, hora
+    } = req.body;
+
+    // Cotizaciones: EMPNIT y CODSUCURSAL siempre = sede
+    const sedeRaw = String(codsucursal || empnit || '');
+    const docType = 'cotiz';
+    const horaDoc = formatHoraDoc(hora);
+    const horaParts = horaDoc.split(':');
+    const horaInt = Number(horaParts[0]) || 0;
+    const minutoInt = Number(horaParts[1]) || 0;
+
+    let tblDocproductos;
+    try {
+        tblDocproductos = JSON.parse(jsondocproductos);
+    } catch (e) {
+        return res.send('error');
+    }
+    if (!Array.isArray(tblDocproductos) || tblDocproductos.length === 0) {
+        return res.send('error');
+    }
+
+    // DOCUMENTOS/DOCPRODUCTOS tienen longitudes distintas a ME_*
+    const clip = (v, max) => String(v == null ? '' : v).substring(0, max);
+    const esc = (v, max) => clip(v, max == null ? 8000 : max).replace(/'/g, "''");
+    const num = (v, d = 0) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : d;
+    };
+    const mapConcre = (forma) => {
+        const f = String(forma || '').toUpperCase().trim();
+        if (f.startsWith('CRE')) return 'CRE';
+        if (f.startsWith('VAL')) return 'VAL';
+        if (f.startsWith('FAC')) return 'FAC';
+        if (f.startsWith('CON')) return 'CON';
+        return clip(f, 3) || 'CON';
+    };
+    // DOCUMENTOS.PRIORIDAD (varchar 10): NORMAL | BAJA | ALTA
+    const mapPrioridad = (p) => {
+        const u = String(p || 'NORMAL').toUpperCase().trim();
+        if (u.startsWith('ALT')) return 'ALTA';
+        if (u.startsWith('BAJ')) return 'BAJA';
+        return 'NORMAL';
+    };
+
+    const sede = esc(sedeRaw, 50);
+    const codClie = Number.parseInt(codcliente, 10);
+    const codClienteSql = Number.isFinite(codClie) ? codClie : 0;
+    const concre = esc(mapConcre(formaentrega), 3);
+    const tipopago = esc(formaentrega || 'CONTADO', 10);
+    const prioridadSql = esc(mapPrioridad(prioridad), 10);
+    const nom = esc(nomclie, 255);
+    const nit = esc(nitclie, 50);
+    const dir = esc(dirclie, 255);
+    const obsSql = esc(obs, 255);
+    const dirEnt = esc(direntrega || 'SN', 255);
+    const usr = esc(usuario, 100);
+    const fechaSql = esc(fecha, 50);
+    const fechaEntSql = esc(fechaentrega || fecha, 50);
+    const latN = num(lat);
+    const longN = num(long);
+    const totCosto = num(totalcosto);
+    const totPrecio = num(totalprecio);
+    const codVenN = Math.trunc(num(codven));
+
+    try {
+        let qrydoc = '';
+        tblDocproductos.forEach((p) => {
+            const desprod = esc(p.DESPROD, 255);
+            const tipoprecio = esc(p.TIPOPRECIO || 'P', 1);
+            const codprod = esc(p.CODPROD, 100);
+            const codmedida = esc(p.CODMEDIDA, 50);
+            const cantidad = num(p.CANTIDAD);
+            const equivale = Math.trunc(num(p.EQUIVALE, 1));
+            const totalunidades = num(p.TOTALUNIDADES, cantidad * equivale);
+            const costo = num(p.COSTO);
+            const precio = num(p.PRECIO);
+            const totalcostoL = num(p.TOTALCOSTO, costo * cantidad);
+            const totalprecioL = num(p.TOTALPRECIO, precio * cantidad);
+            const exento = num(p.EXENTO);
+
+            qrydoc += `
+                INSERT INTO DOCPRODUCTOS (
+                    CODSUCURSAL, EMPNIT, ANIO, MES, DIA,
+                    CODDOC, CORRELATIVO, CODPROD, DESPROD, CODMEDIDA,
+                    CANTIDAD, EQUIVALE, TOTALUNIDADES, COSTO, PRECIO,
+                    TOTALCOSTO, TOTALPRECIO, EXENTO, TIPOPRECIO, SOLICITADO
+                ) VALUES (
+                    '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)},
+                    '${docType}', @CORREL, '${codprod}', '${desprod}', '${codmedida}',
+                    ${cantidad}, ${equivale}, ${totalunidades}, ${costo}, ${precio},
+                    ${totalcostoL}, ${totalprecioL}, ${exento}, '${tipoprecio}', 0
+                );
+            `;
+        });
+
+        const qry = `
+            SET XACT_ABORT ON;
+            BEGIN TRAN;
+            DECLARE @CORREL NUMERIC(18,0);
+            SELECT @CORREL = ISNULL(MAX(CORRELATIVO), 0) + 1
+            FROM DOCUMENTOS WITH (UPDLOCK, HOLDLOCK)
+            WHERE CODDOC = '${docType}'
+              AND CODSUCURSAL = '${sede}';
+
+            INSERT INTO DOCUMENTOS (
+                CODSUCURSAL, EMPNIT, ANIO, MES, DIA, FECHA, HORA, MINUTO,
+                CODDOC, CORRELATIVO, CODCLIENTE, DOC_NIT, DOC_NOMCLIE, DOC_DIRCLIE,
+                TOTALCOSTO, TOTALPRECIO, STATUS, USUARIO, CONCRE, CODVEN,
+                OBS, DOC_SALDO, DOC_ABONO, DIRENTREGA, LAT, LONG,
+                F_ENTREGA, TIPOPAGO, PRIORIDAD, PAGO, VUELTO
+            ) VALUES (
+                '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)}, '${fechaSql}', ${horaInt}, ${minutoInt},
+                '${docType}', @CORREL, ${codClienteSql}, '${nit}', '${nom}', '${dir}',
+                ${totCosto}, ${totPrecio}, 'O', '${usr}', '${concre}', ${codVenN},
+                '${obsSql}', ${totPrecio}, 0, '${dirEnt}', ${latN}, ${longN},
+                '${fechaEntSql}', '${tipopago}', '${prioridadSql}', 0, 0
+            );
+            ${qrydoc}
+            SELECT @CORREL AS CORRELATIVO;
+            COMMIT TRAN;
+        `;
+
+        const result = await execute.command(qry);
+        const correlativo = result.recordset && result.recordset[0]
+            ? num(result.recordset[0].CORRELATIVO, 0)
+            : 0;
+        res.send({ rowsAffected: [1], correlativo, coddoc: docType });
+    } catch (error) {
+        console.log('insertcotizacion: ' + error);
+        res.send('error');
+    }
+});
+
 function formatHoraDoc(hora) {
     const raw = (hora || '').toString().trim();
     if (raw && raw !== 'undefined' && raw !== 'null') {

@@ -56,3 +56,62 @@ a.text-personal:hover, a.text-personal:focus {
   .rounded-xxl {
     border-radius: 22px;
   }
+
+.modal-backdrop.cotiz-finalizar-backdrop,
+body.cotiz-finalizar-open > .modal-backdrop {
+  opacity: 1 !important;
+  background-color: rgba(15, 23, 42, 0.42) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* Cotizaciones: blur en modal finalizar */
+.cotiz-finalizar-modal.show ~ .modal-backdrop {
+  opacity: 1 !important;
+  background-color: rgba(15, 23, 42, 0.35) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+body.theme-modern-glass .cotiz-finalizar-modal.show ~ .modal-backdrop {
+  opacity: 1 !important;
+  background-color: rgba(15, 23, 42, 0.32) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body.theme-modern-glass #btnCotizNueva,
+#btnCotizNueva {
+  position: fixed !important;
+  right: 18px !important;
+  bottom: 78px !important;
+  z-index: 1090 !important;
+  width: 58px !important;
+  height: 58px !important;
+  min-width: 58px !important;
+  min-height: 58px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #28a745 !important;
+  background-image: none !important;
+  background-color: #28a745 !important;
+  border: 1px solid #28a745 !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.45) !important;
+}
+
+body.theme-modern-glass #btnCotizNueva:hover,
+body.theme-modern-glass #btnCotizNueva:focus,
+body.theme-modern-glass #btnCotizNueva:active,
+#btnCotizNueva:hover,
+#btnCotizNueva:focus,
+#btnCotizNueva:active {
+  background: #218838 !important;
+  background-image: none !important;
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
+  color: #fff !important;
+}
