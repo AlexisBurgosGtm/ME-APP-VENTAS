@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-v2026-023';
-const dynamicCacheName = 'runtime-cache-2026-023';
+const staticCacheName = 'pre-cache-v2026-025';
+const dynamicCacheName = 'runtime-cache-2026-025';
 
 
 // Pre Caching Assets
@@ -89,13 +89,15 @@ function isApiRequest(request) {
     try {
         const url = new URL(request.url);
         const path = url.pathname.toLowerCase();
-        // Nunca cachear endpoints de datos en vivo (conteos, listas, sync, auth)
+        // Nunca cachear endpoints de datos en vivo ni vistas JS dinámicas
         if (
             path.includes('/ventas/') ||
             path.includes('/empleados/') ||
             path.includes('/clientes/') ||
             path.includes('/type/') ||
-            path.includes('/api/')
+            path.includes('/api/') ||
+            path.includes('/views/') ||
+            path.includes('/router/')
         ) {
             return true;
         }

@@ -1,4 +1,8 @@
 try {
+  process.env.TZ = 'America/Guatemala';
+} catch (e) {}
+
+try {
   process.loadEnvFile() //process.loadEnvFile(['./dev.env','./dev2.env']) 
 } catch (error) {
   

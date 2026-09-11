@@ -2,6 +2,107 @@ const execute = require('./connection');
 const express = require('express');
 const router = express.Router();
 
+/** Fecha calendario yyyy-mm-dd en zona America/Guatemala (independiente del TZ del host/Render). */
+function getFechaGuatemalaYmd(dateInput) {
+    try {
+        const d = dateInput ? new Date(dateInput) : new Date();
+        if (isNaN(d.getTime())) throw new Error('invalid date');
+        return new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Guatemala',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(d); // en-CA => YYYY-MM-DD
+    } catch (e) {
+        const n = new Date();
+        return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+    }
+}
+
+function normalizeYmdGuatemala(v) {
+    const s = String(v == null ? '' : v).trim();
+    // yyyy-mm-dd puro (input date / app)
+    const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (plain) return `${plain[1]}-${plain[2]}-${plain[3]}`;
+    // ISO u otro Date parseable -> calendario Guatemala
+    if (s) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) return getFechaGuatemalaYmd(d);
+    }
+    return '';
+}
+
+function setNoStore(res) {
+    res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+    });
+}
+
+function handleListCotizaciones(req, res) {
+    const src = Object.assign({}, req.query || {}, req.body || {});
+    const sede = String(src.codsucursal || '').replace(/'/g, "''");
+    let ini = normalizeYmdGuatemala(src.fechaini);
+    let fin = normalizeYmdGuatemala(src.fechafin);
+    const todayGt = getFechaGuatemalaYmd();
+    if (!ini) ini = todayGt;
+    if (!fin) fin = todayGt;
+    if (ini > fin) {
+        const tmp = ini; ini = fin; fin = tmp;
+    }
+    const iniNum = Number(ini.replace(/-/g, ''));
+    const finNum = Number(fin.replace(/-/g, ''));
+
+    setNoStore(res);
+
+    // Comparación por fecha calendario (texto yyyy-mm-dd / ANIO-MES-DIA).
+    // Evita desfaces por hora, UTC de Render y CAST datetime.
+    const qry = `
+        SELECT
+            CONVERT(varchar(10), D.FECHA, 23) AS FECHA,
+            ISNULL(D.ANIO, 0) AS ANIO,
+            ISNULL(D.MES, 0) AS MES,
+            ISNULL(D.DIA, 0) AS DIA,
+            ISNULL(D.HORA, 0) AS HORA,
+            ISNULL(D.MINUTO, 0) AS MINUTO,
+            D.CODDOC,
+            D.CORRELATIVO,
+            ISNULL(D.DOC_NOMCLIE, '') AS CLIENTE,
+            ISNULL(D.DOC_NIT, '') AS DOC_NIT,
+            ISNULL(D.DOC_DIRCLIE, '') AS DOC_DIRCLIE,
+            ISNULL(D.CODCLIENTE, 0) AS CODCLIENTE,
+            ISNULL(D.TOTALPRECIO, 0) AS TOTALPRECIO,
+            ISNULL(D.TOTALCOSTO, 0) AS TOTALCOSTO,
+            ISNULL(D.OBS, '') AS OBS,
+            ISNULL(D.CONCRE, '') AS CONCRE,
+            ISNULL(D.TIPOPAGO, '') AS TIPOPAGO,
+            ISNULL(D.PRIORIDAD, 'NORMAL') AS PRIORIDAD,
+            ISNULL(D.CODVEN, 0) AS CODVEN
+        FROM DOCUMENTOS D
+        WHERE D.CODDOC = 'cotiz'
+          AND D.CODSUCURSAL = '${sede}'
+          AND (
+                (
+                    ISNULL(D.ANIO, 0) >= 2000
+                    AND ISNULL(D.MES, 0) BETWEEN 1 AND 12
+                    AND ISNULL(D.DIA, 0) BETWEEN 1 AND 31
+                    AND (D.ANIO * 10000 + D.MES * 100 + D.DIA) BETWEEN ${iniNum} AND ${finNum}
+                )
+                OR (
+                    CONVERT(varchar(10), D.FECHA, 23) BETWEEN '${ini}' AND '${fin}'
+                )
+          )
+        ORDER BY
+            CONVERT(varchar(10), D.FECHA, 23) DESC,
+            D.HORA DESC,
+            D.MINUTO DESC,
+            D.CORRELATIVO DESC
+    `;
+    execute.Query(res, qry);
+}
+
 router.post("/get_codupdate", async(req,res)=>{
     
     const {sucursal} = req.body;
@@ -1840,67 +1941,11 @@ router.post("/update_fecha_pedido", async (req,res)=>{
 
 
 router.get("/listcotizaciones", async (req, res) => {
-    const { codsucursal, fechaini, fechafin } = req.query;
-    const sede = String(codsucursal || '').replace(/'/g, "''");
-    const ymd = (v) => {
-        const m = String(v || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-        return m ? `${m[1]}-${m[2]}-${m[3]}` : '';
-    };
-    let ini = ymd(fechaini);
-    let fin = ymd(fechafin);
-    if (!ini || !fin) {
-        const n = new Date();
-        const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
-        if (!ini) ini = today;
-        if (!fin) fin = today;
-    }
-    if (ini > fin) {
-        const tmp = ini; ini = fin; fin = tmp;
-    }
-    const iniNum = Number(ini.replace(/-/g, ''));
-    const finNum = Number(fin.replace(/-/g, ''));
+    handleListCotizaciones(req, res);
+});
 
-    // Filtrar por día calendario inclusivo (cubre FECHA con hora y ANIO/MES/DIA).
-    const qry = `
-        SELECT
-            CONVERT(varchar(10), D.FECHA, 23) AS FECHA,
-            ISNULL(D.ANIO, 0) AS ANIO,
-            ISNULL(D.MES, 0) AS MES,
-            ISNULL(D.DIA, 0) AS DIA,
-            ISNULL(D.HORA, 0) AS HORA,
-            ISNULL(D.MINUTO, 0) AS MINUTO,
-            D.CODDOC,
-            D.CORRELATIVO,
-            ISNULL(D.DOC_NOMCLIE, '') AS CLIENTE,
-            ISNULL(D.DOC_NIT, '') AS DOC_NIT,
-            ISNULL(D.DOC_DIRCLIE, '') AS DOC_DIRCLIE,
-            ISNULL(D.CODCLIENTE, 0) AS CODCLIENTE,
-            ISNULL(D.TOTALPRECIO, 0) AS TOTALPRECIO,
-            ISNULL(D.TOTALCOSTO, 0) AS TOTALCOSTO,
-            ISNULL(D.OBS, '') AS OBS,
-            ISNULL(D.CONCRE, '') AS CONCRE,
-            ISNULL(D.TIPOPAGO, '') AS TIPOPAGO,
-            ISNULL(D.PRIORIDAD, 'NORMAL') AS PRIORIDAD,
-            ISNULL(D.CODVEN, 0) AS CODVEN
-        FROM DOCUMENTOS D
-        WHERE D.CODDOC = 'cotiz'
-          AND D.CODSUCURSAL = '${sede}'
-          AND (
-                (
-                    ISNULL(D.ANIO, 0) >= 2000
-                    AND (D.ANIO * 10000 + D.MES * 100 + D.DIA) BETWEEN ${iniNum} AND ${finNum}
-                )
-                OR (
-                    D.FECHA >= CAST('${ini}' AS datetime)
-                    AND D.FECHA < DATEADD(day, 1, CAST('${fin}' AS datetime))
-                )
-                OR (
-                    CONVERT(int, CONVERT(varchar(8), D.FECHA, 112)) BETWEEN ${iniNum} AND ${finNum}
-                )
-          )
-        ORDER BY D.FECHA DESC, D.HORA DESC, D.MINUTO DESC, D.CORRELATIVO DESC
-    `;
-    execute.Query(res, qry);
+router.post("/listcotizaciones", async (req, res) => {
+    handleListCotizaciones(req, res);
 });
 
 router.get("/cotizaciondetalle", async (req, res) => {
@@ -2161,8 +2206,14 @@ router.post("/insertcotizacion", async (req,res)=>{
     const obsSql = esc(obs, 255);
     const dirEnt = esc(direntrega || 'SN', 255);
     const usr = esc(usuario, 100);
-    const fechaSql = esc(fecha, 50);
-    const fechaEntSql = esc(fechaentrega || fecha, 50);
+    const fechaNorm = normalizeYmdGuatemala(fecha) || getFechaGuatemalaYmd();
+    const fechaEntNorm = normalizeYmdGuatemala(fechaentrega || fecha) || fechaNorm;
+    const fechaParts = fechaNorm.split('-');
+    const anioSql = Number(fechaParts[0]) || num(anio);
+    const mesSql = Number(fechaParts[1]) || num(mes);
+    const diaSql = Number(fechaParts[2]) || num(dia);
+    const fechaSql = esc(fechaNorm, 50);
+    const fechaEntSql = esc(fechaEntNorm, 50);
     const latN = num(lat);
     const longN = num(long);
     const totCosto = num(totalcosto);
@@ -2192,7 +2243,7 @@ router.post("/insertcotizacion", async (req,res)=>{
                     CANTIDAD, EQUIVALE, TOTALUNIDADES, COSTO, PRECIO,
                     TOTALCOSTO, TOTALPRECIO, EXENTO, TIPOPRECIO, SOLICITADO
                 ) VALUES (
-                    '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)},
+                    '${sede}', '${sede}', ${anioSql}, ${mesSql}, ${diaSql},
                     '${docType}', @CORREL, '${codprod}', '${desprod}', '${codmedida}',
                     ${cantidad}, ${equivale}, ${totalunidades}, ${costo}, ${precio},
                     ${totalcostoL}, ${totalprecioL}, ${exento}, '${tipoprecio}', 0
@@ -2216,7 +2267,7 @@ router.post("/insertcotizacion", async (req,res)=>{
                 OBS, DOC_SALDO, DOC_ABONO, DIRENTREGA, LAT, LONG,
                 F_ENTREGA, TIPOPAGO, PRIORIDAD, PAGO, VUELTO
             ) VALUES (
-                '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)}, CAST('${fechaSql}' AS date), ${horaInt}, ${minutoInt},
+                '${sede}', '${sede}', ${anioSql}, ${mesSql}, ${diaSql}, CAST('${fechaSql}' AS date), ${horaInt}, ${minutoInt},
                 '${docType}', @CORREL, ${codClienteSql}, '${nit}', '${nom}', '${dir}',
                 ${totCosto}, ${totPrecio}, 'O', '${usr}', '${concre}', ${codVenN},
                 '${obsSql}', ${totPrecio}, 0, '${dirEnt}', ${latN}, ${longN},

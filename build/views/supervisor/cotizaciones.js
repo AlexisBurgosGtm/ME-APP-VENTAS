@@ -16,13 +16,26 @@ function formatFechaCotiz(fecha, anio, mes, dia) {
     }
     if (!fecha) return '';
     const s = String(fecha);
-    // Preferir yyyy-mm-dd del campo FECHA sin shift de zona horaria
+    // Preferir yyyy-mm-dd puro (sin hora) para no aplicar TZ
+    const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (plain) return plain[3] + '/' + plain[2] + '/' + plain[1];
     const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (m) return m[3] + '/' + m[2] + '/' + m[1];
-    const d = new Date(fecha);
-    if (isNaN(d.getTime())) return s;
-    // Usar componentes locales: el Date de SQL suele venir en UTC y getUTC* atrasa un día en GT
-    return pad2Cotiz(d.getDate()) + '/' + pad2Cotiz(d.getMonth() + 1) + '/' + d.getFullYear();
+    if (m && !/[T ]\d/.test(s)) return m[3] + '/' + m[2] + '/' + m[1];
+    // ISO con hora: interpretar en calendario Guatemala
+    try {
+        const d = new Date(fecha);
+        if (!isNaN(d.getTime())) {
+            const gt = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Guatemala',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).format(d); // YYYY-MM-DD
+            const p = gt.split('-');
+            if (p.length === 3) return p[2] + '/' + p[1] + '/' + p[0];
+        }
+    } catch (e) {}
+    return s;
 }
 
 function formatHoraCotiz(hora, minuto) {
@@ -681,11 +694,21 @@ async function iniciarVistaCotizaciones(){
 };
 
 function getFechaCotizLocal(){
-    const f = new Date();
-    const y = f.getFullYear();
-    const m = String(f.getMonth() + 1).padStart(2, '0');
-    const d = String(f.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    // Siempre calendario de Guatemala (no UTC del host ni del navegador en otra zona)
+    try {
+        return new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Guatemala',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(new Date()); // YYYY-MM-DD
+    } catch (e) {
+        const f = new Date();
+        const y = f.getFullYear();
+        const m = String(f.getMonth() + 1).padStart(2, '0');
+        const d = String(f.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
 }
 
 function cleanupCotizUiLocks(){
@@ -803,8 +826,10 @@ async function cargarListaCotizaciones(){
     tbody.innerHTML = `<tr><td colspan="6" class="text-center">${GlobalLoader}</td></tr>`;
 
     const normalizeFecha = (v) => {
-        const m = String(v || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
-        return m ? `${m[1]}-${m[2]}-${m[3]}` : getFechaCotizLocal();
+        const s = String(v || '').trim();
+        const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+        return getFechaCotizLocal();
     };
     let ini = normalizeFecha(document.getElementById('txtCotizFechaIni').value);
     let fin = normalizeFecha(document.getElementById('txtCotizFechaFin').value);
@@ -813,10 +838,21 @@ async function cargarListaCotizaciones(){
         document.getElementById('txtCotizFechaIni').value = ini;
         document.getElementById('txtCotizFechaFin').value = fin;
     }
-    const sede = encodeURIComponent(GlobalCodSucursal);
 
     try {
-        const response = await axios.get(`/ventas/listcotizaciones?codsucursal=${sede}&fechaini=${encodeURIComponent(ini)}&fechafin=${encodeURIComponent(fin)}`);
+        // POST + no-cache: en Render/CDN los GET se cacheaban y el filtro parecía “roto”
+        const response = await axios.post('/ventas/listcotizaciones', {
+            codsucursal: GlobalCodSucursal,
+            fechaini: ini,
+            fechafin: fin,
+            tz: 'America/Guatemala',
+            _: Date.now()
+        }, {
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
         const data = response.data;
         if (!data || data.toString() === 'error' || !data.recordset) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">No se pudo cargar la lista</td></tr>`;
