@@ -1783,9 +1783,6 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
         let pre = 0;
 
         data.forEach((rows) => {
-            let exist = Number(rows.EXISTENCIA) / Number(rows.EQUIVALE || 1);
-            let strC = '';
-            if (Number(rows.EXISTENCIA) <= 0) { strC = 'bg-danger text-white'; } else { strC = 'bg-success text-white'; }
             let totalexento = 0;
             if (rows.EXENTO == 1) { totalexento = Number(rows.PRECIO); }
 
@@ -1810,7 +1807,9 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                     break;
             }
 
-            str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});" class="border-bottom">
+            // Cotización: no se valida stock; EXISTENCIA alta solo para no bloquear cantidades
+            const existUi = 999999;
+            str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${existUi});" class="border-bottom">
                 <td >
                     ${funciones.quitarCaracteres(rows.DESPROD,'"'," pulg",true)}
                     <br>
@@ -1819,14 +1818,11 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                     <b class"bg-danger text-white">${rows.CODMEDIDA}</b>
                     <small>(${rows.EQUIVALE})</small>
                 </td>
-                <td>${funciones.setMoneda(pre || 0,'Q ')}
-                    <br>
-                    <small class="${strC}">E:${funciones.setMoneda(exist,'')}</small>
-                </td>
+                <td>${funciones.setMoneda(pre || 0,'Q ')}</td>
                 
                 <td>
                     <button class="btn btn-sm btn-success btn-circle text-white" 
-                    onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});">
+                    onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${existUi});">
                         +
                     </button>
                 <td>
@@ -1842,35 +1838,24 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
     });
 };
 
-//gestiona la apertura de la cantidad
+//gestiona la apertura de la cantidad (cotización: sin validar existencias)
 function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento,existencia){
-    console.log('existencia: ' + existencia);
+    GlobalSelectedCodprod = codprod;
+    GlobalSelectedDesprod = desprod;
+    GlobalSelectedCodmedida = codmedida;
+    GlobalSelectedEquivale = parseInt(equivale);
+    GlobalSelectedCosto = parseFloat(costo);
+    GlobalSelectedPrecio = parseFloat(precio);
+    GlobalSelectedExento = parseInt(exento);
+    GlobalSelectedExistencia = 999999;
 
-    if(parseInt(existencia)>0){
-        GlobalSelectedCodprod = codprod;
-        GlobalSelectedDesprod = desprod;
-        GlobalSelectedCodmedida = codmedida;
-        GlobalSelectedEquivale = parseInt(equivale);
-        GlobalSelectedCosto = parseFloat(costo);
-        GlobalSelectedPrecio = parseFloat(precio);
-        
-        GlobalSelectedExento = parseInt(exento);
-        GlobalSelectedExistencia = parseInt(existencia);
-    
-        //modal para la cantidad del producto
-        document.getElementById('txtDesProducto').innerText = desprod; //label
-        document.getElementById('txtCodMedida').innerText = codmedida; //label
-        document.getElementById('txtPrecioProducto').innerText = funciones.setMoneda(precio,'Q'); //label
-        document.getElementById('txtSubTotal').innerText = funciones.setMoneda(precio,'Q'); //label
-            
-        document.getElementById('txtCantidad').value = 1;
-    
-        $("#ModalCantidadProducto").modal('show');    
-    }else{
-        funciones.AvisoError('Producto SIN EXISTENCIA')
-    }
+    document.getElementById('txtDesProducto').innerText = desprod;
+    document.getElementById('txtCodMedida').innerText = codmedida;
+    document.getElementById('txtPrecioProducto').innerText = funciones.setMoneda(precio,'Q');
+    document.getElementById('txtSubTotal').innerText = funciones.setMoneda(precio,'Q');
+    document.getElementById('txtCantidad').value = 1;
 
-
+    $("#ModalCantidadProducto").modal('show');
 };
 
 //GRID TEMP VENTAS
@@ -1880,21 +1865,13 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
    
     db_totalunidades_producto(codprod)
     .then((totaluns)=>{
-        //---------------------------------------------------------
-
-        if(Number(GlobalSelectedExistencia)<(Number(totalunidades)+Number(totaluns))){
-            funciones.AvisoError('No pude agregar una cantidad mayor a la existencia');
-            return;
-        };
-    
+        // Cotización: no valida stock / existencias
         document.getElementById('btnAgregarProducto').innerHTML = GlobalLoader;
         document.getElementById('btnAgregarProducto').disabled = true;
     
-        //document.getElementById('tblResultadoBusqueda').innerHTML = '';
         let cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
             let totalcosto = Number(costo) * Number(cantidad);
             let totalprecio = Number(precio) * Number(cantidad);
-            console.log('intenta agregar la fila')
             let coddoc = document.getElementById('cmbCoddoc').value;
             try {        
                     var data = {
@@ -1914,7 +1891,7 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
                         EXENTO:exento,
                         USUARIO:GlobalUsuario,
                         TIPOPRECIO:cmbTipoPrecio.value,
-                        EXISTENCIA:GlobalSelectedExistencia
+                        EXISTENCIA:999999
                     };
     
                     insertTempVentas(data)
@@ -2041,23 +2018,15 @@ async function fcnCargarGridTempVentas(idContenedor){
 };
 
 async function fcnUpdateTempRow(id,cantidad){
-
-    //--------------------------
-    if(Number(GlobalSelectedExistencia)<Number(cantidad)){
-        funciones.AvisoError('No pude agregar una cantidad mayor a la existencia');
-        return;
-    };
-    //--------------------------
-
+    // Cotización: no valida stock / existencias
     return new Promise((resolve, reject) => {
-            //OBTIENE LOS DATOS DE LA ROW    
             selectDataRowVenta(id,cantidad)
             .then(()=>{
                 fcnCargarGridTempVentas('tblGridTempVentas');
                 resolve();
             })
             .catch(()=>{
-                funciones.AvisoError('No se logró Eliminar la lista de productos agregados');
+                funciones.AvisoError('No se logró actualizar la cantidad');
                 reject();
             })
 
@@ -2065,13 +2034,10 @@ async function fcnUpdateTempRow(id,cantidad){
 };
 
 async function fcnCambiarCantidad(id,cantidad,codprod, existencia){
-    
     GlobalSelectedId = id;
-    GlobalSelectedExistencia = Number(existencia);
-    //$('#ModalCantidad').modal('show');
+    GlobalSelectedExistencia = 999999;
     document.getElementById('txtCantNuevaCant').value = cantidad;
     $('#modalCambiarCantidadProducto').modal('show');
-    
 };
 
 
