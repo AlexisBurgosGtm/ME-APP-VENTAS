@@ -1857,10 +1857,16 @@ router.get("/listcotizaciones", async (req, res) => {
     if (ini > fin) {
         const tmp = ini; ini = fin; fin = tmp;
     }
+    const iniNum = Number(ini.replace(/-/g, ''));
+    const finNum = Number(fin.replace(/-/g, ''));
 
+    // Filtrar por día calendario inclusivo (cubre FECHA con hora y ANIO/MES/DIA).
     const qry = `
         SELECT
-            D.FECHA,
+            CONVERT(varchar(10), D.FECHA, 23) AS FECHA,
+            ISNULL(D.ANIO, 0) AS ANIO,
+            ISNULL(D.MES, 0) AS MES,
+            ISNULL(D.DIA, 0) AS DIA,
             ISNULL(D.HORA, 0) AS HORA,
             ISNULL(D.MINUTO, 0) AS MINUTO,
             D.CODDOC,
@@ -1879,8 +1885,19 @@ router.get("/listcotizaciones", async (req, res) => {
         FROM DOCUMENTOS D
         WHERE D.CODDOC = 'cotiz'
           AND D.CODSUCURSAL = '${sede}'
-          AND CAST(D.FECHA AS date) >= CAST('${ini}' AS date)
-          AND CAST(D.FECHA AS date) <= CAST('${fin}' AS date)
+          AND (
+                (
+                    ISNULL(D.ANIO, 0) >= 2000
+                    AND (D.ANIO * 10000 + D.MES * 100 + D.DIA) BETWEEN ${iniNum} AND ${finNum}
+                )
+                OR (
+                    D.FECHA >= CAST('${ini}' AS datetime)
+                    AND D.FECHA < DATEADD(day, 1, CAST('${fin}' AS datetime))
+                )
+                OR (
+                    CONVERT(int, CONVERT(varchar(8), D.FECHA, 112)) BETWEEN ${iniNum} AND ${finNum}
+                )
+          )
         ORDER BY D.FECHA DESC, D.HORA DESC, D.MINUTO DESC, D.CORRELATIVO DESC
     `;
     execute.Query(res, qry);
@@ -1895,7 +1912,11 @@ router.get("/cotizaciondetalle", async (req, res) => {
     try {
         const cab = await execute.command(`
             SELECT TOP 1
-                FECHA, HORA, MINUTO, CODDOC, CORRELATIVO,
+                CONVERT(varchar(10), FECHA, 23) AS FECHA,
+                ISNULL(ANIO, 0) AS ANIO,
+                ISNULL(MES, 0) AS MES,
+                ISNULL(DIA, 0) AS DIA,
+                HORA, MINUTO, CODDOC, CORRELATIVO,
                 ISNULL(DOC_NOMCLIE, '') AS CLIENTE,
                 ISNULL(DOC_NIT, '') AS DOC_NIT,
                 ISNULL(DOC_DIRCLIE, '') AS DOC_DIRCLIE,

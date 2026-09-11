@@ -7,7 +7,13 @@ function pad2Cotiz(n) {
     return v < 10 ? ('0' + v) : String(v);
 }
 
-function formatFechaCotiz(fecha) {
+function formatFechaCotiz(fecha, anio, mes, dia) {
+    const ai = Number(anio);
+    const mi = Number(mes);
+    const di = Number(dia);
+    if (ai >= 2000 && mi >= 1 && mi <= 12 && di >= 1 && di <= 31) {
+        return pad2Cotiz(di) + '/' + pad2Cotiz(mi) + '/' + ai;
+    }
     if (!fecha) return '';
     const s = String(fecha);
     // Preferir yyyy-mm-dd del campo FECHA sin shift de zona horaria
@@ -15,7 +21,8 @@ function formatFechaCotiz(fecha) {
     if (m) return m[3] + '/' + m[2] + '/' + m[1];
     const d = new Date(fecha);
     if (isNaN(d.getTime())) return s;
-    return pad2Cotiz(d.getUTCDate()) + '/' + pad2Cotiz(d.getUTCMonth() + 1) + '/' + d.getUTCFullYear();
+    // Usar componentes locales: el Date de SQL suele venir en UTC y getUTC* atrasa un día en GT
+    return pad2Cotiz(d.getDate()) + '/' + pad2Cotiz(d.getMonth() + 1) + '/' + d.getFullYear();
 }
 
 function formatHoraCotiz(hora, minuto) {
@@ -824,7 +831,7 @@ async function cargarListaCotizaciones(){
             const docLabel = `${r.CODDOC}-${r.CORRELATIVO}`;
             const corr = Number(r.CORRELATIVO);
             html += `<tr>
-                <td>${formatFechaCotiz(r.FECHA)}</td>
+                <td>${formatFechaCotiz(r.FECHA, r.ANIO, r.MES, r.DIA)}</td>
                 <td>${formatHoraCotiz(r.HORA, r.MINUTO)}</td>
                 <td><span class="negrita">${docLabel}</span></td>
                 <td>${r.CLIENTE || ''}</td>
@@ -1006,7 +1013,7 @@ function getCotizPrintStyles(){
 
 function buildCotizacionPrintableContent(cab, productos, logoUrl){
     const docNo = `${cab.CODDOC || 'cotiz'}-${cab.CORRELATIVO}`;
-    const fecha = formatFechaCotiz(cab.FECHA);
+    const fecha = formatFechaCotiz(cab.FECHA, cab.ANIO, cab.MES, cab.DIA);
     const hora = formatHoraCotiz(cab.HORA, cab.MINUTO);
     const cliente = escHtmlCotiz(cab.CLIENTE || '');
     const nit = escHtmlCotiz(cab.DOC_NIT || '');

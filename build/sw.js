@@ -1,5 +1,5 @@
-const staticCacheName = 'pre-cache-v2026-021';
-const dynamicCacheName = 'runtime-cache-2026-021';
+const staticCacheName = 'pre-cache-v2026-023';
+const dynamicCacheName = 'runtime-cache-2026-023';
 
 
 // Pre Caching Assets
@@ -85,10 +85,30 @@ const precacheAssets = [
     './manifest.json'
 ];
 
+function isApiRequest(request) {
+    try {
+        const url = new URL(request.url);
+        const path = url.pathname.toLowerCase();
+        // Nunca cachear endpoints de datos en vivo (conteos, listas, sync, auth)
+        if (
+            path.includes('/ventas/') ||
+            path.includes('/empleados/') ||
+            path.includes('/clientes/') ||
+            path.includes('/type/') ||
+            path.includes('/api/')
+        ) {
+            return true;
+        }
+        if (request.method && request.method.toUpperCase() !== 'GET') {
+            return true;
+        }
+    } catch (e) {}
+    return false;
+}
+
 // INSTALL Event
 self.addEventListener('install', function (event) {
-    
-  
+    self.skipWaiting();
     event.waitUntil(
         caches.open(staticCacheName).then(function (cache) {
             return cache.addAll(precacheAssets);
@@ -98,34 +118,46 @@ self.addEventListener('install', function (event) {
 
 // ACTIVATE Event
 self.addEventListener('activate', function (event) {
-    
- 
     event.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(keys
                 .filter(key => key !== staticCacheName && key !== dynamicCacheName)
                 .map(key => caches.delete(key))
             );
-        })
+        }).then(() => self.clients.claim())
     );
 });
 
 // FETCH Event
 self.addEventListener('fetch', function (event) {
-    
-    //return;
+    // APIs / datos dinámicos: siempre red, sin cache
+    if (isApiRequest(event.request)) {
+        event.respondWith(
+            fetch(event.request).catch(function () {
+                return caches.match('offline.html');
+            })
+        );
+        return;
+    }
 
     event.respondWith(
         caches.match(event.request).then(cacheRes => {
             return cacheRes || fetch(event.request).then(response => {
+                // Solo cachear assets estáticos exitosos
+                if (!response || response.status !== 200 || response.type === 'opaque') {
+                    return response;
+                }
+                const contentType = response.headers.get('content-type') || '';
+                if (contentType.includes('application/json')) {
+                    return response;
+                }
                 return caches.open(dynamicCacheName).then(function (cache) {
                     cache.put(event.request, response.clone());
                     return response;
-                })
+                });
             });
-        }).catch(function() {
-            // Fallback Page, When No Internet Connection
+        }).catch(function () {
             return caches.match('offline.html');
-          })
+        })
     );
 });

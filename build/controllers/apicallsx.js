@@ -25,7 +25,10 @@ let apigen = {
             
             return new Promise((resolve,reject)=>{
                 let total = '';
-                axios.get(`/ventas/online_productos_subidos?sucursal=${GlobalCodSucursal}&codtipocatalogo=${GlobalTipoCatalogo}`)
+                const bust = Date.now();
+                axios.get(`/ventas/online_productos_subidos?sucursal=${GlobalCodSucursal}&codtipocatalogo=${GlobalTipoCatalogo}&_=${bust}`, {
+                    headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+                })
                 .then((response) => {
                     const data = response.data.recordset;
                     data.map((rows)=>{
@@ -42,7 +45,10 @@ let apigen = {
             
             return new Promise((resolve,reject)=>{
                 let total = '';
-                axios.get(`/ventas/online_clientes_subidos?sucursal=${GlobalCodSucursal}&codven=${GlobalCodUsuario}&codruta=${GlobalCodRuta}`)
+                const bust = Date.now();
+                axios.get(`/ventas/online_clientes_subidos?sucursal=${GlobalCodSucursal}&codven=${GlobalCodUsuario}&codruta=${GlobalCodRuta}&_=${bust}`, {
+                    headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+                })
                 .then((response) => {
                     const data = response.data.recordset;
                     data.map((rows)=>{
