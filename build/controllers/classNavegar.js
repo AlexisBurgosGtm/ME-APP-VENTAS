@@ -520,6 +520,23 @@ let classNavegar = {
         })
     },
     supervisor_cotizaciones:()=>{
+        // Liberar bloqueos de modal/backdrop antes de cargar la vista
+        try {
+            document.body.classList.remove('modal-open', 'cotiz-finalizar-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            document.querySelectorAll('.modal-backdrop').forEach((el) => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+            const wait = document.getElementById('modalWait');
+            if (wait) {
+                try { $('#modalWait').modal('hide'); } catch (e) {}
+                wait.classList.remove('show', 'factura-wait-modal');
+                wait.style.display = 'none';
+            }
+            const pdfHost = document.getElementById('cotizPdfHost');
+            if (pdfHost && pdfHost.parentNode) pdfHost.parentNode.removeChild(pdfHost);
+        } catch (e) {}
         funciones.loadScript('./views/supervisor/cotizaciones.js','root')
         .then(()=>{
             detener_efecto();

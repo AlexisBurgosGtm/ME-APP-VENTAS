@@ -109,6 +109,21 @@
                 localStorage.setItem("themeSettings", "");
             }
 
+            // Modo día/noche (APPVENTAS) — aplicar antes del render
+            (function applyAppVentasThemeMode() {
+                try {
+                    if (!classHolder.classList.contains('theme-modern-glass')) {
+                        classHolder.classList.add('theme-modern-glass');
+                    }
+                    var mode = localStorage.getItem('appventas_theme_mode') || 'day';
+                    if (mode === 'night') {
+                        classHolder.classList.add('theme-night');
+                    } else {
+                        classHolder.classList.remove('theme-night');
+                    }
+                } catch (e) {}
+            })();
+
         </script>
 
         <!-- BEGIN Page Wrapper -->
@@ -122,8 +137,14 @@
                     <!-- hice una modificacion en el css del app bundle, 
                         cambie la clase page-header bajando el height de 4 a 2 -->
                     <header class="page-header bg-personal" role="banner">
-                        <div>
-                            <h5 class="text-white" id="lbUsuarioData"></h5>
+                        <div class="header-left d-flex align-items-center">
+                            <div class="header-user-badge" id="headerUserBadge" style="display:none;">
+                                <span class="header-user-badge-icon"><i class="fal fa-user"></i></span>
+                                <span class="header-user-badge-name" id="lbUsuarioData"></span>
+                            </div>
+                            <button type="button" class="header-theme-toggle" id="btnThemeMode" title="Cambiar modo día/noche" aria-label="Cambiar modo día/noche">
+                                <i class="fal fa-moon" id="iconThemeMode"></i>
+                            </button>
                         </div>
                         
                         <div class="ml-auto d-flex">

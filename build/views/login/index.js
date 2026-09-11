@@ -83,6 +83,7 @@ function addListeners(){
    
 
     document.getElementById('lbUsuarioData').innerText = '';
+    if (typeof clearHeaderUserBadge === 'function') clearHeaderUserBadge();
 
     //carga las sucursales directamente desde código
     document.getElementById('cmbSucursal').innerHTML = '<option value="" disabled selected hidden>Selecciona una sede</option>' + funciones.getComboSucursales();

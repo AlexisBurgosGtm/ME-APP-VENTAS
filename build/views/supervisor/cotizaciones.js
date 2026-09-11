@@ -668,13 +668,68 @@ async function iniciarVistaCotizaciones(){
     CotizEditCorrelativo = 0;
     CotizEditCoddoc = 'cotiz';
     GlobalSelectedCodCliente = '';
+    cleanupCotizUiLocks();
     try { await deleteTempVenta(GlobalUsuario); } catch (e) {}
     showListaCotizaciones();
 };
 
+function getFechaCotizLocal(){
+    const f = new Date();
+    const y = f.getFullYear();
+    const m = String(f.getMonth() + 1).padStart(2, '0');
+    const d = String(f.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
+function cleanupCotizUiLocks(){
+    try {
+        if (typeof window._cotizBodyKeyup === 'function') {
+            document.body.removeEventListener('keyup', window._cotizBodyKeyup);
+            window._cotizBodyKeyup = null;
+        }
+        document.body.classList.remove('modal-open', 'cotiz-finalizar-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        document.querySelectorAll('.modal-backdrop').forEach((el) => {
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+        });
+        document.querySelectorAll('.modal.show').forEach((el) => {
+            try { $(el).modal('hide'); } catch (e) {}
+            el.classList.remove('show');
+            el.style.display = 'none';
+            el.setAttribute('aria-hidden', 'true');
+        });
+        const wait = document.getElementById('modalWait');
+        if (wait) {
+            try { $('#modalWait').modal('hide'); } catch (e) {}
+            wait.classList.remove('show', 'factura-wait-modal');
+            wait.style.display = 'none';
+            wait.setAttribute('aria-hidden', 'true');
+        }
+        const pdfHost = document.getElementById('cotizPdfHost');
+        if (pdfHost && pdfHost.parentNode) pdfHost.parentNode.removeChild(pdfHost);
+        if (typeof hideFacturaPedidoWait === 'function') {
+            try { hideFacturaPedidoWait(); } catch (e) {}
+        }
+        if (typeof hideWaitForm === 'function') {
+            try { hideWaitForm(); } catch (e) {}
+        }
+        // Segunda pasada por si Bootstrap recrea el backdrop al cerrar
+        document.querySelectorAll('.modal-backdrop').forEach((el) => {
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+        });
+        document.body.classList.remove('modal-open', 'cotiz-finalizar-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    } catch (e) {
+        console.log('cleanupCotizUiLocks', e);
+    }
+}
+
 function showListaCotizaciones(){
     GlobalSelectedForm = 'COTIZACIONES';
-    const hoy = funciones.getFecha();
+    cleanupCotizUiLocks();
+    const hoy = getFechaCotizLocal();
     root.innerHTML = `
         <div class="supervisor-page" id="cotizListaPage">
             <div class="supervisor-card">
@@ -740,12 +795,21 @@ async function cargarListaCotizaciones(){
     if (!tbody) return;
     tbody.innerHTML = `<tr><td colspan="6" class="text-center">${GlobalLoader}</td></tr>`;
 
-    const ini = document.getElementById('txtCotizFechaIni').value;
-    const fin = document.getElementById('txtCotizFechaFin').value;
+    const normalizeFecha = (v) => {
+        const m = String(v || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? `${m[1]}-${m[2]}-${m[3]}` : getFechaCotizLocal();
+    };
+    let ini = normalizeFecha(document.getElementById('txtCotizFechaIni').value);
+    let fin = normalizeFecha(document.getElementById('txtCotizFechaFin').value);
+    if (ini > fin) {
+        const tmp = ini; ini = fin; fin = tmp;
+        document.getElementById('txtCotizFechaIni').value = ini;
+        document.getElementById('txtCotizFechaFin').value = fin;
+    }
     const sede = encodeURIComponent(GlobalCodSucursal);
 
     try {
-        const response = await axios.get(`/ventas/listcotizaciones?codsucursal=${sede}&fechaini=${ini}&fechafin=${fin}`);
+        const response = await axios.get(`/ventas/listcotizaciones?codsucursal=${sede}&fechaini=${encodeURIComponent(ini)}&fechafin=${encodeURIComponent(fin)}`);
         const data = response.data;
         if (!data || data.toString() === 'error' || !data.recordset) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">No se pudo cargar la lista</td></tr>`;
@@ -849,31 +913,93 @@ async function fetchCotizacionDetalle(coddoc, correlativo){
 }
 
 function getCotizPrintStyles(){
+    // Márgenes van en el PDF / @page. El root se dimensiona al área útil.
     return `
-  @page { size: letter; margin: 12mm; }
+  @page { size: letter portrait; margin: 12mm; }
   * { box-sizing: border-box; }
-  .cotiz-print-root { font-family: Arial, Helvetica, sans-serif; color: #111; font-size: 12px; margin: 0; padding: 16px; background: #fff; width: 794px; }
-  .cotiz-print-root .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 2px solid #222; padding-bottom: 12px; margin-bottom: 14px; }
-  .cotiz-print-root .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .cotiz-print-root .logo { max-height: 72px; max-width: 140px; object-fit: contain; }
-  .cotiz-print-root .brand-text { display: flex; flex-direction: column; justify-content: center; }
-  .cotiz-print-root .brand-text .empresa { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.4px; line-height: 1.15; color: #111; }
-  .cotiz-print-root .brand-text .sucursal { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: #444; }
-  .cotiz-print-root .title { text-align: right; }
-  .cotiz-print-root .title h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
-  .cotiz-print-root .title .doc { font-size: 14px; font-weight: 700; margin-top: 4px; }
-  .cotiz-print-root .meta { width: 100%; margin-bottom: 14px; border-collapse: collapse; }
-  .cotiz-print-root .meta td { padding: 4px 6px; vertical-align: top; }
-  .cotiz-print-root .meta .lbl { width: 90px; font-weight: 700; color: #333; }
-  .cotiz-print-root table.items { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  .cotiz-print-root table.items th, .cotiz-print-root table.items td { border: 1px solid #ccc; padding: 6px 5px; }
-  .cotiz-print-root table.items th { background: #f2f2f2; font-size: 11px; text-transform: uppercase; }
-  .cotiz-print-root .totals { margin-top: 12px; text-align: right; font-size: 15px; }
-  .cotiz-print-root .totals strong { font-size: 18px; }
-  .cotiz-print-root .obs { margin-top: 14px; padding: 8px; border: 1px dashed #999; min-height: 40px; }
-  .cotiz-print-root .leyenda { margin-top: 28px; text-align: center; font-weight: 700; font-size: 13px; border-top: 1px solid #222; padding-top: 12px; }
+  .cotiz-print-root {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #111111;
+    font-size: 11.5px;
+    line-height: 1.35;
+    margin: 0;
+    padding: 12px 14px;
+    background: #ffffff;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  .cotiz-print-root table { border-collapse: collapse; width: 100%; }
+  .cotiz-print-root .head-table { width: 100%; margin-bottom: 10px; border-bottom: 2px solid #222; padding-bottom: 8px; }
+  .cotiz-print-root .head-table td { vertical-align: middle; border: none; padding: 0; }
+  .cotiz-print-root .brand-cell { width: 58%; }
+  .cotiz-print-root .brand-inner { width: 100%; }
+  .cotiz-print-root .brand-inner td { vertical-align: middle; border: none; padding: 0; }
+  .cotiz-print-root .logo { height: 56px; max-height: 56px; max-width: 100px; object-fit: contain; display: block; }
+  .cotiz-print-root .empresa { margin: 0 0 2px 8px; font-size: 15px; font-weight: 800; letter-spacing: 0.2px; color: #111; }
+  .cotiz-print-root .sucursal { margin: 0 0 0 8px; font-size: 11px; font-weight: 600; color: #444; }
+  .cotiz-print-root .title-cell { width: 42%; text-align: right; padding-left: 8px; }
+  .cotiz-print-root .title-cell h1 { margin: 0; font-size: 18px; letter-spacing: 0.3px; white-space: nowrap; }
+  .cotiz-print-root .title-cell .doc { font-size: 12px; font-weight: 700; margin-top: 3px; white-space: nowrap; }
+  .cotiz-print-root .title-cell .fecha { font-size: 11px; margin-top: 2px; white-space: nowrap; }
+  .cotiz-print-root .meta { width: 100%; margin: 8px 0 10px; }
+  .cotiz-print-root .meta td { padding: 3px 4px; vertical-align: top; border: none; }
+  .cotiz-print-root .meta .lbl { width: 82px; font-weight: 700; color: #333; white-space: nowrap; }
+  .cotiz-print-root table.items { width: 100%; table-layout: fixed; margin-top: 4px; }
+  .cotiz-print-root table.items th,
+  .cotiz-print-root table.items td {
+    border: 1px solid #444;
+    padding: 5px 4px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    vertical-align: middle;
+  }
+  .cotiz-print-root table.items th {
+    background: #f2f2f2;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .cotiz-print-root table.items .c { text-align: center; }
+  .cotiz-print-root table.items .r { text-align: right; white-space: nowrap; }
+  .cotiz-print-root .col-n { width: 5%; }
+  .cotiz-print-root .col-cod { width: 13%; }
+  .cotiz-print-root .col-des { width: 36%; }
+  .cotiz-print-root .col-med { width: 9%; }
+  .cotiz-print-root .col-cant { width: 8%; }
+  .cotiz-print-root .col-pre { width: 14%; }
+  .cotiz-print-root .col-sub { width: 15%; }
+  .cotiz-print-root .totals-table { width: 100%; margin-top: 10px; }
+  .cotiz-print-root .totals-table td { border: none; padding: 0; }
+  .cotiz-print-root .totals-box {
+    display: inline-block;
+    min-width: 190px;
+    max-width: 100%;
+    border: 2px solid #222;
+    padding: 7px 10px;
+    text-align: right;
+    font-size: 14px;
+    background: #fff;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .cotiz-print-root .totals-box strong { font-size: 16px; }
+  .cotiz-print-root .obs {
+    margin-top: 12px;
+    padding: 7px;
+    border: 1px dashed #666;
+    min-height: 38px;
+  }
+  .cotiz-print-root .leyenda {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12px;
+    border-top: 1px solid #222;
+    padding-top: 10px;
+  }
   @media print {
-    body { padding: 0; margin: 0; }
+    body { padding: 0; margin: 0; background: #fff; }
     .no-print { display: none !important; }
   }`;
 }
@@ -899,34 +1025,40 @@ function buildCotizacionPrintableContent(cab, productos, logoUrl){
     (productos || []).forEach((p) => {
         i += 1;
         rows += `<tr>
-            <td style="text-align:center;">${i}</td>
-            <td>${escHtmlCotiz(p.CODPROD)}</td>
-            <td>${escHtmlCotiz(p.DESPROD)}</td>
-            <td style="text-align:center;">${escHtmlCotiz(p.CODMEDIDA)}</td>
-            <td style="text-align:right;">${Number(p.CANTIDAD || 0)}</td>
-            <td style="text-align:right;">${funciones.setMoneda(p.PRECIO || 0, 'Q')}</td>
-            <td style="text-align:right;">${funciones.setMoneda(p.TOTALPRECIO || 0, 'Q')}</td>
+            <td class="c col-n">${i}</td>
+            <td class="col-cod">${escHtmlCotiz(p.CODPROD)}</td>
+            <td class="col-des">${escHtmlCotiz(p.DESPROD)}</td>
+            <td class="c col-med">${escHtmlCotiz(p.CODMEDIDA)}</td>
+            <td class="r col-cant">${Number(p.CANTIDAD || 0)}</td>
+            <td class="r col-pre">${funciones.setMoneda(p.PRECIO || 0, 'Q')}</td>
+            <td class="r col-sub">${funciones.setMoneda(p.TOTALPRECIO || 0, 'Q')}</td>
         </tr>`;
     });
     if (!rows) {
-        rows = `<tr><td colspan="7" style="text-align:center;">Sin productos</td></tr>`;
+        rows = `<tr><td colspan="7" class="c">Sin productos</td></tr>`;
     }
 
     const inner = `
-  <div class="head">
-    <div class="brand">
-      <img class="logo" src="${logo}" alt="Logo"/>
-      <div class="brand-text">
-        <div class="empresa">MERCADOS EFECTIVOS</div>
-        <div class="sucursal">${sucursalLabel}</div>
-      </div>
-    </div>
-    <div class="title">
-      <h1>COTIZACIÓN</h1>
-      <div class="doc">${escHtmlCotiz(docNo)}</div>
-      <div>${fecha} ${hora}</div>
-    </div>
-  </div>
+  <table class="head-table">
+    <tr>
+      <td class="brand-cell">
+        <table class="brand-inner">
+          <tr>
+            <td style="width:120px;"><img class="logo" src="${logo}" alt="Logo"/></td>
+            <td>
+              <div class="empresa">MERCADOS EFECTIVOS</div>
+              <div class="sucursal">${sucursalLabel}</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td class="title-cell">
+        <h1>COTIZACIÓN</h1>
+        <div class="doc">${escHtmlCotiz(docNo)}</div>
+        <div class="fecha">${fecha} ${hora}</div>
+      </td>
+    </tr>
+  </table>
 
   <table class="meta">
     <tr><td class="lbl">Cliente:</td><td>${cliente}</td><td class="lbl">Código/NIT:</td><td>${nit}</td></tr>
@@ -937,19 +1069,27 @@ function buildCotizacionPrintableContent(cab, productos, logoUrl){
   <table class="items">
     <thead>
       <tr>
-        <th>#</th>
-        <th>Código</th>
-        <th>Descripción</th>
-        <th>Medida</th>
-        <th>Cant.</th>
-        <th>Precio</th>
-        <th>Subtotal</th>
+        <th class="col-n">#</th>
+        <th class="col-cod">Código</th>
+        <th class="col-des">Descripción</th>
+        <th class="col-med">Medida</th>
+        <th class="col-cant">Cant.</th>
+        <th class="col-pre">Precio</th>
+        <th class="col-sub">Subtotal</th>
       </tr>
     </thead>
     <tbody>${rows}</tbody>
   </table>
 
-  <div class="totals">Total: <strong>${total}</strong></div>
+  <table class="totals-table">
+    <tr>
+      <td style="width:58%;"></td>
+      <td style="width:42%; text-align:right;">
+        <div class="totals-box">Total: <strong>${total}</strong></div>
+      </td>
+    </tr>
+  </table>
+
   <div class="obs"><strong>Observaciones:</strong> ${obs || 'SN'}</div>
   <div class="leyenda">Esta cotización tiene una validez de 8 días</div>`;
 
@@ -962,32 +1102,16 @@ function buildCotizacionPrintableHtml(cab, productos, logoUrl){
 <html lang="es">
 <head>
 <meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Cotización ${escHtmlCotiz(docNo)}</title>
-<style>${getCotizPrintStyles()}
-  body { font-family: Arial, Helvetica, sans-serif; color: #111; font-size: 12px; margin: 0; padding: 16px; background: #fff; }
-  .head { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 2px solid #222; padding-bottom: 12px; margin-bottom: 14px; }
-  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-  .logo { max-height: 72px; max-width: 140px; object-fit: contain; }
-  .brand-text { display: flex; flex-direction: column; justify-content: center; }
-  .brand-text .empresa { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.4px; line-height: 1.15; color: #111; }
-  .brand-text .sucursal { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: #444; }
-  .title { text-align: right; }
-  .title h1 { margin: 0; font-size: 22px; letter-spacing: 0.5px; }
-  .title .doc { font-size: 14px; font-weight: 700; margin-top: 4px; }
-  .meta { width: 100%; margin-bottom: 14px; border-collapse: collapse; }
-  .meta td { padding: 4px 6px; vertical-align: top; }
-  .meta .lbl { width: 90px; font-weight: 700; color: #333; }
-  table.items { width: 100%; border-collapse: collapse; margin-top: 8px; }
-  table.items th, table.items td { border: 1px solid #ccc; padding: 6px 5px; }
-  table.items th { background: #f2f2f2; font-size: 11px; text-transform: uppercase; }
-  .totals { margin-top: 12px; text-align: right; font-size: 15px; }
-  .totals strong { font-size: 18px; }
-  .obs { margin-top: 14px; padding: 8px; border: 1px dashed #999; min-height: 40px; }
-  .leyenda { margin-top: 28px; text-align: center; font-weight: 700; font-size: 13px; border-top: 1px solid #222; padding-top: 12px; }
+<style>
+${getCotizPrintStyles()}
+body { margin: 0; padding: 0; background: #fff; }
+.cotiz-print-root { margin: 0 auto; max-width: 190mm; width: 100%; }
 </style>
 </head>
 <body>
-${inner}
+<div class="cotiz-print-root">${inner}</div>
 </body>
 </html>`;
 }
@@ -1050,19 +1174,27 @@ async function descargarCotizacionPdfDirecto(cab, productos, logoUrl, filename){
         throw new Error('html2pdf no disponible');
     }
 
+    // Carta 8.5x11 in @96dpi. El margen del PDF reduce el área útil:
+    // si el HTML mide 816px y además hay margin, se corta la derecha.
+    const MARGIN_IN = 0.35;
+    const CONTENT_W = Math.round((8.5 - (MARGIN_IN * 2)) * 96); // ~749px
+    const CONTENT_H = Math.round((11 - (MARGIN_IN * 2)) * 96);   // ~989px
     const { inner } = buildCotizacionPrintableContent(cab, productos, logoUrl);
+
     const host = document.createElement('div');
     host.id = 'cotizPdfHost';
     host.style.cssText = [
         'position:fixed',
-        'left:0',
+        'left:-10000px',
         'top:0',
-        'width:794px',
+        'width:' + CONTENT_W + 'px',
+        'min-width:' + CONTENT_W + 'px',
+        'max-width:' + CONTENT_W + 'px',
         'background:#ffffff',
         'z-index:2147483646',
-        'opacity:0.01',
+        'opacity:1',
         'pointer-events:none',
-        'overflow:visible'
+        'overflow:hidden'
     ].join(';');
 
     const styleEl = document.createElement('style');
@@ -1071,11 +1203,15 @@ async function descargarCotizacionPdfDirecto(cab, productos, logoUrl, filename){
 
     const root = document.createElement('div');
     root.className = 'cotiz-print-root';
+    root.style.width = CONTENT_W + 'px';
+    root.style.minWidth = CONTENT_W + 'px';
+    root.style.maxWidth = CONTENT_W + 'px';
+    root.style.boxSizing = 'border-box';
+    root.style.background = '#ffffff';
     root.innerHTML = inner;
     host.appendChild(root);
     document.body.appendChild(host);
 
-    // Esperar imágenes (logo en data URL debería estar listo)
     const imgs = Array.from(root.querySelectorAll('img'));
     await Promise.all(imgs.map((img) => {
         if (img.complete && img.naturalWidth > 0) return Promise.resolve();
@@ -1085,10 +1221,13 @@ async function descargarCotizacionPdfDirecto(cab, productos, logoUrl, filename){
             setTimeout(resolve, 1500);
         });
     }));
-    await new Promise((r) => setTimeout(r, 150));
+    await new Promise((r) => setTimeout(r, 200));
+
+    // Forzar layout completo antes de capturar
+    void root.offsetHeight;
 
     const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [MARGIN_IN, MARGIN_IN, MARGIN_IN, MARGIN_IN],
         filename: `${filename}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -1097,10 +1236,21 @@ async function descargarCotizacionPdfDirecto(cab, productos, logoUrl, filename){
             allowTaint: true,
             backgroundColor: '#ffffff',
             logging: false,
-            windowWidth: 794
+            width: CONTENT_W,
+            windowWidth: CONTENT_W,
+            windowHeight: Math.max(CONTENT_H, root.scrollHeight + 20),
+            scrollX: 0,
+            scrollY: 0,
+            x: 0,
+            y: 0
         },
-        jsPDF: { unit: 'mm', format: 'letter', orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'] }
+        jsPDF: {
+            unit: 'in',
+            format: 'letter',
+            orientation: 'portrait',
+            compress: true
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
     try {
@@ -1268,8 +1418,8 @@ async function iniciarEditorCotizacion(nit,nombre,direccion,options){
     })
 
 
-    let txtFecha = document.getElementById('txtFecha');txtFecha.value = funciones.getFecha();
-    let txtEntregaFecha = funciones.getFecha();// document.getElementById('txtEntregaFecha');txtEntregaFecha.value = funciones.getFecha();
+    let txtFecha = document.getElementById('txtFecha');txtFecha.value = getFechaCotizLocal();
+    let txtEntregaFecha = getFechaCotizLocal();// document.getElementById('txtEntregaFecha');txtEntregaFecha.value = funciones.getFecha();
 
     // listener para el nit
     let txtNit = document.getElementById('txtNit');
@@ -1406,23 +1556,25 @@ async function iniciarEditorCotizacion(nit,nombre,direccion,options){
         
     })
 
-     
-    // EVENTOS DE LOS BOTONES
-    document.body.addEventListener('keyup',(e)=>{
-        if(GlobalSelectedForm=='COTIZACIONES'){
+    // EVENTOS DE LOS BOTONES (evitar listeners apilados al reentrar)
+    if (typeof window._cotizBodyKeyup === 'function') {
+        document.body.removeEventListener('keyup', window._cotizBodyKeyup);
+    }
+    window._cotizBodyKeyup = (e) => {
+        if (GlobalSelectedForm == 'COTIZACIONES') {
             switch (e.keyCode) {
                 case 118: //f7
                     btnCobrar.click();
                     break;
                 case 113: //f2
                     if (!CotizEditMode) btnBusquedaClientes.click();
-                    //createNotification('hola mundo');
+                    break;
                 default:
                     break;
-            }    
+            }
         }
-    });
-
+    };
+    document.body.addEventListener('keyup', window._cotizBodyKeyup);
     // carga el grid
    
     
@@ -1562,50 +1714,64 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
     
     let cmbTipoPrecio = document.getElementById(idTipoPrecio);
 
-    let filtro = document.getElementById(idFiltro).value;
+    let filtro = (document.getElementById(idFiltro).value || '').trim();
     
     let tabla = document.getElementById(idTablaResultado);
     tabla.innerHTML = GlobalLoader;
 
+    if (!filtro) {
+        tabla.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Escriba un producto o código</td></tr>';
+        return;
+    }
 
-    let str = ""; 
+    const sede = encodeURIComponent(GlobalCodSucursal);
+    const q = encodeURIComponent(filtro);
 
-    selectProducto(filtro)
+    axios.get(`/ventas/buscarproducto_cotizacion?codsucursal=${sede}&filtro=${q}`)
     .then((response) => {
-        const data = response;
-        //con esta variable determino el tipo de precio a usar            
-        let pre = 0;
-            
-            data.map((rows)=>{
-                let exist = Number(rows.EXISTENCIA)/Number(rows.EQUIVALE); let strC = '';
-                if(Number(rows.EXISTENCIA<=0)){strC='bg-danger text-white'}else{strC='bg-success text-white'};
-                let totalexento = 0;
-                if (rows.EXENTO==1){totalexento=Number(rows.PRECIO)}
-                
-                switch (cmbTipoPrecio.value) {
-                    case 'P':
-                        pre = Number(rows.PRECIO)
-                        break;
-                    case 'C':
-                        pre = Number(rows.PRECIOC)
-                        break;
-                    case 'B':
-                        pre = Number(rows.PRECIOB)
-                        break;
-                    case 'A':
-                        pre = Number(rows.PRECIOA)
-                        break;
-                    case 'K':
-                        pre = Number(0.01)
-                        break;
-     
-                }
+        const payload = response.data;
+        const data = (payload && payload.recordset) ? payload.recordset : [];
+        if (!Array.isArray(data) || data.length === 0) {
+            tabla.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Sin resultados</td></tr>';
+            return;
+        }
 
-                str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});" class="border-bottom">
+        let str = '';
+        let pre = 0;
+
+        data.forEach((rows) => {
+            let exist = Number(rows.EXISTENCIA) / Number(rows.EQUIVALE || 1);
+            let strC = '';
+            if (Number(rows.EXISTENCIA) <= 0) { strC = 'bg-danger text-white'; } else { strC = 'bg-success text-white'; }
+            let totalexento = 0;
+            if (rows.EXENTO == 1) { totalexento = Number(rows.PRECIO); }
+
+            switch (cmbTipoPrecio.value) {
+                case 'P':
+                    pre = Number(rows.PRECIO);
+                    break;
+                case 'C':
+                    pre = Number(rows.PRECIOC);
+                    break;
+                case 'B':
+                    pre = Number(rows.PRECIOB);
+                    break;
+                case 'A':
+                    pre = Number(rows.PRECIOA);
+                    break;
+                case 'K':
+                    pre = Number(0.01);
+                    break;
+                default:
+                    pre = Number(rows.PRECIO);
+                    break;
+            }
+
+            str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});" class="border-bottom">
                 <td >
                     ${funciones.quitarCaracteres(rows.DESPROD,'"'," pulg",true)}
                     <br>
-                    <small class="text-danger"><b>${rows.CODPROD}</b></small><small class="text-info">//Escala:${rows.DESPROD3}</small>
+                    <small class="text-danger"><b>${rows.CODPROD}</b></small><small class="text-info">//Escala:${rows.DESPROD3 || ''}</small>
                     <br>
                     <b class"bg-danger text-white">${rows.CODMEDIDA}</b>
                     <small>(${rows.EQUIVALE})</small>
@@ -1622,22 +1788,15 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                     </button>
                 <td>
                 
-            </tr>`
-            })
-            tabla.innerHTML= str;
-        
-    }, (error) => {
+            </tr>`;
+        });
+
+        tabla.innerHTML = str;
+    })
+    .catch((error) => {
         console.log(error);
-        tabla.innerHTML ='<label>Debe descargar los productos al menos una vez al día.. Descárguelos nuevamente por favor.</label>';
-    })
-    .catch((error)=>{
-        //funciones.AvisoError(error);
-        tabla.innerHTML ='<label>Debe descargar los productos al menos una vez al día.. Descárguelos nuevamente por favor.</label>';
-    })
-
-
-
-
+        tabla.innerHTML = '<tr><td colspan="3" class="text-center text-danger">No se pudo buscar en el servidor. Verifique la conexión.</td></tr>';
+    });
 };
 
 //gestiona la apertura de la cantidad
@@ -2158,7 +2317,7 @@ async function fcnFinalizarPedido(){
     // Usar FECHA del input (yyyy-mm-dd), no reconstruir con día/mes/año
     let fechaRaw = (document.getElementById('txtFecha').value || '').trim();
     if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaRaw)) {
-        fechaRaw = funciones.getFecha();
+        fechaRaw = getFechaCotizLocal();
     }
     let fecha = fechaRaw;
     let fechaParts = fechaRaw.split('-');

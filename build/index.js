@@ -23,7 +23,68 @@ document.getElementById('btnCerrarSesion').addEventListener('click',(e)=>{
     
     }
 
-})
+});
+
+function getAppVentasThemeMode(){
+    try {
+        return localStorage.getItem('appventas_theme_mode') === 'night' ? 'night' : 'day';
+    } catch (e) {
+        return 'day';
+    }
+}
+
+function setAppVentasThemeMode(mode){
+    const next = mode === 'night' ? 'night' : 'day';
+    try {
+        localStorage.setItem('appventas_theme_mode', next);
+    } catch (e) {}
+    document.body.classList.toggle('theme-night', next === 'night');
+    syncThemeModeButton();
+}
+
+function syncThemeModeButton(){
+    const icon = document.getElementById('iconThemeMode');
+    const btn = document.getElementById('btnThemeMode');
+    if (!icon || !btn) return;
+    const night = getAppVentasThemeMode() === 'night';
+    icon.className = night ? 'fal fa-sun' : 'fal fa-moon';
+    btn.title = night ? 'Cambiar a modo día' : 'Cambiar a modo noche';
+    btn.setAttribute('aria-label', btn.title);
+}
+
+function toggleAppVentasThemeMode(){
+    setAppVentasThemeMode(getAppVentasThemeMode() === 'night' ? 'day' : 'night');
+}
+
+function updateHeaderUserBadge(nombre){
+    const badge = document.getElementById('headerUserBadge');
+    const label = document.getElementById('lbUsuarioData');
+    if (!badge || !label) return;
+    const name = String(nombre == null ? (typeof GlobalUsuario !== 'undefined' ? GlobalUsuario : '') : nombre).trim();
+    if (!name) {
+        label.textContent = '';
+        badge.style.display = 'none';
+        return;
+    }
+    label.textContent = name;
+    badge.style.display = 'inline-flex';
+}
+
+function clearHeaderUserBadge(){
+    updateHeaderUserBadge('');
+}
+
+(function initHeaderThemeToggle(){
+    const btn = document.getElementById('btnThemeMode');
+    if (btn) {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAppVentasThemeMode();
+        });
+    }
+    // sincroniza ícono con lo ya aplicado en <head>
+    setAppVentasThemeMode(getAppVentasThemeMode());
+})();
 
 
 //-------- PERFIL DEL CLIENTE -------

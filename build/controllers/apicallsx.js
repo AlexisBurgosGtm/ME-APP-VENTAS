@@ -68,6 +68,7 @@ let apigen = {
                         GlobalPassUsuario = pass;
                         GlobalTipoUsuario = 'SUPERVISOR';
                         GlobalSelectedDiaUpdated = Number(f.getDate());
+                        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
                                 
                         classNavegar.inicio_supervisor();
                         
@@ -95,7 +96,8 @@ let apigen = {
                                 GlobalCodRuta = Number(rows.CODRUTA);
                                 GlobalTipoCatalogo = rows.CODCATALOGO;
                                 
-                                document.getElementById('lbUsuarioData').innerText = `${GlobalUsuario} - Catalogo ${GlobalTipoCatalogo}`;
+                                document.getElementById('lbUsuarioData').innerText = `${GlobalUsuario}`;
+                                if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
 
                                 switch (GlobalTipoUsuario.toString()) {
                                     case 'VENDEDOR':
@@ -125,6 +127,7 @@ let apigen = {
                         GlobalSelectedDiaUpdated = 0;
                         GlobalCodRuta = 0;
                         GlobalTipoCatalogo = "";
+                        if (typeof clearHeaderUserBadge === 'function') clearHeaderUserBadge();
                         funciones.AvisoError('Usuario o Contraseña incorrectos, intente seleccionando la sucursal a la que pertenece');
                         reject();
                     }
@@ -157,6 +160,7 @@ let apigen = {
                                 GlobalCoddoc= rows.CODDOC;
                                 GlobalCodSucursal = sucursal;
                                 GlobalSistema = sucursal;
+                                if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
                                 
                                 //classNavegar.inicio(GlobalTipoUsuario);     
                                 classNavegar.inicioVendedor();   
@@ -168,6 +172,7 @@ let apigen = {
                         GlobalUsuario = '';
                         GlobalTipoUsuario = '';
                         GlobalCoddoc= '';
+                        if (typeof clearHeaderUserBadge === 'function') clearHeaderUserBadge();
                         funciones.AvisoError('Usuario o Contraseña incorrectos, intente seleccionando la sucursal a la que pertenece');
                         reject();
                     }

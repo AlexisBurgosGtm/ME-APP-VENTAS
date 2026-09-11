@@ -194,6 +194,50 @@ router.get("/json", async(req,res)=>{
 })
 
 // VENTAS BUSCAR PRODUCTO POR DESCRIPCION
+router.get("/buscarproducto_cotizacion", async (req, res) => {
+    const { codsucursal, filtro } = req.query;
+    const sede = String(codsucursal || '').replace(/'/g, "''");
+    const q = String(filtro || '').replace(/'/g, "''").trim();
+
+    if (!sede || !q) {
+        return res.send({ recordset: [] });
+    }
+
+    const qry = `
+        SELECT TOP 40
+            ME_Productos.CODSUCURSAL,
+            ME_Productos.CODPROD,
+            ME_Productos.DESPROD,
+            ME_Precios.CODMEDIDA,
+            ME_Precios.EQUIVALE,
+            ME_Precios.COSTO,
+            ISNULL(ME_Precios.PRECIO, 0) AS PRECIO,
+            ISNULL(ME_Precios.OFERTA, 0) AS PRECIOA,
+            ISNULL(ME_Precios.ESCALA, 0) AS PRECIOB,
+            ISNULL(ME_Precios.MAYORISTA, 0) AS PRECIOC,
+            ISNULL(ME_Marcas.DESMARCA, '') AS DESMARCA,
+            0 AS EXENTO,
+            ISNULL(ME_Productos.EXISTENCIA, 0) AS EXISTENCIA,
+            ISNULL(ME_Productos.DESPROD3, '') AS DESPROD3
+        FROM ME_Productos
+        INNER JOIN ME_Precios
+            ON ME_Productos.CODSUCURSAL = ME_Precios.CODSUCURSAL
+           AND ME_Productos.CODPROD = ME_Precios.CODPROD
+        LEFT OUTER JOIN ME_Marcas
+            ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL
+           AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA
+        WHERE ME_Productos.CODSUCURSAL = '${sede}'
+          AND (
+                ME_Productos.DESPROD LIKE '%${q}%'
+             OR ME_Productos.CODPROD LIKE '%${q}%'
+             OR ME_Productos.DESPROD3 LIKE '%${q}%'
+          )
+        ORDER BY ME_Productos.DESPROD, ME_Precios.EQUIVALE
+    `;
+
+    execute.Query(res, qry);
+});
+
 router.get("/buscarproducto", async(req,res)=>{
     
     const {empnit,filtro,app,tipoprecio} = req.query;
@@ -1798,8 +1842,21 @@ router.post("/update_fecha_pedido", async (req,res)=>{
 router.get("/listcotizaciones", async (req, res) => {
     const { codsucursal, fechaini, fechafin } = req.query;
     const sede = String(codsucursal || '').replace(/'/g, "''");
-    const ini = String(fechaini || '').replace(/'/g, "''");
-    const fin = String(fechafin || '').replace(/'/g, "''");
+    const ymd = (v) => {
+        const m = String(v || '').trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return m ? `${m[1]}-${m[2]}-${m[3]}` : '';
+    };
+    let ini = ymd(fechaini);
+    let fin = ymd(fechafin);
+    if (!ini || !fin) {
+        const n = new Date();
+        const today = `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+        if (!ini) ini = today;
+        if (!fin) fin = today;
+    }
+    if (ini > fin) {
+        const tmp = ini; ini = fin; fin = tmp;
+    }
 
     const qry = `
         SELECT
@@ -1822,8 +1879,8 @@ router.get("/listcotizaciones", async (req, res) => {
         FROM DOCUMENTOS D
         WHERE D.CODDOC = 'cotiz'
           AND D.CODSUCURSAL = '${sede}'
-          AND CAST(D.FECHA AS DATE) >= CAST('${ini}' AS DATE)
-          AND CAST(D.FECHA AS DATE) <= CAST('${fin}' AS DATE)
+          AND CAST(D.FECHA AS date) >= CAST('${ini}' AS date)
+          AND CAST(D.FECHA AS date) <= CAST('${fin}' AS date)
         ORDER BY D.FECHA DESC, D.HORA DESC, D.MINUTO DESC, D.CORRELATIVO DESC
     `;
     execute.Query(res, qry);
@@ -2138,11 +2195,11 @@ router.post("/insertcotizacion", async (req,res)=>{
                 OBS, DOC_SALDO, DOC_ABONO, DIRENTREGA, LAT, LONG,
                 F_ENTREGA, TIPOPAGO, PRIORIDAD, PAGO, VUELTO
             ) VALUES (
-                '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)}, '${fechaSql}', ${horaInt}, ${minutoInt},
+                '${sede}', '${sede}', ${num(anio)}, ${num(mes)}, ${num(dia)}, CAST('${fechaSql}' AS date), ${horaInt}, ${minutoInt},
                 '${docType}', @CORREL, ${codClienteSql}, '${nit}', '${nom}', '${dir}',
                 ${totCosto}, ${totPrecio}, 'O', '${usr}', '${concre}', ${codVenN},
                 '${obsSql}', ${totPrecio}, 0, '${dirEnt}', ${latN}, ${longN},
-                '${fechaEntSql}', '${tipopago}', '${prioridadSql}', 0, 0
+                CAST('${fechaEntSql}' AS date), '${tipopago}', '${prioridadSql}', 0, 0
             );
             ${qrydoc}
             SELECT @CORREL AS CORRELATIVO;

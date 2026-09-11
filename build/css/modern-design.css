@@ -16,6 +16,159 @@ body.theme-modern-glass {
   min-height: 100vh;
 }
 
+/* Header: badge usuario + toggle día/noche */
+.header-left {
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.header-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: min(58vw, 280px);
+  padding: 0.35rem 0.7rem 0.35rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  color: #0f172a;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.header-user-badge-icon {
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.16);
+  color: #1d4ed8;
+  flex: 0 0 auto;
+}
+
+.header-user-badge-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+}
+
+.header-theme-toggle {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 50%;
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.header-theme-toggle:hover {
+  transform: scale(1.06);
+  background: rgba(37, 99, 235, 0.2);
+  color: #1e40af;
+}
+
+body.theme-modern-glass.theme-night .header-user-badge {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.28);
+  color: #e2e8f0;
+}
+
+body.theme-modern-glass.theme-night .header-user-badge-icon {
+  background: rgba(96, 165, 250, 0.2);
+  color: #93c5fd;
+}
+
+body.theme-modern-glass.theme-night .header-theme-toggle {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.28);
+  color: #fde68a;
+}
+
+body.theme-modern-glass.theme-night .header-theme-toggle:hover {
+  background: rgba(148, 163, 184, 0.28);
+  color: #fef3c7;
+}
+
+/* Modo noche */
+body.theme-modern-glass.theme-night {
+  --glass-bg: rgba(15, 23, 42, 0.72);
+  --glass-bg-strong: rgba(30, 41, 59, 0.9);
+  --glass-border: rgba(148, 163, 184, 0.18);
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --accent: #60a5fa;
+  --accent-2: #38bdf8;
+  --accent-red: #f87171;
+  --text-main: #e2e8f0;
+  --text-muted: #94a3b8;
+  background: linear-gradient(135deg, #0b1220 0%, #111827 35%, #0f172a 100%) !important;
+  color: var(--text-main);
+}
+
+body.theme-modern-glass.theme-night .page-header.bg-personal {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.92), rgba(51, 65, 85, 0.9)) !important;
+}
+
+body.theme-modern-glass.theme-night .page-content,
+body.theme-modern-glass.theme-night .supervisor-page,
+body.theme-modern-glass.theme-night .supervisor-card,
+body.theme-modern-glass.theme-night .factura-page,
+body.theme-modern-glass.theme-night .table,
+body.theme-modern-glass.theme-night .form-control,
+body.theme-modern-glass.theme-night select,
+body.theme-modern-glass.theme-night textarea {
+  color: var(--text-main);
+}
+
+body.theme-modern-glass.theme-night .form-control,
+body.theme-modern-glass.theme-night .custom-select,
+body.theme-modern-glass.theme-night select,
+body.theme-modern-glass.theme-night textarea {
+  background: rgba(15, 23, 42, 0.72) !important;
+  color: var(--text-main) !important;
+  border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+body.theme-modern-glass.theme-night .table thead th {
+  background: rgba(51, 65, 85, 0.65) !important;
+  color: #e2e8f0 !important;
+}
+
+body.theme-modern-glass.theme-night .table td,
+body.theme-modern-glass.theme-night .table th {
+  border-color: rgba(148, 163, 184, 0.18) !important;
+}
+
+body.theme-modern-glass.theme-night .text-danger {
+  color: #fca5a5 !important;
+}
+
+body.theme-modern-glass.theme-night .text-info {
+  color: #7dd3fc !important;
+}
+
+body.theme-modern-glass.theme-night .text-secondary,
+body.theme-modern-glass.theme-night .text-muted {
+  color: #94a3b8 !important;
+}
+
+body.theme-modern-glass.theme-night.login-active {
+  background: linear-gradient(145deg, #0b1220 0%, #111827 40%, #1e293b 100%) !important;
+}
+
+body.login-active .header-user-badge {
+  display: none !important;
+}
+
 body.theme-modern-glass .page-wrapper,
 body.theme-modern-glass .page-inner,
 body.theme-modern-glass .page-content-wrapper,
