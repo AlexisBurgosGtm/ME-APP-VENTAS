@@ -83,6 +83,25 @@ let classNavegar = {
         shell.style.setProperty('left', (isSmall ? 0.65 : 0.75) + 'rem', 'important');
         shell.style.setProperty('top', 'auto', 'important');
         shell.style.setProperty('right', 'auto', 'important');
+
+        // Panel: alto máximo hasta el header (scroll solo si no caben todos los items)
+        const panel = document.getElementById('vendorMenuPanel');
+        if (panel) {
+            const shellTop = shell.getBoundingClientRect().top;
+            const header = document.querySelector('.page-header') || document.querySelector('header') || document.getElementById('header');
+            let headerBottom = 0;
+            if (header) {
+                headerBottom = header.getBoundingClientRect().bottom;
+            } else if (vv) {
+                headerBottom = (vv.offsetTop || 0) + 64;
+            } else {
+                headerBottom = 64;
+            }
+            const gapTop = 10;
+            const available = Math.floor(shellTop - headerBottom - gapTop);
+            const maxH = Math.max(220, available);
+            panel.style.setProperty('max-height', maxH + 'px', 'important');
+        }
     },
     bindFloatingMenuViewport() {
         if (classNavegar._menuViewportCleanup) {
@@ -149,6 +168,7 @@ let classNavegar = {
         const btnToggleMenuVendedor = document.getElementById('btnToggleMenuVendedor');
 
         btnToggleMenuVendedor.addEventListener('click', () => {
+            classNavegar.syncFloatingMenuToViewport();
             vendorMenuPanel.classList.toggle('open');
         });
 
