@@ -232,28 +232,32 @@ let apigen = {
                             
                             switch (rows.STVISITA) {
                                 case 'VENTA':
-                                    stClassClie='bg-success text-white card-rounded border-secondary';
+                                    stClassClie='visita-card visita-venta card-rounded';
                                     stNomStatus= 'VENDIDO';
                                     break;
                                 case 'CERRADO':
-                                    stClassClie='bg-warning card-rounded border-secondary';
+                                    stClassClie='visita-card visita-cerrado card-rounded';
                                     stNomStatus= 'CERRADO';        
                                     break;
                                 case 'NODINERO':
-                                    stClassClie='bg-secondary text-white card-rounded border-secondary';
+                                    stClassClie='visita-card visita-nodinero card-rounded';
                                     stNomStatus= 'SIN DINERO';
                                     break;
                                 case 'BLOQUEADO':
-                                    stClassClie='bg-dark text-white card-rounded border-secondary';
+                                    stClassClie='visita-card visita-bloqueado card-rounded';
                                     stNomStatus= 'SIN PASO';
                                     break;
                                 case 'PRODUCTO':
-                                    stClassClie='bg-primary text-white card-rounded border-secondary';
+                                    stClassClie='visita-card visita-producto card-rounded';
                                     stNomStatus= 'TIENE PRODUCTO';
                                     break;
                                 case 'VISITADO':
-                                    stClassClie='bg-info text-white card-rounded border-secondary';
+                                    stClassClie='visita-card visita-otro card-rounded';
                                     stNomStatus= 'VISITADO';
+                                    break;
+                                default:
+                                    stClassClie='visita-card visita-otro card-rounded';
+                                    stNomStatus= rows.STVISITA || 'VISITADO';
                                     break;
                             };
                             let btnCallCliente = ''; 
@@ -289,7 +293,7 @@ let apigen = {
                                 
                                 <small>${rows.DIRCLIE}, <b>${rows.DESMUNI}</b></small>
                                 <br>
-                                <small class="text-info">Ref:${rows.REFERENCIA}</small>
+                                <small class="visita-ref">Ref:${rows.REFERENCIA}</small>
 
                                 <br>
                                 <small>GPS:${rows.LAT},${rows.LONG}</small>

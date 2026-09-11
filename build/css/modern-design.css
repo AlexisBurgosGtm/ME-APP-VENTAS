@@ -2478,3 +2478,41 @@ body.cotiz-finalizar-open > .modal-backdrop {
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
 }
+
+/* Clientes visitados: texto legible en modo claro */
+body.theme-modern-glass .visita-card,
+body.theme-modern-glass tr.visita-card,
+body.theme-modern-glass tr.visita-card td {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  border-left-width: 5px !important;
+  border-left-style: solid !important;
+}
+
+body.theme-modern-glass .visita-card small,
+body.theme-modern-glass .visita-card b,
+body.theme-modern-glass .visita-card .visita-ref {
+  color: #334155 !important;
+}
+
+body.theme-modern-glass .visita-venta { border-left-color: #16a34a !important; background-color: #f0fdf4 !important; }
+body.theme-modern-glass .visita-cerrado { border-left-color: #ca8a04 !important; background-color: #fffbeb !important; }
+body.theme-modern-glass .visita-nodinero { border-left-color: #64748b !important; background-color: #f8fafc !important; }
+body.theme-modern-glass .visita-bloqueado { border-left-color: #0f172a !important; background-color: #f1f5f9 !important; }
+body.theme-modern-glass .visita-producto { border-left-color: #2563eb !important; background-color: #eff6ff !important; }
+body.theme-modern-glass .visita-otro { border-left-color: #0891b2 !important; background-color: #ecfeff !important; }
+
+body.theme-modern-glass.theme-night .visita-card,
+body.theme-modern-glass.theme-night tr.visita-card,
+body.theme-modern-glass.theme-night tr.visita-card td {
+  color: #e2e8f0 !important;
+  background-color: rgba(30, 41, 59, 0.92) !important;
+  border-color: rgba(148, 163, 184, 0.35) !important;
+}
+
+body.theme-modern-glass.theme-night .visita-card small,
+body.theme-modern-glass.theme-night .visita-card b,
+body.theme-modern-glass.theme-night .visita-card .visita-ref {
+  color: #cbd5e1 !important;
+}
