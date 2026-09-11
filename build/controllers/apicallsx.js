@@ -24,19 +24,19 @@ let apigen = {
         getTotalProductosOnline: ()=>{
             
             return new Promise((resolve,reject)=>{
-                let total = '';
-                const bust = Date.now();
-                axios.get(`/ventas/online_productos_subidos?sucursal=${GlobalCodSucursal}&codtipocatalogo=${GlobalTipoCatalogo}&_=${bust}`, {
+                axios.post('/ventas/online_productos_subidos', {
+                    sucursal: GlobalCodSucursal,
+                    codtipocatalogo: GlobalTipoCatalogo,
+                    _: Date.now()
+                }, {
                     headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
                 })
                 .then((response) => {
-                    const data = response.data.recordset;
-                    data.map((rows)=>{
-                        total = rows.PRODUCTOS;
-                    })
-                    resolve(total)               
+                    const rows = (response.data && response.data.recordset) ? response.data.recordset : [];
+                    const total = rows.length ? (rows[0].PRODUCTOS ?? 0) : 0;
+                    resolve(total);
                 }, (error) => {
-                reject('----');
+                    reject('----');
                 });
             })
             
@@ -44,19 +44,20 @@ let apigen = {
         getTotalClientesOnline: ()=>{
             
             return new Promise((resolve,reject)=>{
-                let total = '';
-                const bust = Date.now();
-                axios.get(`/ventas/online_clientes_subidos?sucursal=${GlobalCodSucursal}&codven=${GlobalCodUsuario}&codruta=${GlobalCodRuta}&_=${bust}`, {
+                axios.post('/ventas/online_clientes_subidos', {
+                    sucursal: GlobalCodSucursal,
+                    codven: GlobalCodUsuario,
+                    codruta: GlobalCodRuta,
+                    _: Date.now()
+                }, {
                     headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
                 })
                 .then((response) => {
-                    const data = response.data.recordset;
-                    data.map((rows)=>{
-                        total = rows.CLIENTES;
-                    })
-                    resolve(total)               
+                    const rows = (response.data && response.data.recordset) ? response.data.recordset : [];
+                    const total = rows.length ? (rows[0].CLIENTES ?? 0) : 0;
+                    resolve(total);
                 }, (error) => {
-                reject('----');
+                    reject('----');
                 });
             })
             
@@ -242,9 +243,17 @@ let apigen = {
                                     stClassClie='bg-secondary text-white card-rounded border-secondary';
                                     stNomStatus= 'SIN DINERO';
                                     break;
-                            
-                                default:
-                                    
+                                case 'BLOQUEADO':
+                                    stClassClie='bg-dark text-white card-rounded border-secondary';
+                                    stNomStatus= 'SIN PASO';
+                                    break;
+                                case 'PRODUCTO':
+                                    stClassClie='bg-primary text-white card-rounded border-secondary';
+                                    stNomStatus= 'TIENE PRODUCTO';
+                                    break;
+                                case 'VISITADO':
+                                    stClassClie='bg-info text-white card-rounded border-secondary';
+                                    stNomStatus= 'VISITADO';
                                     break;
                             };
                             let btnCallCliente = ''; 
@@ -3251,7 +3260,7 @@ let apigen = {
         },
         updateClientesLastSale:(nitclie,visita)=>{
             return new Promise((resolve,reject)=>{
-                updateSaleCliente(GlobalSelectedCodCliente)
+                updateSaleCliente(GlobalSelectedCodCliente, visita)
                 axios.post('/clientes/lastsale',{
                     sucursal:GlobalCodSucursal,
                     nitclie:nitclie,
@@ -3595,12 +3604,25 @@ let GF = {
 
     },
     insert_visita:(codclie,motivo,latitud,longitud)=>{
+        const mapStVisita = (m) => {
+            const u = String(m || '').toUpperCase();
+            if (u.includes('CERRAD')) return 'CERRADO';
+            if (u.includes('DINERO')) return 'NODINERO';
+            if (u.includes('PASO') || u.includes('BLOQUE')) return 'BLOQUEADO';
+            if (u.includes('PRODUCTO')) return 'PRODUCTO';
+            if (u.includes('VENTA')) return 'VENTA';
+            return 'VISITADO';
+        };
+        const stVisita = mapStVisita(motivo);
+
         return ApiGate.insertVisita(codclie, motivo, latitud, longitud)
-        .then((data) => {
+        .then(async (data) => {
             if (data && data.queued) {
+                try { await updateSaleCliente(codclie, stVisita); } catch (e) {}
                 return data;
             }
             if (Number(data.rowsAffected[0]) > 0) {
+                try { await updateSaleCliente(codclie, stVisita); } catch (e) {}
                 return data;
             }
             return Promise.reject();

@@ -606,21 +606,33 @@ let funciones = {
     },
     Obtiene_ubicacion_lat_long: async()=>{
 
-      return new Promise((resolve,reject)=>{
-          
+      return new Promise((resolve)=>{
           try {
-              navigator.geolocation.getCurrentPosition(function (location) {
-                  selected_latitud = Number(location.coords.latitude.toString());
-                  selected_longitud = Number(location.coords.longitude.toString());
+              if (!navigator.geolocation) {
+                  selected_latitud = 0;
+                  selected_longitud = 0;
                   resolve();
-              })
+                  return;
+              }
+              navigator.geolocation.getCurrentPosition(
+                  function (location) {
+                      selected_latitud = Number(location.coords.latitude.toString());
+                      selected_longitud = Number(location.coords.longitude.toString());
+                      resolve();
+                  },
+                  function () {
+                      // Si falla GPS, igual permite registrar la visita
+                      selected_latitud = 0;
+                      selected_longitud = 0;
+                      resolve();
+                  },
+                  { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+              );
           } catch (error) {
-              //funciones.AvisoError(error.toString());
               selected_latitud = 0;
               selected_longitud = 0;
               resolve();
           }
-
       })
         
          

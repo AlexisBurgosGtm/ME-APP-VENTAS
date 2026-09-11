@@ -122,20 +122,34 @@ router.post("/get_codupdate", async(req,res)=>{
 })
 
 
-router.get('/online_productos_subidos',async(req,res)=>{
-
-    const{sucursal,codtipocatalogo} = req.query;
-
-    let qry = `
-                SELECT COUNT(ME_Productos.CODPROD) AS PRODUCTOS 
-            FROM ME_Productos LEFT OUTER JOIN
-                ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA LEFT OUTER JOIN
-                ME_Precios ON ME_Productos.CODSUCURSAL = ME_Precios.CODSUCURSAL AND ME_Productos.CODPROD = ME_Precios.CODPROD
-            WHERE (ME_Productos.CODSUCURSAL = '${sucursal}') AND (ME_Productos.CODCLATRES='${codtipocatalogo}')
+router.get('/online_productos_subidos', async (req, res) => {
+    setNoStore(res);
+    const src = Object.assign({}, req.query || {}, req.body || {});
+    const sucursal = String(src.sucursal || '').replace(/'/g, "''");
+    const codtipocatalogo = String(src.codtipocatalogo || '').replace(/'/g, "''");
+    const qry = `
+        SELECT COUNT(*) AS PRODUCTOS
+        FROM ME_PRODUCTOS
+        WHERE CODSUCURSAL = '${sucursal}'
+          AND CODCLATRES = '${codtipocatalogo}'
     `;
-
-    execute.Query(res,qry);
+    execute.Query(res, qry);
 });
+
+router.post('/online_productos_subidos', async (req, res) => {
+    setNoStore(res);
+    const src = Object.assign({}, req.body || {}, req.query || {});
+    const sucursal = String(src.sucursal || '').replace(/'/g, "''");
+    const codtipocatalogo = String(src.codtipocatalogo || '').replace(/'/g, "''");
+    const qry = `
+        SELECT COUNT(*) AS PRODUCTOS
+        FROM ME_PRODUCTOS
+        WHERE CODSUCURSAL = '${sucursal}'
+          AND CODCLATRES = '${codtipocatalogo}'
+    `;
+    execute.Query(res, qry);
+});
+
 router.get('/BACKUP_online_productos_subidos',async(req,res)=>{
 
     const{sucursal} = req.query;
@@ -152,16 +166,34 @@ router.get('/BACKUP_online_productos_subidos',async(req,res)=>{
 });
 
 
-router.get('/online_clientes_subidos',async(req,res)=>{
-
-    const{sucursal,codven,codruta} = req.query;
-
-    let qry = `
-        SELECT COUNT(NITCLIE) AS CLIENTES FROM ME_CLIENTES WHERE CODSUCURSAL='${sucursal}' AND CODRUTA=${codruta}
+router.get('/online_clientes_subidos', async (req, res) => {
+    setNoStore(res);
+    const src = Object.assign({}, req.query || {}, req.body || {});
+    const sucursal = String(src.sucursal || '').replace(/'/g, "''");
+    const codruta = Number(src.codruta) || 0;
+    const qry = `
+        SELECT COUNT(*) AS CLIENTES
+        FROM ME_CLIENTES
+        WHERE CODSUCURSAL = '${sucursal}'
+          AND CODRUTA = ${codruta}
     `;
-
-    execute.Query(res,qry);
+    execute.Query(res, qry);
 });
+
+router.post('/online_clientes_subidos', async (req, res) => {
+    setNoStore(res);
+    const src = Object.assign({}, req.body || {}, req.query || {});
+    const sucursal = String(src.sucursal || '').replace(/'/g, "''");
+    const codruta = Number(src.codruta) || 0;
+    const qry = `
+        SELECT COUNT(*) AS CLIENTES
+        FROM ME_CLIENTES
+        WHERE CODSUCURSAL = '${sucursal}'
+          AND CODRUTA = ${codruta}
+    `;
+    execute.Query(res, qry);
+});
+
 router.get('/BACKUP_online_clientes_subidos',async(req,res)=>{
 
     const{sucursal,codven} = req.query;

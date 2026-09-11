@@ -5,25 +5,52 @@ const router = express.Router();
 
 router.post("/insert_visita", async(req,res)=>{
    
-    const { sucursal, codemp, codclie, fecha,hora,motivo,lat,long } = req.body;
+    const { sucursal, codemp, codclie, fecha, hora, motivo, lat, long } = req.body;
 
-    let qry = `
-        INSERT INTO CLIENTES_VISITAS (EMPNIT,CODCLIENTE,FECHA,HORA,CODEMP,MOTIVO,LATITUD,LONGITUD)
-        SELECT '${sucursal}' AS EMPNIT, 
-                ${codclie} AS CODCLIENTE, 
-                '${fecha}' AS FECHA, 
-                '${hora}' AS HORA, 
-                ${codemp} AS CODEMP, 
-                '${motivo}' AS MOTIVO, 
-                ${lat} AS LATITUD,
-                ${long} AS LONGITUD;
-            `;
+    const sede = String(sucursal || '').replace(/'/g, "''");
+    const motivoTxt = String(motivo || '').replace(/'/g, "''").trim();
+    const fechaSql = String(fecha || '').replace(/'/g, "''");
+    const horaSql = String(hora || '').replace(/'/g, "''");
+    const codClieRaw = String(codclie == null ? '' : codclie).trim();
+    const codClieEsc = codClieRaw.replace(/'/g, "''");
+    const codClieSql = /^\d+$/.test(codClieRaw) ? codClieRaw : `'${codClieEsc}'`;
+    const codEmpSql = Number(codemp) || 0;
+    const latN = Number(lat);
+    const longN = Number(long);
+    const latSql = Number.isFinite(latN) ? latN : 0;
+    const longSql = Number.isFinite(longN) ? longN : 0;
 
-            //UPDATE CLIENTES SET LASTSALE='${fecha}' WHERE CODCLIENTE=${codclie};
-    
-          
-      execute.Query(res,qry);
-     
+    // FAXCLIE = resultado de visita en lista (VENTA / CERRADO / NODINERO / BLOQUEADO / PRODUCTO)
+    const u = motivoTxt.toUpperCase();
+    let stVisita = 'VISITADO';
+    if (u.includes('CERRAD')) stVisita = 'CERRADO';
+    else if (u.includes('DINERO')) stVisita = 'NODINERO';
+    else if (u.includes('PASO') || u.includes('BLOQUE')) stVisita = 'BLOQUEADO';
+    else if (u.includes('PRODUCTO')) stVisita = 'PRODUCTO';
+    else if (u.includes('VENTA')) stVisita = 'VENTA';
+
+    // 1) Historial de visitas  2) Marca cliente visitado hoy (FECHAINGRESO = LASTSALE en app)
+    const qry = `
+        INSERT INTO CLIENTES_VISITAS (EMPNIT, CODCLIENTE, FECHA, HORA, CODEMP, MOTIVO, LATITUD, LONGITUD)
+        VALUES (
+            '${sede}',
+            ${codClieSql},
+            '${fechaSql}',
+            '${horaSql}',
+            ${codEmpSql},
+            '${motivoTxt}',
+            ${latSql},
+            ${longSql}
+        );
+
+        UPDATE ME_CLIENTES
+        SET FECHAINGRESO = '${fechaSql}',
+            FAXCLIE = '${stVisita}'
+        WHERE CODSUCURSAL = '${sede}'
+          AND NITCLIE = '${codClieEsc}';
+    `;
+
+    execute.Query(res, qry);
 });
 
 
@@ -155,7 +182,7 @@ router.post("/descargar_clientes_ruta", async(req,res)=>{
                 ISNULL(ME_Clientes.LONGITUD, 0) AS LONG, 
                 ISNULL(ME_Clientes.FECHAINGRESO,'2020-04-15') AS LASTSALE, 
                 ME_Clientes.FAXCLIE AS TIPONEGOCIO, 
-                '' AS STVISITA, 
+                ISNULL(ME_Clientes.FAXCLIE, '') AS STVISITA, 
                 ME_Clientes.REFERENCIA, 
                 ME_Clientes.VISITA, 
                 ME_Clientes.NOMFAC AS NEGOCIO

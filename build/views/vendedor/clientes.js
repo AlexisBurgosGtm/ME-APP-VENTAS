@@ -680,15 +680,19 @@ async function addListeners(){
         funciones.Confirmacion('Se marcará este cliente como CERRADA. ¿Está seguro?')
         .then((value)=>{
             if(value==true){
-                apigen.updateClientesLastSale(GlobalSelectedCodCliente,'CERRADO')
-                .then(async()=>{
+                funciones.showToast('Enviando datos...');
+                funciones.Obtiene_ubicacion_lat_long()
+                .then(()=> GF.insert_visita(GlobalSelectedCodCliente,'TIENDA CERRADA',selected_latitud,selected_longitud))
+                .then(()=>{
                     funciones.Aviso('TIENDA CERRADA');
+                    hideMenuLateral();
+                    if (GlobalSelectedClientesDia && GlobalSelectedClientesDia !== 'SN') {
+                        getListaClientes(GlobalSelectedClientesDia);
+                    }
                 })
                 .catch(()=>{
                     funciones.AvisoError('No se marcar esta tienda. Inténtelo de nuevo')
                 })
-                
-                hideMenuLateral();
             }
         })
         
@@ -700,15 +704,19 @@ async function addListeners(){
         funciones.Confirmacion('Se marcará este cliente como SIN DINERO. ¿Está seguro?')
         .then(async(value)=>{
             if(value==true){
-                apigen.updateClientesLastSale(GlobalSelectedCodCliente,'NODINERO')
-                .then(async()=>{
+                funciones.showToast('Enviando datos...');
+                funciones.Obtiene_ubicacion_lat_long()
+                .then(()=> GF.insert_visita(GlobalSelectedCodCliente,'NO TIENE DINERO',selected_latitud,selected_longitud))
+                .then(()=>{
                     funciones.Aviso('TIENDA SIN DINERO');
+                    hideMenuLateral();
+                    if (GlobalSelectedClientesDia && GlobalSelectedClientesDia !== 'SN') {
+                        getListaClientes(GlobalSelectedClientesDia);
+                    }
                 })
                 .catch(()=>{
                     funciones.AvisoError('No se marcar esta tienda. Inténtelo de nuevo')
                 })
-
-                hideMenuLateral();
             }
         })
         

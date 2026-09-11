@@ -649,15 +649,20 @@ async function getTotalProductos(idLbTotal) {
 };
 
 
-async function updateSaleCliente(codigo) {
+async function updateSaleCliente(codigo, stvisita) {
+
+    const setFields = {
+        LASTSALE: funciones.getFecha()
+    };
+    if (stvisita) {
+        setFields.STVISITA = String(stvisita);
+    }
 
     var noOfRowsUpdated = await connection.update({ 
             in: "clientes",
-          set: {
-              LASTSALE:funciones.getFecha()
-          },
+          set: setFields,
           where: {
-              CODIGO:codigo.toString()
+              CODIGO: codigo.toString()
           }
     });
     console.log('Cliente actualizado, rows: ' + noOfRowsUpdated.toString())
