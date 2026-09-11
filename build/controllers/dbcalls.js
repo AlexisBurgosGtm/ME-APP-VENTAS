@@ -669,6 +669,23 @@ async function updateSaleCliente(codigo, stvisita) {
 
 };
 
+/** Revierte LASTSALE en IndexedDB (tras eliminar visita) para que vuelva a pendientes. */
+async function revertSaleCliente(codigo, fechaAnterior) {
+    const setFields = {
+        LASTSALE: String(fechaAnterior || ''),
+        STVISITA: ''
+    };
+    var noOfRowsUpdated = await connection.update({
+        in: "clientes",
+        set: setFields,
+        where: {
+            CODIGO: codigo.toString()
+        }
+    });
+    console.log('Cliente revertido visitas, rows: ' + noOfRowsUpdated.toString());
+    return noOfRowsUpdated;
+}
+
 function insertTempVentas(datos){
     return new Promise((resolve,reject)=>{
         connection.insert({

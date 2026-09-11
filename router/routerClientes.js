@@ -2,6 +2,49 @@ const execute = require('./connection');
 const express = require('express');
 const router = express.Router();
 
+function getFechaGuatemalaYmd(dateInput) {
+    try {
+        const d = dateInput ? new Date(dateInput) : new Date();
+        if (isNaN(d.getTime())) throw new Error('invalid date');
+        return new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'America/Guatemala',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).format(d);
+    } catch (e) {
+        const n = new Date();
+        return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+    }
+}
+
+function normalizeYmdGuatemala(v) {
+    const s = String(v == null ? '' : v).trim();
+    const plain = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (plain) return `${plain[1]}-${plain[2]}-${plain[3]}`;
+    if (s) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) return getFechaGuatemalaYmd(d);
+    }
+    return '';
+}
+
+function dayBeforeYmd(ymd) {
+    const m = String(ymd || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return getFechaGuatemalaYmd();
+    const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+    d.setUTCDate(d.getUTCDate() - 1);
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+function setNoStore(res) {
+    res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+    });
+}
 
 router.post("/insert_visita", async(req,res)=>{
    
@@ -9,7 +52,7 @@ router.post("/insert_visita", async(req,res)=>{
 
     const sede = String(sucursal || '').replace(/'/g, "''");
     const motivoTxt = String(motivo || '').replace(/'/g, "''").trim();
-    const fechaSql = String(fecha || '').replace(/'/g, "''");
+    const fechaSql = normalizeYmdGuatemala(fecha) || getFechaGuatemalaYmd();
     const horaSql = String(hora || '').replace(/'/g, "''");
     const codClieRaw = String(codclie == null ? '' : codclie).trim();
     const codClieEsc = codClieRaw.replace(/'/g, "''");
@@ -50,6 +93,99 @@ router.post("/insert_visita", async(req,res)=>{
           AND NITCLIE = '${codClieEsc}';
     `;
 
+    execute.Query(res, qry);
+});
+
+/** Lista visitas por rango de fechas (calendario Guatemala). */
+router.post("/list_visitas", async (req, res) => {
+    setNoStore(res);
+    const { sucursal, fechaini, fechafin, codemp } = req.body || {};
+    const sede = String(sucursal || '').replace(/'/g, "''");
+    let ini = normalizeYmdGuatemala(fechaini);
+    let fin = normalizeYmdGuatemala(fechafin);
+    const today = getFechaGuatemalaYmd();
+    if (!ini) ini = today;
+    if (!fin) fin = today;
+    if (ini > fin) {
+        const tmp = ini; ini = fin; fin = tmp;
+    }
+    const codEmpN = Number(codemp);
+    const filterEmp = Number.isFinite(codEmpN) && codEmpN > 0
+        ? `AND V.CODEMP = ${Math.trunc(codEmpN)}`
+        : '';
+
+    const qry = `
+        SELECT
+            CONVERT(varchar(10), V.FECHA, 23) AS FECHA,
+            ISNULL(V.HORA, '') AS HORA,
+            V.CODCLIENTE,
+            ISNULL(C.NOMCLIE, '') AS CLIENTE,
+            ISNULL(C.NOMFAC, '') AS NEGOCIO,
+            ISNULL(V.MOTIVO, '') AS MOTIVO,
+            ISNULL(V.CODEMP, 0) AS CODEMP,
+            ISNULL(E.NOMVEN, '') AS EMPLEADO,
+            ISNULL(V.LATITUD, 0) AS LAT,
+            ISNULL(V.LONGITUD, 0) AS LONG
+        FROM CLIENTES_VISITAS V
+        LEFT JOIN ME_CLIENTES C
+            ON C.CODSUCURSAL = V.EMPNIT
+           AND (
+                C.NITCLIE = CONVERT(varchar(50), V.CODCLIENTE)
+             OR (ISNUMERIC(C.NITCLIE) = 1 AND ISNUMERIC(CONVERT(varchar(50), V.CODCLIENTE)) = 1
+                 AND CONVERT(numeric(18,0), C.NITCLIE) = CONVERT(numeric(18,0), V.CODCLIENTE))
+           )
+        LEFT JOIN ME_VENDEDORES E
+            ON E.CODSUCURSAL = V.EMPNIT
+           AND E.CODVEN = V.CODEMP
+        WHERE V.EMPNIT = '${sede}'
+          AND CONVERT(varchar(10), V.FECHA, 23) BETWEEN '${ini}' AND '${fin}'
+          ${filterEmp}
+        ORDER BY CONVERT(varchar(10), V.FECHA, 23) DESC, V.HORA DESC, V.CODEMP, V.CODCLIENTE
+    `;
+    execute.Query(res, qry);
+});
+
+/**
+ * Elimina visita y revierte FECHAINGRESO al día anterior
+ * para que el cliente vuelva a pendientes.
+ */
+router.post("/delete_visita", async (req, res) => {
+    setNoStore(res);
+    const { sucursal, codclie, fecha, hora, codemp, motivo } = req.body || {};
+    const sede = String(sucursal || '').replace(/'/g, "''");
+    const fechaSql = normalizeYmdGuatemala(fecha);
+    const horaSql = String(hora || '').replace(/'/g, "''");
+    const motivoTxt = String(motivo || '').replace(/'/g, "''");
+    const codClieRaw = String(codclie == null ? '' : codclie).trim();
+    const codClieEsc = codClieRaw.replace(/'/g, "''");
+    const codClieSql = /^\d+$/.test(codClieRaw) ? codClieRaw : `'${codClieEsc}'`;
+    const codEmpSql = Number(codemp) || 0;
+    const fechaAnterior = dayBeforeYmd(fechaSql || getFechaGuatemalaYmd());
+
+    if (!sede || !codClieRaw || !fechaSql) {
+        return res.send('error');
+    }
+
+    const qry = `
+        DELETE FROM CLIENTES_VISITAS
+        WHERE EMPNIT = '${sede}'
+          AND (
+                CODCLIENTE = ${codClieSql}
+             OR CONVERT(varchar(50), CODCLIENTE) = '${codClieEsc}'
+          )
+          AND CONVERT(varchar(10), FECHA, 23) = '${fechaSql}'
+          AND ISNULL(HORA, '') = '${horaSql}'
+          AND CODEMP = ${codEmpSql}
+          AND ISNULL(MOTIVO, '') = '${motivoTxt}';
+
+        UPDATE ME_CLIENTES
+        SET FECHAINGRESO = '${fechaAnterior}',
+            FAXCLIE = ''
+        WHERE CODSUCURSAL = '${sede}'
+          AND NITCLIE = '${codClieEsc}';
+
+        SELECT '${fechaAnterior}' AS FECHA_REVERTIDA;
+    `;
     execute.Query(res, qry);
 });
 

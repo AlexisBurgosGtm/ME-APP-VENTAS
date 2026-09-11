@@ -193,6 +193,10 @@ let classNavegar = {
                         <i class="fal fa-shopping-cart"></i>
                         <span>Cliente</span>
                     </button>
+                    <button class="vendor-menu-item" id="btnMenu2VendedorVisitas">
+                        <i class="fal fa-clipboard-list"></i>
+                        <span>Registro visitas</span>
+                    </button>
                     <button class="vendor-menu-item" id="btnMenu2Censo">
                         <i class="fal fa-edit"></i>
                         <span>Censo</span>
@@ -220,6 +224,12 @@ let classNavegar = {
                     closeMenu();
                     detener_efecto();
                     classNavegar.inicioVendedorListado();
+                });
+
+                document.getElementById('btnMenu2VendedorVisitas').addEventListener('click', () => {
+                    closeMenu();
+                    detener_efecto();
+                    classNavegar.vendedor_registro_visitas();
                 });
 
                 document.getElementById('btnMenu2VendedorClientesMapa').addEventListener('click', () => {
@@ -409,6 +419,10 @@ let classNavegar = {
                         <i class="fal fa-file-alt"></i>
                         <span>Cotizaciones</span>
                     </button>
+                    <button class="vendor-menu-item" id="btnMenu2SuperVisitas">
+                        <i class="fal fa-clipboard-list"></i>
+                        <span>Registro visitas</span>
+                    </button>
                     <button class="vendor-menu-item" id="btnMenu2SuperUsuarios">
                         <i class="fal fa-unlock"></i>
                         <span>Usuarios</span>
@@ -456,6 +470,11 @@ let classNavegar = {
                 document.getElementById('btnMenu2SuperCotizaciones').addEventListener('click', () => {
                     closeMenu();
                     classNavegar.supervisor_cotizaciones();
+                });
+
+                document.getElementById('btnMenu2SuperVisitas').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.supervisor_registro_visitas();
                 });
 
                 document.getElementById('btnMenu2SuperUsuarios').addEventListener('click', () => {
@@ -543,6 +562,20 @@ let classNavegar = {
             GlobalSelectedForm ='COTIZACIONES';
             GlobalSelectedCodCliente = '';
             iniciarVistaCotizaciones();
+        })
+    },
+    supervisor_registro_visitas:()=>{
+        funciones.loadScript('./views/vendedor/registro_visitas.js','root')
+        .then(()=>{
+            detener_efecto();
+            iniciarVistaRegistroVisitas({ supervisor: true });
+        })
+    },
+    vendedor_registro_visitas:()=>{
+        funciones.loadScript('./views/vendedor/registro_visitas.js','root')
+        .then(()=>{
+            detener_efecto();
+            iniciarVistaRegistroVisitas({ supervisor: false });
         })
     },
     supervisor_usuarios:()=>{
