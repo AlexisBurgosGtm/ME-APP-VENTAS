@@ -1,3 +1,60 @@
+const OFFLINE_SESSION_KEY = 'appventas_offline_session';
+
+function saveOfflineSession() {
+    try {
+        localStorage.setItem(OFFLINE_SESSION_KEY, JSON.stringify({
+            sucursal: GlobalCodSucursal,
+            user: GlobalUsuario,
+            pass: GlobalPassUsuario,
+            codigo: GlobalCodUsuario,
+            tipo: GlobalTipoUsuario,
+            coddoc: GlobalCoddoc,
+            objetivo: GlobalObjetivoVenta,
+            codruta: GlobalCodRuta,
+            catalogo: GlobalTipoCatalogo
+        }));
+    } catch (e) {}
+}
+
+function enterFromOfflineSession(session) {
+    const f = new Date();
+    GlobalCodUsuario = session.codigo;
+    GlobalUsuario = session.user;
+    GlobalPassUsuario = session.pass;
+    GlobalTipoUsuario = session.tipo;
+    GlobalCoddoc = session.coddoc || '';
+    GlobalCodSucursal = session.sucursal;
+    GlobalSistema = session.sucursal;
+    GlobalObjetivoVenta = Number(session.objetivo) || 0;
+    GlobalSelectedDiaUpdated = Number(f.getDate());
+    GlobalCodRuta = Number(session.codruta) || 0;
+    GlobalTipoCatalogo = session.catalogo || '';
+    const badge = document.getElementById('lbUsuarioData');
+    if (badge) badge.innerText = `${GlobalUsuario}`;
+    if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+    const tipo = String(GlobalTipoUsuario || '');
+    if (tipo === 'VENDEDOR') classNavegar.inicioVendedor();
+    else if (tipo === 'SUPERVISOR') {
+        GlobalTipoCatalogo = '0';
+        classNavegar.inicio_supervisor();
+    } else if (tipo === 'REPARTIDOR') classNavegar.inicio_repartidor();
+}
+
+function tryOfflineLogin(sucursal, user, pass) {
+    try {
+        const raw = localStorage.getItem(OFFLINE_SESSION_KEY);
+        if (!raw) return false;
+        const session = JSON.parse(raw);
+        if (String(session.sucursal || '') !== String(sucursal || '')) return false;
+        if (String(session.user || '').trim() !== String(user || '').trim()) return false;
+        if (String(session.pass || '') !== String(pass || '')) return false;
+        enterFromOfflineSession(session);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 let apigen = {
         config_get_codupdate: (sucursal)=>{
             return new Promise((resolve,reject)=>{
@@ -105,6 +162,7 @@ let apigen = {
                                 
                                 document.getElementById('lbUsuarioData').innerText = `${GlobalUsuario}`;
                                 if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+                                saveOfflineSession();
 
                                 switch (GlobalTipoUsuario.toString()) {
                                     case 'VENDEDOR':
@@ -139,6 +197,15 @@ let apigen = {
                         reject();
                     }
                 }, (error) => {
+                    if (!error || !error.response) {
+                        if (tryOfflineLogin(sucursal, user, pass)) {
+                            if (typeof funciones !== 'undefined' && funciones.showToast) {
+                                funciones.showToast('Sin conexión. Sesión local.');
+                            }
+                            resolve();
+                            return;
+                        }
+                    }
                     funciones.AvisoError('Error en la solicitud');
                     reject();
                 });

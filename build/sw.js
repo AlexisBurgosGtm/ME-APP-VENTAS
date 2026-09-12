@@ -1,165 +1,196 @@
-const staticCacheName = 'pre-cache-v2026-038';
-const dynamicCacheName = 'runtime-cache-2026-038';
+const shellCacheName = 'app-shell-v2026-039';
 
+const API_PREFIXES = [
+    '/ventas/',
+    '/empleados/',
+    '/clientes/',
+    '/sucursales/',
+    '/noticias/',
+    '/censo/',
+    '/repartidor/',
+    '/tipodocumentos/',
+    '/productos/',
+    '/digitacion/',
+    '/usuarios/',
+    '/objetivos/',
+    '/reportes/',
+    '/type/',
+    '/api/',
+    '/router/'
+];
 
-// Pre Caching Assets
+// App shell: HTML, CSS, JS de vistas y libs. Las APIs no van aquí.
 const precacheAssets = [
     '/',
+    './index.html',
+    './index.js',
+    './manifest.json',
+    './offline.html',
+    './favicon.png',
+    './listaprecios.js',
     './css/vendors.bundle.css',
-    './css/sb-admin-2.css',
+    './css/app.bundle.css',
+    './css/btn.css',
+    './css/personalizado.css',
+    './css/modern-design.css',
     './css/fa-solid.css',
     './css/fa-regular.css',
     './css/fa-brands.css',
-    './css/btn.css',
-    './css/personalizado.css',
-    './css/custom_theme.css',
     './css/bootstrap.min.css',
     './css/bootstrap-toggle.css',
-    './css/app.bundle.css.map',
-    './css/app.bundle.css',
+    './libs/animate.min.css',
+    './libs/leaflet/leaflet.css',
+    './libs/noty/noty.min.css',
+    './libs/noty/noty.min.js',
+    './libs/funciones.js',
+    './libs/sweetalert2-compat.js',
+    './libs/sweetalert2.min.js',
+    './libs/axios.min.js',
+    './libs/parallax.min.js',
+    './libs/qrcode.min.js',
+    './libs/xlsx.full.min.js',
+    './libs/chartjs.bundle.js',
+    './libs/leaflet/leaflet.js',
+    './libs/jsstore/jsstore.min.js',
+    './libs/jsstore/jsstore.worker.min.js',
+    './js/vendors.bundle.js',
+    './js/app.bundle.js',
+    './js/script.js',
     './controllers/GlobalVars.js',
     './controllers/dbcalls.js',
-    './controllers/customerVars.js',
+    './controllers/CustomerVars.js',
     './controllers/classNavegar.js',
     './controllers/classDb.js',
     './controllers/apicallsx.js',
+    './controllers/apiGate.js',
+    './controllers/syncQueue.js',
+    './models/classTipoDocumentos.js',
+    './models/classEmpleados.js',
+    './views/login/index.js',
+    './views/programador.js',
+    './views/config.js',
+    './views/vendedor/clientes.js',
+    './views/vendedor/censo.js',
+    './views/vendedor/facturacion.js',
+    './views/vendedor/mapaclientes.js',
+    './views/vendedor/reparto.js',
+    './views/vendedor/logro.js',
+    './views/vendedor/registro_visitas.js',
+    './views/pedidos/vendedor.js',
+    './views/reportes/view_reportes.js',
+    './views/repartidor/repartidor.js',
+    './views/supervisor/ventas.js',
+    './views/supervisor/cobertura.js',
+    './views/supervisor/mapa.js',
+    './views/supervisor/horarios.js',
+    './views/supervisor/precios.js',
+    './views/supervisor/cotizaciones.js',
+    './views/supervisor/usuarios.js',
+    './views/supervisor/objetivos.js',
+    './views/supervisor/logro_objetivos.js',
     './img/logoag.png',
     './img/mercados.png',
     './img/usericon.png',
     './img/logo.png',
     './img/cog.png',
-    './img/favicon.png',
-    './img/icon-60.png',
-    './img/icon-114.png',
-    './img/icon-152.png',
-    './js/vendors.bundle.js',
-    './js/script.js',
-    './js/sb-admnin-2.min.js',
-    './js/sb-admin-2.js',
-    './js/holder.js',
-    './js/bootstrap.min.js',
-    './js/bootstrap-toggle.js',
-    './js/app.bundle.js',
-    './libs/jsstore/jsstore.min.js',
-    './libs/jsstore/jsstore.worker.min.js',
-    './libs/leaflet/images/marker-icon.png',
-    './libs/leaflet/leaflet.css',
-    './libs/leaftlet/leaftlet.js',
-    './libs/noty/noty.min.js',
-    './libs/noty/noty.min.css',
-    './libs/chartjs.bundle.js',
-    './libs/funciones.js',
-    './libs/sweetalert.min.js',
-    './libs/sweetalert2.min.js',
-    './libs/sweetalert2-compat.js',
-    './libs/toastr.js',
-    './libs/parallax.min.js',
-    './libs/animate.min.css',
-    './models/classTipoDocumentos.js',
-    './models/classEmpleados.js',
-    './vendor/jquery-easing/jquery.easing.js',
-    './vendor/jquery/jquery.slim.min.map',
-    './vendor/jquery/jquery.slim.min.js',
-    './vendor/jquery/jquery.slim.js',
-    './vendor/jquery/jquery.min.map',
-    './vendor/jquery/jquery.min.js',
-    './vendor/jquery/jquery.js',
-    './vendor/fontawesome-free/css/all.css',
-    './vendor/chart.js/Chart.min.js',
-    './views/vendedor/clientes.js',
-    './views/vendedor/reparto.js',
-    './views/vendedor/mapaclientes.js',
-    './views/vendedor/facturacion.js',
-    './views/vendedor/censo.js',
-    './views/vendedor/logro.js',
-    './views/reportes/view_reportes.js',
-    './views/pedidos/vendedor.js',
-    './views/login/index.js',
-    './views/programador.js',
-    './views/config.js',
-    './favicon.png',
-    './listaprecios.js',
-    './sw.js',
-    './index.html',
-    './index.js',
-    './manifest.json'
+    './img/favicon.png'
 ];
 
-function isApiRequest(request) {
-    try {
-        const url = new URL(request.url);
-        const path = url.pathname.toLowerCase();
-        // Nunca cachear endpoints de datos en vivo ni vistas JS dinámicas
-        if (
-            path.includes('/ventas/') ||
-            path.includes('/empleados/') ||
-            path.includes('/clientes/') ||
-            path.includes('/type/') ||
-            path.includes('/api/') ||
-            path.includes('/views/') ||
-            path.includes('/router/')
-        ) {
-            return true;
-        }
-        if (request.method && request.method.toUpperCase() !== 'GET') {
-            return true;
-        }
-    } catch (e) {}
-    return false;
+function isApiRequest(url) {
+    const path = url.pathname.toLowerCase();
+    if (path === '/sede' || path === '/test_service') return true;
+    return API_PREFIXES.some((prefix) => path === prefix.slice(0, -1) || path.startsWith(prefix));
 }
 
-// INSTALL Event
+function isHtmlRequest(request, url) {
+    if (request.mode === 'navigate') return true;
+    const accept = request.headers.get('accept') || '';
+    return accept.includes('text/html');
+}
+
+async function precacheOne(cache, asset) {
+    try {
+        const response = await fetch(new Request(asset, { cache: 'reload' }));
+        if (response && response.ok) {
+            await cache.put(asset, response);
+        }
+    } catch (e) {}
+}
+
+async function matchShell(request) {
+    const hit = await caches.match(request, { ignoreSearch: true });
+    if (hit) return hit;
+    if (request.mode === 'navigate') {
+        return (await caches.match('./index.html'))
+            || (await caches.match('/index.html'))
+            || (await caches.match('/'));
+    }
+    return null;
+}
+
+async function networkFirstShell(request) {
+    try {
+        const response = await fetch(request);
+        if (response && response.ok && response.type !== 'opaque') {
+            const cache = await caches.open(shellCacheName);
+            await cache.put(request, response.clone());
+        }
+        return response;
+    } catch (e) {
+        const cached = await matchShell(request);
+        if (cached) return cached;
+        if (request.mode === 'navigate') {
+            const offline = await caches.match('./offline.html');
+            if (offline) return offline;
+        }
+        return new Response('offline', { status: 503, statusText: 'offline' });
+    }
+}
+
 self.addEventListener('install', function (event) {
     self.skipWaiting();
     event.waitUntil(
-        caches.open(staticCacheName).then(function (cache) {
-            return cache.addAll(precacheAssets);
+        caches.open(shellCacheName).then(function (cache) {
+            return Promise.all(precacheAssets.map((asset) => precacheOne(cache, asset)));
         })
     );
 });
 
-// ACTIVATE Event
 self.addEventListener('activate', function (event) {
     event.waitUntil(
-        caches.keys().then(keys => {
+        caches.keys().then((keys) => {
             return Promise.all(keys
-                .filter(key => key !== staticCacheName && key !== dynamicCacheName)
-                .map(key => caches.delete(key))
+                .filter((key) => key !== shellCacheName)
+                .map((key) => caches.delete(key))
             );
         }).then(() => self.clients.claim())
     );
 });
 
-// FETCH Event
 self.addEventListener('fetch', function (event) {
-    // APIs / datos dinámicos: siempre red, sin cache
-    if (isApiRequest(event.request)) {
+    const request = event.request;
+    if (!request || request.method !== 'GET') return;
+
+    let url;
+    try {
+        url = new URL(request.url);
+    } catch (e) {
+        return;
+    }
+    if (url.origin !== self.location.origin) return;
+
+    // Datos en vivo: siempre red, nunca caché (cotizaciones, precios, visitas, etc.)
+    if (isApiRequest(url)) {
         event.respondWith(
-            fetch(event.request).catch(function () {
-                return caches.match('offline.html');
+            fetch(request).catch(function () {
+                return new Response(JSON.stringify({ error: 'offline' }), {
+                    status: 503,
+                    headers: { 'Content-Type': 'application/json' }
+                });
             })
         );
         return;
     }
 
-    event.respondWith(
-        caches.match(event.request).then(cacheRes => {
-            return cacheRes || fetch(event.request).then(response => {
-                // Solo cachear assets estáticos exitosos
-                if (!response || response.status !== 200 || response.type === 'opaque') {
-                    return response;
-                }
-                const contentType = response.headers.get('content-type') || '';
-                if (contentType.includes('application/json')) {
-                    return response;
-                }
-                return caches.open(dynamicCacheName).then(function (cache) {
-                    cache.put(event.request, response.clone());
-                    return response;
-                });
-            });
-        }).catch(function () {
-            return caches.match('offline.html');
-        })
-    );
+    event.respondWith(networkFirstShell(request));
 });
