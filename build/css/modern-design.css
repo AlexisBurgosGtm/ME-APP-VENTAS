@@ -1392,9 +1392,23 @@ body.theme-modern-glass .factura-search-fab-close:active {
   transform: scale(0.96);
 }
 
+/* Modal cantidad: encima de la lista (modal 2050 / backdrop 2040) con fondo blur */
+body.theme-modern-glass .factura-qty-modal.show {
+  z-index: 2075 !important;
+}
+
+body.theme-modern-glass .modal-backdrop.factura-qty-backdrop {
+  z-index: 2060 !important;
+  opacity: 1 !important;
+  background: rgba(15, 23, 42, 0.42) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
 /* Modal cantidad producto */
 body.theme-modern-glass .factura-qty-modal .modal-dialog {
   max-width: 340px;
+  pointer-events: auto;
 }
 
 @media (max-width: 576px) {

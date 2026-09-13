@@ -1,4 +1,4 @@
-const shellCacheName = 'app-shell-v2026-039';
+const shellCacheName = 'app-shell-v2026-041';
 
 const API_PREFIXES = [
     '/ventas/',

@@ -563,7 +563,7 @@ function getView(){
         },
         modalCambiarCantidadProducto :()=>{
             return `
-                <div class="modal fade" id="modalCambiarCantidadProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal fade factura-qty-modal" id="modalCambiarCantidadProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-md" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -815,6 +815,33 @@ function addEventsModalCambioCantidad(){
 
 };
 
+function showFacturaQtyModal(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    if (el.parentElement !== document.body) {
+        document.body.appendChild(el);
+    }
+    const $modal = $(el);
+    const pinQtyLayer = () => {
+        el.style.setProperty('z-index', '2075', 'important');
+        const backs = document.querySelectorAll('.modal-backdrop');
+        backs.forEach((backdrop, index) => {
+            backdrop.classList.toggle('factura-qty-backdrop', index === backs.length - 1);
+        });
+    };
+    $modal.off('shown.bs.modal.qtyblur hidden.bs.modal.qtyblur');
+    $modal.on('shown.bs.modal.qtyblur', pinQtyLayer);
+    $modal.on('hidden.bs.modal.qtyblur', () => {
+        document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
+            backdrop.classList.remove('factura-qty-backdrop');
+        });
+    });
+    el.style.setProperty('z-index', '2075', 'important');
+    $modal.modal('show');
+    setTimeout(pinQtyLayer, 0);
+    setTimeout(pinQtyLayer, 80);
+}
+
 function fcnIniciarModalCantidadProductos(){
 
         
@@ -969,7 +996,7 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
             
         document.getElementById('txtCantidad').value = 1;
     
-        $("#ModalCantidadProducto").modal('show');    
+        showFacturaQtyModal('#ModalCantidadProducto');    
     }else{
         funciones.AvisoError('Producto SIN EXISTENCIA')
     }
@@ -1174,7 +1201,7 @@ async function fcnCambiarCantidad(id,cantidad,codprod, existencia){
     GlobalSelectedExistencia = Number(existencia);
     //$('#ModalCantidad').modal('show');
     document.getElementById('txtCantNuevaCant').value = cantidad;
-    $('#modalCambiarCantidadProducto').modal('show');
+    showFacturaQtyModal('#modalCambiarCantidadProducto');
     
 };
 

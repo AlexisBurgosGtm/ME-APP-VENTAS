@@ -331,7 +331,7 @@ let apigen = {
                             if(rows.TELEFONO=='SN'){
                                 btnCallCliente=''
                             }else{
-                                btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
+                                btnCallCliente = `<button class="btn btn-sm btn-secondary" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i> ${rows.TELEFONO}</button>`
                             }
                             strdataVisitados = strdataVisitados + `
                         <tr class='${stClassClie} card card-rounded p-2 col-12'>
@@ -365,10 +365,13 @@ let apigen = {
                                 <br>
                                 <small>GPS:${rows.LAT},${rows.LONG}</small>
 
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <div>${btnCallCliente}</div>
+                                    <button class="btn btn-info btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                        <i class="fal fa-shopping-cart"></i>Vender
+                                    </button>
+                                </div>
                                 <div class="row">
-                                    <div class="col-2">
-                                        ${btnCallCliente}
-                                    </div>
                                     <div class="col-2">
                                         <button class="btn btn-success btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
                                             <i class="fal fa-map-marker"></i>
@@ -377,11 +380,6 @@ let apigen = {
                                     <div class="col-2">
                                         <button class="btn btn-warning btn-md btn-circle hand shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
                                             <i class="fal fa-book"></i>Historial
-                                        </button>
-                                    </div>
-                                    <div class="col-5">
-                                        <button class="btn btn-info btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-shopping-cart"></i>Vender
                                         </button>
                                     </div>
                                 </div>
@@ -395,7 +393,7 @@ let apigen = {
                             if(rows.TELEFONO=='SN'){
                                 btnCallCliente=''
                             }else{
-                                btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
+                                btnCallCliente = `<button class="btn btn-sm btn-secondary" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i> ${rows.TELEFONO}</button>`
                             }
                             varItems += 1;
                             strdata = strdata + `
@@ -431,12 +429,13 @@ let apigen = {
                                         <br>
                                         <small>GPS:${rows.LAT},${rows.LONG}</small>
 
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <div>${btnCallCliente}</div>
+                                            <button class="btn btn-info btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                                <i class="fal fa-shopping-cart"></i>Vender
+                                            </button>
+                                        </div>
                                         <div class="row">
-
-                                            <div class="col-2">
-                                                ${btnCallCliente}
-                                            </div>
-                                            
                                             <div class="col-2">
                                                 <button class="btn btn-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
                                                     <i class="fal fa-map-marker"></i>
@@ -446,12 +445,6 @@ let apigen = {
                                                 <button class="btn btn-warning  btn-md btn-circle hand shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
                                                     <i class="fal fa-book"></i>
                                                 </button>   
-                                            </div>
-                                        
-                                            <div class="col-5">
-                                                <button class="btn btn-info  btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                                    <i class="fal fa-shopping-cart"></i>Vender
-                                                </button>
                                             </div>
                                         </div>
                                     </td>
@@ -540,7 +533,7 @@ let apigen = {
                     if(rows.TELEFONO=='SN'){
                         btnCallCliente=''
                     }else{
-                        btnCallCliente = `<button class="btn btn-circle btn-secondary btn-md" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i></button>`
+                        btnCallCliente = `<button class="btn btn-sm btn-secondary" onclick="funciones.phone_call('${rows.TELEFONO}')"><i class="fal fa-phone"></i> ${rows.TELEFONO}</button>`
                     }                    
                             strdata = strdata + `
                         <tr class='card card-rounded border-secondary shadow p-2'>
@@ -558,10 +551,13 @@ let apigen = {
                                 <br>
                                 <small class="text-info">Ref:${rows.REFERENCIA}</small>
                                 
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <div>${btnCallCliente}</div>
+                                    <button class="btn btn-info btn-sm shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                        <i class="fal fa-shopping-cart"></i>Vender
+                                    </button>
+                                </div>
                                 <div class="row">
-                                    <div class="col-2">
-                                         ${btnCallCliente}   
-                                    </div>
                                     <div class="col-2">
                                         <button class="btn btn-outline-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
                                             <i class="fal fa-map-marker"></i>
@@ -573,13 +569,6 @@ let apigen = {
                                             <i class="fal fa-book"></i>
                                         </button>
                                     </div>
-                                    
-                                    <div class="col-5">
-                                        <button class="btn btn-info btn-sm shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-shopping-cart"></i>Vender
-                                        </button>
-                                    </div>
-                                    
                                 </div>
                                 
                             </td>
