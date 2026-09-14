@@ -1190,26 +1190,24 @@ function Lmap(lat,long){
 };
 
 function getMenuCliente(codigo,nombre,direccion,telefono,lat,long,nit){
-    
-    
-    //map.remove()
-    //map = Lmap(lat,long,nombre,telefono);
-
-    document.getElementById('lbNombreCliente').innerHTML = nombre;
-    document.getElementById('txtCodClie').value = codigo;
-    document.getElementById('txtNitClie').value = nit;
-    document.getElementById('txtDirClie').value = direccion;
-    document.getElementById('txtTelClie').value = telefono;
-    
     GlobalSelectedCodCliente = codigo;
     GlobalSelectedNomCliente = nombre;
     GlobalSelectedDirCliente = direccion;
-    
 
-    classNavegar.ventas(GlobalSelectedCodCliente,GlobalSelectedNomCliente,GlobalSelectedDirCliente);
+    try {
+        const lb = document.getElementById('lbNombreCliente');
+        if (lb) lb.innerHTML = nombre || '';
+        const txtCod = document.getElementById('txtCodClie');
+        if (txtCod) txtCod.value = codigo || '';
+        const txtNit = document.getElementById('txtNitClie');
+        if (txtNit) txtNit.value = nit || '';
+        const txtDir = document.getElementById('txtDirClie');
+        if (txtDir) txtDir.value = direccion || '';
+        const txtTel = document.getElementById('txtTelClie');
+        if (txtTel) txtTel.value = telefono || '';
+    } catch (e) {}
 
-    //showMenuLateral('Opciones del Cliente');
-
+    classNavegar.ventas(GlobalSelectedCodCliente, GlobalSelectedNomCliente, GlobalSelectedDirCliente);
 };
 
 function getMenuCliente2(codigo,negocio,nombre,direccion,telefono,lat,long,nit){

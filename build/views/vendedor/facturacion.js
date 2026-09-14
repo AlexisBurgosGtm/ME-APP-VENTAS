@@ -628,61 +628,77 @@ function getView(){
                 //+ view.modalCantidadCalculadora();
 
     let containerModalesVentas = document.getElementById('containerModalesVentas');
-    containerModalesVentas.innerHTML = view.modalBusquedaProductos() 
-                                        + view.modalCantidadProducto()
-                                        + view.modalCambiarCantidadProducto();
+    if (containerModalesVentas) {
+        containerModalesVentas.innerHTML = view.modalBusquedaProductos() 
+                                            + view.modalCantidadProducto()
+                                            + view.modalCambiarCantidadProducto();
+    }
 
 };
 
 async function iniciarVistaVentas(nit,nombre,direccion){
 
-    
+    try {
+        if (typeof funciones.clearUiBlockers === 'function') funciones.clearUiBlockers();
+    } catch (e) {}
+
     //inicializa la vista
     getView();
 
-
     let lbNomClien = document.getElementById('lbNomClien');
-    lbNomClien.innerText = `${nombre} // ${direccion}`;
+    if (lbNomClien) lbNomClien.innerText = `${nombre || ''} // ${direccion || ''}`;
     
-    document.getElementById('btnCambiarCliente').addEventListener('click',()=>{
-        classNavegar.inicioVendedor();
-    })
+    const btnCambiarCliente = document.getElementById('btnCambiarCliente');
+    if (btnCambiarCliente) {
+        btnCambiarCliente.addEventListener('click',()=>{
+            classNavegar.inicioVendedor();
+        });
+    }
 
-
-    let txtFecha = document.getElementById('txtFecha');txtFecha.value = funciones.getFecha();
+    let txtFecha = document.getElementById('txtFecha');
+    if (txtFecha) txtFecha.value = funciones.getFecha();
     let txtEntregaFecha = funciones.getFecha();// document.getElementById('txtEntregaFecha');txtEntregaFecha.value = funciones.getFecha();
 
     // listener para el nit
     let txtNit = document.getElementById('txtNit');
-    txtNit.addEventListener('keydown',(e)=>{
-        if(e.code=='Enter'){
-            fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
-        }
-        if(e.code=='NumpadEnter'){
-            fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
-        }
-    });
+    if (txtNit) {
+        txtNit.addEventListener('keydown',(e)=>{
+            if(e.code=='Enter'){
+                fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+            }
+            if(e.code=='NumpadEnter'){
+                fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+            }
+        });
+    }
 
-    document.getElementById('btnBuscarCliente').addEventListener('click',()=>{
-        //fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
-    });
+    const btnBuscarClienteEarly = document.getElementById('btnBuscarCliente');
+    if (btnBuscarClienteEarly) {
+        btnBuscarClienteEarly.addEventListener('click',()=>{
+            //fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+        });
+    }
 
-    document.getElementById('txtBusqueda').addEventListener('keyup',(e)=>{
-        if(e.code=='Enter'){
+    const txtBusqueda = document.getElementById('txtBusqueda');
+    if (txtBusqueda) {
+        txtBusqueda.addEventListener('keyup',(e)=>{
+            if(e.code=='Enter'){
+                fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
+            }
+            if(e.code=='NumpadEnter'){
+                fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
+            }
+        });
+    }
+    const btnBuscarProducto = document.getElementById('btnBuscarProducto');
+    if (btnBuscarProducto) {
+        btnBuscarProducto.addEventListener('click',()=>{
             fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-            //$('#ModalBusqueda').modal('show');
-        }
-        if(e.code=='NumpadEnter'){
-            fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-            //$('#ModalBusqueda').modal('show');
-        }
-    });
-    document.getElementById('btnBuscarProducto').addEventListener('click',()=>{
-        fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-        //$('#ModalBusqueda').modal('show');
-    });
+        });
+    }
 
     let btnCobrar = document.getElementById('btnCobrar');
+    if (btnCobrar) {
     btnCobrar.addEventListener('click',()=>{
        
         fcnCargarGridTempVentas('tblGridTempVentas');
@@ -691,7 +707,7 @@ async function iniciarVistaVentas(nit,nombre,direccion){
         if(btnCobrar.innerText=='Terminar'){
             funciones.AvisoError('No puede finalizar un pedido sin productos')
         }else{
-           if(txtNit.value==''){
+           if(!txtNit || txtNit.value==''){
                funciones.AvisoError('Especifique el cliente a quien se carga la venta');
            }else{
 
@@ -704,24 +720,30 @@ async function iniciarVistaVentas(nit,nombre,direccion){
        }
        
     });
+    }
 
     let cmbCoddoc = document.getElementById('cmbCoddoc');
     //classTipoDocumentos.comboboxTipodoc('PED','cmbCoddoc');
-    cmbCoddoc.value = GlobalCoddoc;
+    if (cmbCoddoc) cmbCoddoc.value = GlobalCoddoc;
 
+    if (cmbCoddoc) {
     cmbCoddoc.addEventListener('change',async ()=>{
        await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
     });
+    }
 
     let cmbVendedor = document.getElementById('cmbVendedor');
 
     let btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
+    if (btnFinalizarPedido) {
     btnFinalizarPedido.addEventListener('click',async ()=>{
         fcnFinalizarPedido();
     });
+    }
 
     //BUSQUEDA CLIENTES
     let frmNuevoCliente = document.getElementById('formNuevoCliente');
+    if (frmNuevoCliente) {
     frmNuevoCliente.addEventListener('submit',(e)=>{
         e.preventDefault();
         funciones.Confirmacion('¿Está seguro que desea guardar este cliente?')
@@ -732,13 +754,17 @@ async function iniciarVistaVentas(nit,nombre,direccion){
         })
 
     });
+    }
 
     let btnBusquedaClientes = document.getElementById('btnBusquedaClientes');
+    if (btnBusquedaClientes) {
     btnBusquedaClientes.addEventListener('click',()=>{
         $('#ModalBusquedaCliente').modal('show');
     });
+    }
     
     let txtBusquedaCliente = document.getElementById('txtBusquedaCliente');
+    if (txtBusquedaCliente) {
     txtBusquedaCliente.addEventListener('keyup',(e)=>{
         if(e.code=='Enter'){
             fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
@@ -747,19 +773,26 @@ async function iniciarVistaVentas(nit,nombre,direccion){
             fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
         }
     });
+    }
 
-    document.getElementById('btnBuscarCliente').addEventListener('click',()=>{
+    const btnBuscarCliente = document.getElementById('btnBuscarCliente');
+    if (btnBuscarCliente) {
+    btnBuscarCliente.addEventListener('click',()=>{
         fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
     });
-    document.getElementById('btnNuevoCliente').addEventListener('click',()=>{
+    }
+    const btnNuevoCliente = document.getElementById('btnNuevoCliente');
+    if (btnNuevoCliente) {
+    btnNuevoCliente.addEventListener('click',()=>{
         //$('#ModalNuevoCliente').modal('show');
-        if(txtNit.value!==''){
+        if(txtNit && txtNit.value!==''){
             fcnBuscarCliente('txtNit','txtNombre','txtDireccion');
         }else{
             funciones.AvisoError('Escriba el NIT o código de cliente para comprobar');
         };
         
     })
+    }
 
      
     // EVENTOS DE LOS BOTONES
@@ -767,10 +800,10 @@ async function iniciarVistaVentas(nit,nombre,direccion){
         if(GlobalSelectedForm=='VENTAS'){
             switch (e.keyCode) {
                 case 118: //f7
-                    btnCobrar.click();
+                    if (btnCobrar) btnCobrar.click();
                     break;
                 case 113: //f2
-                    btnBusquedaClientes.click();
+                    if (btnBusquedaClientes) btnBusquedaClientes.click();
                     //createNotification('hola mundo');
                 default:
                     break;
@@ -781,34 +814,44 @@ async function iniciarVistaVentas(nit,nombre,direccion){
     // carga el grid
    
     
-    await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
+    if (cmbCoddoc) {
+        await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
+    }
     await fcnCargarGridTempVentas('tblGridTempVentas');
     //await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
 
-    cmbVendedor.value = GlobalCodUsuario;
+    if (cmbVendedor) cmbVendedor.value = GlobalCodUsuario;
 
     fcnCargarComboTipoPrecio();
   
     // inicializa la calculadora de cantidad
     //iniciarModalCantidad();
-    addEventsModalCambioCantidad();
+    try { addEventsModalCambioCantidad(); } catch (e) { console.log(e); }
 
     //carga los datos del cliente
-    document.getElementById('txtNit').value = nit;
-    document.getElementById('txtNombre').value = nombre;
-    document.getElementById('txtDireccion').value = direccion;
+    if (txtNit) txtNit.value = nit || '';
+    const txtNombre = document.getElementById('txtNombre');
+    const txtDireccion = document.getElementById('txtDireccion');
+    if (txtNombre) txtNombre.value = nombre || '';
+    if (txtDireccion) txtDireccion.value = direccion || '';
     
     //inicia los eventos de la ventana Cantidad al agregar productos
-    fcnIniciarModalCantidadProductos();
+    try { fcnIniciarModalCantidadProductos(); } catch (e) { console.log(e); }
 
-    document.getElementById('btnAgregarProd').addEventListener('click',()=>{
-        $('#ModalBusqueda').modal('show');
-    });
+    const btnAgregarProd = document.getElementById('btnAgregarProd');
+    if (btnAgregarProd) {
+        btnAgregarProd.addEventListener('click',()=>{
+            $('#ModalBusqueda').modal('show');
+        });
+    }
 };
 
 function addEventsModalCambioCantidad(){
+    const btnCantGuardar = document.getElementById('btnCantGuardar');
+    if (!btnCantGuardar || btnCantGuardar.dataset.bound === '1') return;
+    btnCantGuardar.dataset.bound = '1';
 
-    document.getElementById('btnCantGuardar').addEventListener('click',()=>{
+    btnCantGuardar.addEventListener('click',()=>{
         let nuevacantidad = Number(document.getElementById('txtCantNuevaCant').value);
         if(nuevacantidad>0){
             fcnUpdateTempRow(GlobalSelectedId,nuevacantidad)
