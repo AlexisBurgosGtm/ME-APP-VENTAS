@@ -821,6 +821,12 @@ function showFacturaQtyModal(selector) {
     if (el.parentElement !== document.body) {
         document.body.appendChild(el);
     }
+    window._facturaAgregandoProducto = false;
+    const btnAgregar = document.getElementById('btnAgregarProducto');
+    if (btnAgregar) {
+        btnAgregar.disabled = false;
+        btnAgregar.innerHTML = '<i class="fal fa-check"></i> Agregar';
+    }
     const $modal = $(el);
     const pinQtyLayer = () => {
         el.style.setProperty('z-index', '2075', 'important');
@@ -835,11 +841,39 @@ function showFacturaQtyModal(selector) {
         document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
             backdrop.classList.remove('factura-qty-backdrop');
         });
+        window._facturaAgregandoProducto = false;
+        const btn = document.getElementById('btnAgregarProducto');
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fal fa-check"></i> Agregar';
+        }
     });
     el.style.setProperty('z-index', '2075', 'important');
     $modal.modal('show');
     setTimeout(pinQtyLayer, 0);
     setTimeout(pinQtyLayer, 80);
+}
+
+function hideFacturaQtyModal(selector) {
+    const el = document.querySelector(selector);
+    if (!el) return;
+    try {
+        $(el).modal('hide');
+    } catch (e) {}
+    // Fallback si Bootstrap no cierra el modal (stack con búsqueda de productos)
+    setTimeout(() => {
+        if (!el.classList.contains('show')) return;
+        el.classList.remove('show');
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden', 'true');
+        document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
+            if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+        });
+        if (!document.querySelector('.modal.show')) {
+            document.body.classList.remove('modal-open');
+            document.body.style.paddingRight = '';
+        }
+    }, 120);
 }
 
 function fcnIniciarModalCantidadProductos(){
@@ -852,15 +886,21 @@ function fcnIniciarModalCantidadProductos(){
     let txtSubTotal = document.getElementById('txtSubTotal'); //label
 
     btnAgregarProducto.addEventListener('click',()=>{
-        GlobalSelectedCantidad = Number(txtCantidad.value);
+        if (window._facturaAgregandoProducto) return;
+        const cant = Number(txtCantidad.value);
+        if (!Number.isFinite(cant) || cant <= 0) {
+            funciones.AvisoError('Escriba una cantidad válida');
+            return;
+        }
+        window._facturaAgregandoProducto = true;
+        btnAgregarProducto.disabled = true;
+        btnAgregarProducto.innerHTML = GlobalLoader;
+
+        GlobalSelectedCantidad = cant;
         let totalunidades = (Number(GlobalSelectedEquivale) * Number(GlobalSelectedCantidad));
         let totalexento = GlobalSelectedCantidad * GlobalSelectedExento;
 
-        
-        
         fcnAgregarProductoVenta(GlobalSelectedCodprod,GlobalSelectedDesprod,GlobalSelectedCodmedida,GlobalSelectedCantidad,GlobalSelectedEquivale,totalunidades,GlobalSelectedCosto,GlobalSelectedPrecio,totalexento);
-        
-        
     });
 
     txtCantidad.addEventListener('click',()=>{txtCantidad.value =''});
@@ -1008,78 +1048,66 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
 
 // agrega el producto a temp_ventas
 async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento){
-   
-    db_totalunidades_producto(codprod)
-    .then((totaluns)=>{
-        //---------------------------------------------------------
+    const btn = document.getElementById('btnAgregarProducto');
+    const resetBtn = () => {
+        window._facturaAgregandoProducto = false;
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fal fa-check"></i> Agregar';
+        }
+    };
 
-        if(Number(GlobalSelectedExistencia)<(Number(totalunidades)+Number(totaluns))){
-            funciones.AvisoError('No pude agregar una cantidad mayor a la existencia');
+    try {
+        const totaluns = await db_totalunidades_producto(codprod);
+
+        if (Number(GlobalSelectedExistencia) < (Number(totalunidades) + Number(totaluns))) {
+            funciones.AvisoError('No puede agregar una cantidad mayor a la existencia');
+            resetBtn();
             return;
+        }
+
+        if (btn) {
+            btn.innerHTML = GlobalLoader;
+            btn.disabled = true;
+        }
+
+        const cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
+        const totalcosto = Number(costo) * Number(cantidad);
+        const totalprecio = Number(precio) * Number(cantidad);
+        const coddoc = document.getElementById('cmbCoddoc').value;
+        const data = {
+            EMPNIT: GlobalEmpnit,
+            CODSUCURSAL: GlobalCodSucursal,
+            CODDOC: coddoc,
+            CODPROD: codprod,
+            DESPROD: desprod,
+            CODMEDIDA: codmedida,
+            CANTIDAD: cantidad,
+            EQUIVALE: equivale,
+            TOTALUNIDADES: totalunidades,
+            COSTO: costo,
+            PRECIO: precio,
+            TOTALCOSTO: totalcosto,
+            TOTALPRECIO: totalprecio,
+            EXENTO: exento,
+            USUARIO: GlobalUsuario,
+            TIPOPRECIO: cmbTipoPrecio ? cmbTipoPrecio.value : 'P',
+            EXISTENCIA: GlobalSelectedExistencia
         };
-    
-        document.getElementById('btnAgregarProducto').innerHTML = GlobalLoader;
-        document.getElementById('btnAgregarProducto').disabled = true;
-    
-        //document.getElementById('tblResultadoBusqueda').innerHTML = '';
-        let cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
-            let totalcosto = Number(costo) * Number(cantidad);
-            let totalprecio = Number(precio) * Number(cantidad);
-            console.log('intenta agregar la fila')
-            let coddoc = document.getElementById('cmbCoddoc').value;
-            try {        
-                    var data = {
-                        EMPNIT:GlobalEmpnit,  
-                        CODSUCURSAL:GlobalCodSucursal,
-                        CODDOC:coddoc,     
-                        CODPROD:codprod,
-                        DESPROD:desprod,
-                        CODMEDIDA:codmedida,
-                        CANTIDAD:cantidad,
-                        EQUIVALE:equivale,
-                        TOTALUNIDADES:totalunidades,
-                        COSTO:costo,
-                        PRECIO:precio,
-                        TOTALCOSTO:totalcosto,
-                        TOTALPRECIO:totalprecio,
-                        EXENTO:exento,
-                        USUARIO:GlobalUsuario,
-                        TIPOPRECIO:cmbTipoPrecio.value,
-                        EXISTENCIA:GlobalSelectedExistencia
-                    };
-    
-                    insertTempVentas(data)
-                    .then(()=>{                    
-          
-                            $('#ModalCantidadProducto').modal('hide') //MARCADOR
-                            funciones.showToast('Agregado: ' + desprod);
-                            
-                            fcnCargarGridTempVentas('tblGridTempVentas');
-                            
-                            document.getElementById('btnAgregarProducto').innerHTML  = `<i class="fal fa-check"></i>Agregar`;
-                            document.getElementById('btnAgregarProducto').disabled = false;
-                            let txbusqueda = document.getElementById('txtBusqueda');
-                            txbusqueda.value = '';
-                            
-                      })
-                      .catch(
-                          ()=>{
-                            document.getElementById('btnAgregarProducto').innerHTML  = `<i class="fal fa-check"></i>Agregar`;
-                            document.getElementById('btnAgregarProducto').disabled = false;
-                            funciones.AvisoError('No se pudo agregar este producto a la venta actual');
-                          }
-                      )
-            
-            } catch (error) {
-                document.getElementById('btnAgregarProducto').innerHTML  = `<i class="fal fa-check"></i>Agregar`;
-                document.getElementById('btnAgregarProducto').disabled = false;
-            }
-       
 
-        //---------------------------------------------------------
-    })
- 
-
+        await insertTempVentas(data);
+        hideFacturaQtyModal('#ModalCantidadProducto');
+        funciones.showToast('Agregado: ' + desprod);
+        fcnCargarGridTempVentas('tblGridTempVentas');
+        const txbusqueda = document.getElementById('txtBusqueda');
+        if (txbusqueda) txbusqueda.value = '';
+        // No reactivar el botón aquí: el modal se cierra; se reactiva al reabrir
+        window._facturaAgregandoProducto = false;
+    } catch (error) {
+        console.log(error);
+        funciones.AvisoError('No se pudo agregar este producto a la venta actual');
+        resetBtn();
+    }
 };
 
 function fcnEliminarItem(id){

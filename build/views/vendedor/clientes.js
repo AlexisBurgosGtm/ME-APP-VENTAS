@@ -922,10 +922,12 @@ async function addListeners(){
                                 updateProgressOverlay(Math.round(porc), `Guardando producto ${contador - 1} de ${totalrows}`);
                                 if(totalrows==contador){
                                    
-                                    funciones.Aviso('Productos descargados exitosamente!!');
+                                    funciones.showToast('Productos descargados exitosamente');
                                    
-                                    btnDescargarP.disabled = false;
-                                    btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
+                                    if (btnDescargarP) {
+                                        btnDescargarP.disabled = false;
+                                        btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
+                                    }
                                     hideProgressOverlay();
                                     Pace.stop();
 
@@ -1106,10 +1108,14 @@ async function addListeners(){
                                     contador += 1;
                                     if(totalrows==contador){
                                        
-                                        funciones.Aviso('Productos descargados exitosamente!!');
+                                        funciones.showToast('Productos descargados exitosamente');
                                        
-                                        btnDescargarP.disabled = false;
-                                        btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
+                                        try {
+                                            if (btnDescargarP) {
+                                                btnDescargarP.disabled = false;
+                                                btnDescargarP.innerHTML = `<i class="fal fa-download"></i>`;
+                                            }
+                                        } catch (e) {}
     
                                         try {
                                             getTotalProductos('lbTotalProductos');

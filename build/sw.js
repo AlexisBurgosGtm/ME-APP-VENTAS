@@ -1,4 +1,4 @@
-const shellCacheName = 'app-shell-v2026-041';
+const shellCacheName = 'app-shell-v2026-044';
 
 const API_PREFIXES = [
     '/ventas/',
@@ -13,6 +13,7 @@ const API_PREFIXES = [
     '/digitacion/',
     '/usuarios/',
     '/objetivos/',
+    '/admin/',
     '/reportes/',
     '/type/',
     '/api/',
@@ -88,6 +89,9 @@ const precacheAssets = [
     './views/supervisor/usuarios.js',
     './views/supervisor/objetivos.js',
     './views/supervisor/logro_objetivos.js',
+    './views/admin/inicio.js',
+    './views/admin/usuarios.js',
+    './views/admin/basedatos.js',
     './img/logoag.png',
     './img/mercados.png',
     './img/usericon.png',

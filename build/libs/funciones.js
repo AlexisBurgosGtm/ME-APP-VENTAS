@@ -292,6 +292,11 @@ let funciones = {
       //INSTALACION APP
     },
     Confirmacion: function(msn){
+        try {
+            if (typeof Swal !== 'undefined' && typeof Swal.isVisible === 'function' && Swal.isVisible()) {
+                Swal.close();
+            }
+        } catch (e) {}
         return swal({
             title: 'Confirme',
             text: msn,
@@ -302,13 +307,32 @@ let funciones = {
             }
         })
     },
+    // Avisos no bloqueantes: toast (no congelan la UI ni dejan overlay)
     Aviso: function(msn){
-        swal(msn, {
-            timer: 1500,
-            icon: "success",
-            buttons: false
-            });
-
+        try {
+            if (typeof Noty !== 'undefined') {
+                new Noty({
+                    type: 'success',
+                    layout: 'topRight',
+                    timeout: 2200,
+                    theme: 'relax',
+                    progressBar: true,
+                    text: String(msn || '')
+                }).show();
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: String(msn || ''),
+                    showConfirmButton: false,
+                    timer: 2200,
+                    timerProgressBar: true
+                });
+            }
+        } catch (e) {
+            console.log(msn);
+        }
         try {
             navigator.vibrate(500);
         } catch (error) {
@@ -316,16 +340,73 @@ let funciones = {
         }
     },
     AvisoError: function(msn){
-        swal(msn, {
-            timer: 2000,
-            icon: "error",
-            buttons: false
-            });
+        try {
+            if (typeof Noty !== 'undefined') {
+                new Noty({
+                    type: 'error',
+                    layout: 'topRight',
+                    timeout: 2800,
+                    theme: 'relax',
+                    progressBar: true,
+                    text: String(msn || '')
+                }).show();
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: String(msn || ''),
+                    showConfirmButton: false,
+                    timer: 2800,
+                    timerProgressBar: true
+                });
+            }
+        } catch (e) {
+            console.log(msn);
+        }
         try {
             navigator.vibrate([100,200,500]);
         } catch (error) {
             
         }
+    },
+    clearUiBlockers: function(){
+        try {
+            if (typeof Swal !== 'undefined' && typeof Swal.isVisible === 'function' && Swal.isVisible()) {
+                Swal.close();
+            }
+        } catch (e) {}
+        try {
+            document.querySelectorAll('.swal2-container').forEach((el) => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+        } catch (e) {}
+        try {
+            const wait = document.getElementById('modalWait');
+            if (wait && (wait.classList.contains('show') || wait.style.display === 'block')) {
+                try { $('#modalWait').modal('hide'); } catch (e2) {}
+                wait.classList.remove('show', 'factura-wait-modal');
+                wait.style.display = 'none';
+            }
+        } catch (e) {}
+        try {
+            const overlay = document.getElementById('progressOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            }
+        } catch (e) {}
+        try {
+            const openModals = document.querySelectorAll('.modal.show');
+            if (!openModals.length) {
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                document.querySelectorAll('.modal-backdrop').forEach((b) => {
+                    if (b && b.parentNode) b.parentNode.removeChild(b);
+                });
+            }
+        } catch (e) {}
     },
     FiltrarListaProductos: function(idTabla){
         swal({
@@ -434,6 +515,11 @@ let funciones = {
     },
     loadScript: function(url, idContainer) {
         return new Promise((resolve, reject) => {
+          try {
+            if (typeof funciones.clearUiBlockers === 'function') {
+              funciones.clearUiBlockers();
+            }
+          } catch (e) {}
           var script = document.createElement('script');
           script.src = url;
     

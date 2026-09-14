@@ -34,6 +34,7 @@ let classNavegar = {
         document.body.classList.remove('supervisor-active');
         divUsuario.innerText = GlobalUsuario;
         lbTipo.innerText = GlobalTipoUsuario;
+        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
 
         switch (tipousuario) {
             case 'VENDEDOR':
@@ -204,6 +205,12 @@ let classNavegar = {
         }
     },
     inicioVendedor : async ()=>{
+        document.body.classList.remove('login-active');
+        document.body.classList.remove('supervisor-active');
+        if (typeof divUsuario !== 'undefined' && divUsuario) divUsuario.innerText = GlobalUsuario;
+        if (typeof lbTipo !== 'undefined' && lbTipo) lbTipo.innerText = GlobalTipoUsuario || 'VENDEDOR';
+        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+
         const vendedorItems = `
                     <button class="vendor-menu-item" id="btnMenu2VendedorClientesMapa">
                         <i class="fal fa-map"></i>
@@ -410,9 +417,66 @@ let classNavegar = {
             initView();
         })
     },
+    inicio_superusuario: async () => {
+        document.body.classList.remove('login-active');
+        document.body.classList.add('supervisor-active');
+        if (typeof divUsuario !== 'undefined' && divUsuario) divUsuario.innerText = GlobalUsuario;
+        if (typeof lbTipo !== 'undefined' && lbTipo) lbTipo.innerText = GlobalTipoUsuario || 'SUPERUSUARIO';
+        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+
+        const items = `
+                    <button class="vendor-menu-item" id="btnMenu2AdminInicio">
+                        <i class="fal fa-home"></i>
+                        <span>Inicio</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2AdminUsuarios">
+                        <i class="fal fa-users"></i>
+                        <span>Usuarios</span>
+                    </button>
+                    <button class="vendor-menu-item" id="btnMenu2AdminBaseDatos">
+                        <i class="fal fa-database"></i>
+                        <span>Base de datos</span>
+                    </button>
+        `;
+
+        await classNavegar.setupMenuFooter({
+            itemsHtml: items,
+            showPedidosPend: false,
+            autoNavigateId: 'btnMenu2AdminInicio',
+            bindEvents: ({ closeMenu }) => {
+                document.getElementById('btnMenu2AdminInicio').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.admin_inicio();
+                });
+                document.getElementById('btnMenu2AdminUsuarios').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.admin_usuarios();
+                });
+                document.getElementById('btnMenu2AdminBaseDatos').addEventListener('click', () => {
+                    closeMenu();
+                    classNavegar.admin_basedatos();
+                });
+            }
+        });
+    },
+    admin_inicio: () => {
+        funciones.loadScript('./views/admin/inicio.js', 'root')
+            .then(() => iniciarVistaAdminInicio());
+    },
+    admin_usuarios: () => {
+        funciones.loadScript('./views/admin/usuarios.js', 'root')
+            .then(() => iniciarVistaAdminUsuarios());
+    },
+    admin_basedatos: () => {
+        funciones.loadScript('./views/admin/basedatos.js', 'root')
+            .then(() => iniciarVistaAdminBaseDatos());
+    },
     inicio_supervisor : async ()=>{
         document.body.classList.remove('login-active');
         document.body.classList.add('supervisor-active');
+        if (typeof divUsuario !== 'undefined' && divUsuario) divUsuario.innerText = GlobalUsuario;
+        if (typeof lbTipo !== 'undefined' && lbTipo) lbTipo.innerText = GlobalTipoUsuario || 'SUPERVISOR';
+        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
 
         const supervisorItems = `
                     <button class="vendor-menu-item" id="btnMenu2SuperMapa">
@@ -622,6 +686,11 @@ let classNavegar = {
     },
     inicio_repartidor : async ()=>{
         console.log('inicio Repartidor....')
+        document.body.classList.remove('login-active');
+        document.body.classList.remove('supervisor-active');
+        if (typeof divUsuario !== 'undefined' && divUsuario) divUsuario.innerText = GlobalUsuario;
+        if (typeof lbTipo !== 'undefined' && lbTipo) lbTipo.innerText = GlobalTipoUsuario || 'REPARTIDOR';
+        if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
 
         let strFooter =    `
                             `
