@@ -46,14 +46,33 @@ function tryOfflineLogin(sucursal, user, pass) {
         const raw = localStorage.getItem(OFFLINE_SESSION_KEY);
         if (!raw) return false;
         const session = JSON.parse(raw);
-        if (String(session.sucursal || '') !== String(sucursal || '')) return false;
-        if (String(session.user || '').trim() !== String(user || '').trim()) return false;
+        const reqUser = String(user || '').trim().toUpperCase();
+        const sesUser = String(session.user || '').trim().toUpperCase();
+        if (!reqUser || sesUser !== reqUser) return false;
         if (String(session.pass || '') !== String(pass || '')) return false;
+
+        const reqSuc = String(sucursal || '').trim();
+        const sesSuc = String(session.sucursal || '').trim();
+        // Si viene sede, debe coincidir; si viene vacía, usa la de la sesión guardada
+        if (reqSuc && sesSuc && reqSuc !== sesSuc) return false;
+
         enterFromOfflineSession(session);
         return true;
     } catch (e) {
         return false;
     }
+}
+
+function isOfflineLoginError(error) {
+    if (!error) return true;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return true;
+    if (!error.response) return true;
+    const status = Number(error.response.status) || 0;
+    if (status === 0 || status === 503 || status === 504) return true;
+    const data = error.response.data;
+    if (data && typeof data === 'object' && data.error === 'offline') return true;
+    if (typeof data === 'string' && data.toLowerCase().includes('offline')) return true;
+    return false;
 }
 
 let apigen = {
@@ -123,6 +142,14 @@ let apigen = {
         empleadosLogin : (sucursal,user,pass)=>{
             let f = new Date();
             return new Promise((resolve,reject)=>{
+
+                const useOfflineSession = () => {
+                    if (!tryOfflineLogin(sucursal, user, pass)) return false;
+                    if (typeof funciones !== 'undefined' && funciones.showToast) {
+                        funciones.showToast('Sin conexión. Sesión local.');
+                    }
+                    return true;
+                };
                 
                 if (String(user || '').trim().toUpperCase() === 'ALEXIS BURGOS' && pass === '2410201415082017') {
                     GlobalCodSucursal = sucursal || '';
@@ -149,12 +176,23 @@ let apigen = {
                         GlobalTipoUsuario = 'SUPERVISOR';
                         GlobalSelectedDiaUpdated = Number(f.getDate());
                         if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
-                                
+                        saveOfflineSession();
                         classNavegar.inicio_supervisor();
                         
                         resolve();
                         return;
                     }
+                }
+
+                // Sin red: entrar directo con la última sesión válida
+                if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+                    if (useOfflineSession()) {
+                        resolve();
+                        return;
+                    }
+                    funciones.AvisoError('Sin conexión y no hay sesión local para este usuario. Entra online al menos una vez.');
+                    reject();
+                    return;
                 }
 
                 axios.get(GlobalServerUrl + `/empleados/login?codsucursal=${sucursal}&user=${user}&pass=${pass}`)
@@ -213,16 +251,16 @@ let apigen = {
                         reject();
                     }
                 }, (error) => {
-                    if (!error || !error.response) {
-                        if (tryOfflineLogin(sucursal, user, pass)) {
-                            if (typeof funciones !== 'undefined' && funciones.showToast) {
-                                funciones.showToast('Sin conexión. Sesión local.');
-                            }
-                            resolve();
-                            return;
-                        }
+                    // SW offline responde 503 con {error:'offline'} → axios trae error.response
+                    if (isOfflineLoginError(error) && useOfflineSession()) {
+                        resolve();
+                        return;
                     }
-                    funciones.AvisoError('Error en la solicitud');
+                    if (isOfflineLoginError(error)) {
+                        funciones.AvisoError('Sin conexión y no hay sesión local para este usuario. Entra online al menos una vez.');
+                    } else {
+                        funciones.AvisoError('Error en la solicitud');
+                    }
                     reject();
                 });
 

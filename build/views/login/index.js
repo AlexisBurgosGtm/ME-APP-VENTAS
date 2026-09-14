@@ -90,18 +90,19 @@ function addListeners(){
 
     GlobalCodSucursal = '';
 
+    // Último usuario/clave usados (offline)
+    if (typeof cargarCredencialesGuardadas === 'function') cargarCredencialesGuardadas();
+
+    // Sede: cache local primero; refresca en red solo si hace falta
     get_sede()
     .then((sede)=>{
-        document.getElementById('cmbSucursal').value = sede;
+        applySedeToSelect(sede);
     })
     .catch(()=>{
-        document.getElementById('cmbSucursal').disabled = false;
-    })
+        const cmb = document.getElementById('cmbSucursal');
+        if (cmb) cmb.disabled = false;
+    });
 
-
-   
-   
-    
     let btnIniciar = document.getElementById('btnIniciar');
     const btnIniciarDefaultHtml = '<i class="fal fa-unlock"></i> Ingresar';
 
@@ -114,15 +115,13 @@ function addListeners(){
             let usu = document.getElementById('txtUsr').value;
             let pas = document.getElementById('txtPass').value;
         
-            almacenarCredenciales()
-        
-            apigen.empleadosLogin(suc, usu.trim(), pas.trim())
-            .then(()=>{
-
-            })
-            .catch(()=>{
-                btnIniciar.disabled = false;
-                btnIniciar.innerHTML = btnIniciarDefaultHtml;
+            Promise.resolve(almacenarCredenciales()).finally(()=>{
+                apigen.empleadosLogin(suc, usu.trim(), pas.trim())
+                .then(()=>{})
+                .catch(()=>{
+                    btnIniciar.disabled = false;
+                    btnIniciar.innerHTML = btnIniciarDefaultHtml;
+                });
             });
 
     });
@@ -227,28 +226,73 @@ async function fcnLoginForzarActualizacion() {
     }
 }
 
+function normalizeSedeValue(raw) {
+    if (raw == null) return '';
+    if (typeof raw === 'object') return '';
+    const sede = String(raw).trim();
+    if (!sede || sede === 'offline' || sede === 'error' || sede.startsWith('{')) return '';
+    return sede;
+}
+
+function applySedeToSelect(sede) {
+    const cmb = document.getElementById('cmbSucursal');
+    const value = normalizeSedeValue(sede);
+    if (!cmb || !value) return;
+
+    let found = false;
+    for (let i = 0; i < cmb.options.length; i++) {
+        if (String(cmb.options[i].value) === value) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = value;
+        cmb.appendChild(opt);
+    }
+
+    cmb.value = value;
+    GlobalCodSucursal = value;
+    cmb.disabled = true;
+    if (typeof setCachedSede === 'function') setCachedSede(value);
+}
+
 function get_sede(){
-            
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject)=>{
+        const lastLogin = (typeof getCachedLastLogin === 'function') ? getCachedLastLogin() : null;
+        const cached = ((typeof getCachedSede === 'function') ? getCachedSede() : '')
+            || (lastLogin && lastLogin.sucursal) || '';
+        if (cached) {
+            // Ya hay sede local: úsala al instante y refresca en segundo plano
+            axios.get('/sede', { timeout: 8000 })
+                .then((response) => {
+                    const sede = normalizeSedeValue(response && response.data);
+                    if (sede) {
+                        setCachedSede(sede);
+                        applySedeToSelect(sede);
+                    }
+                })
+                .catch(()=>{});
+            resolve(cached);
+            return;
+        }
 
-        axios.get('/sede')
-        .then((response) => {
-            let sede = response.data;
-            
-            console.log('sede:');
-            console.log(sede);
-
-            if(response=='error'){
-                reject();
-            }else{
+        axios.get('/sede', { timeout: 8000 })
+            .then((response) => {
+                const sede = normalizeSedeValue(response && response.data);
+                if (!sede) {
+                    reject();
+                    return;
+                }
+                setCachedSede(sede);
                 resolve(sede);
-            }             
-        }, (error) => {
-            reject();
-        });
-
+            })
+            .catch(() => {
+                reject();
+            });
     });
-
 };
 
 

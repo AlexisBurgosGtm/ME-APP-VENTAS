@@ -1,4 +1,4 @@
-const shellCacheName = 'app-shell-v2026-046';
+const shellCacheName = 'app-shell-v2026-050';
 
 const API_PREFIXES = [
     '/ventas/',
@@ -22,12 +22,13 @@ const API_PREFIXES = [
 
 // App shell: HTML, CSS, JS de vistas y libs. Las APIs no van aquí.
 const precacheAssets = [
-    '/',
+    './',
     './index.html',
     './index.js',
     './manifest.json',
     './offline.html',
     './favicon.png',
+    './anuncio.png',
     './listaprecios.js',
     './css/vendors.bundle.css',
     './css/app.bundle.css',
@@ -45,7 +46,6 @@ const precacheAssets = [
     './libs/noty/noty.min.js',
     './libs/funciones.js',
     './libs/sweetalert2-compat.js',
-    './libs/sweetalert2.min.js',
     './libs/axios.min.js',
     './libs/parallax.min.js',
     './libs/qrcode.min.js',
@@ -97,39 +97,96 @@ const precacheAssets = [
     './img/usericon.png',
     './img/logo.png',
     './img/cog.png',
-    './img/favicon.png'
+    './img/favicon.png',
+    // Font Awesome + icon fonts (botones offline)
+    './webfonts/fa-light-300.woff2',
+    './webfonts/fa-light-300.woff',
+    './webfonts/fa-light-300.ttf',
+    './webfonts/fa-light-300.eot',
+    './webfonts/fa-regular-400.woff2',
+    './webfonts/fa-regular-400.woff',
+    './webfonts/fa-regular-400.ttf',
+    './webfonts/fa-regular-400.eot',
+    './webfonts/fa-solid-900.woff2',
+    './webfonts/fa-solid-900.woff',
+    './webfonts/fa-solid-900.ttf',
+    './webfonts/fa-solid-900.eot',
+    './webfonts/fa-brands-400.woff2',
+    './webfonts/fa-brands-400.woff',
+    './webfonts/fa-brands-400.ttf',
+    './webfonts/fa-brands-400.eot',
+    './webfonts/nextgen-icons.woff2',
+    './webfonts/nextgen-icons.woff',
+    './webfonts/nextgen-icons.ttf',
+    './webfonts/nextgen-icons.eot',
+    './webfonts/nextgen-icons.svg',
+    './webfonts/summernote.woff',
+    './webfonts/summernote.ttf',
+    './webfonts/summernote.eot'
 ];
+
+function assetUrl(asset) {
+    return new URL(asset, self.location).href;
+}
 
 function isApiRequest(url) {
     const path = url.pathname.toLowerCase();
-    if (path === '/sede' || path === '/test_service') return true;
+    if (path === '/test_service') return true;
     return API_PREFIXES.some((prefix) => path === prefix.slice(0, -1) || path.startsWith(prefix));
 }
 
-function isHtmlRequest(request, url) {
+function isFontOrIconRequest(url) {
+    const path = url.pathname.toLowerCase();
+    if (path.includes('/webfonts/')) return true;
+    return /\.(woff2?|ttf|eot|otf)(\?|$)/i.test(path);
+}
+
+function isHtmlRequest(request) {
     if (request.mode === 'navigate') return true;
     const accept = request.headers.get('accept') || '';
     return accept.includes('text/html');
 }
 
 async function precacheOne(cache, asset) {
+    const url = assetUrl(asset);
     try {
-        const response = await fetch(new Request(asset, { cache: 'reload' }));
+        const response = await fetch(url, { cache: 'reload', credentials: 'same-origin' });
         if (response && response.ok) {
-            await cache.put(asset, response);
+            await cache.put(url, response.clone());
+            return true;
         }
-    } catch (e) {}
+        console.warn('[SW] precache skip', url, response && response.status);
+    } catch (e) {
+        console.warn('[SW] precache fail', url, e && e.message);
+    }
+    return false;
 }
 
 async function matchShell(request) {
     const hit = await caches.match(request, { ignoreSearch: true });
     if (hit) return hit;
-    if (request.mode === 'navigate') {
-        return (await caches.match('./index.html'))
+    if (request.mode === 'navigate' || isHtmlRequest(request)) {
+        return (await caches.match(assetUrl('./index.html')))
+            || (await caches.match(assetUrl('./')))
             || (await caches.match('/index.html'))
             || (await caches.match('/'));
     }
     return null;
+}
+
+async function cacheFirst(request) {
+    const cached = await caches.match(request, { ignoreSearch: true });
+    if (cached) return cached;
+    try {
+        const response = await fetch(request);
+        if (response && response.ok && response.type !== 'opaque') {
+            const cache = await caches.open(shellCacheName);
+            await cache.put(request, response.clone());
+        }
+        return response;
+    } catch (e) {
+        return new Response('', { status: 503, statusText: 'offline' });
+    }
 }
 
 async function networkFirstShell(request) {
@@ -144,18 +201,37 @@ async function networkFirstShell(request) {
         const cached = await matchShell(request);
         if (cached) return cached;
         if (request.mode === 'navigate') {
-            const offline = await caches.match('./offline.html');
+            const offline = await caches.match(assetUrl('./offline.html'));
             if (offline) return offline;
         }
         return new Response('offline', { status: 503, statusText: 'offline' });
     }
 }
 
+async function networkFirstSede(request) {
+    try {
+        const response = await fetch(request);
+        if (response && response.ok) {
+            const text = (await response.clone().text()).trim();
+            if (text && text !== 'offline' && !text.startsWith('{')) {
+                const cache = await caches.open(shellCacheName);
+                await cache.put(request, response.clone());
+            }
+        }
+        return response;
+    } catch (e) {
+        const cached = await caches.match(request, { ignoreSearch: true });
+        if (cached) return cached;
+        return new Response('', { status: 503, statusText: 'offline' });
+    }
+}
+
 self.addEventListener('install', function (event) {
     self.skipWaiting();
     event.waitUntil(
-        caches.open(shellCacheName).then(function (cache) {
-            return Promise.all(precacheAssets.map((asset) => precacheOne(cache, asset)));
+        caches.open(shellCacheName).then(async function (cache) {
+            // No falla el install si un asset suelto falla (antes un 404 rompía la sensación de “precaché”)
+            await Promise.all(precacheAssets.map((asset) => precacheOne(cache, asset)));
         })
     );
 });
@@ -183,6 +259,12 @@ self.addEventListener('fetch', function (event) {
     }
     if (url.origin !== self.location.origin) return;
 
+    // Sede: red primero, cache de respaldo (offline)
+    if (url.pathname === '/sede') {
+        event.respondWith(networkFirstSede(request));
+        return;
+    }
+
     // Datos en vivo: siempre red, nunca caché (cotizaciones, precios, visitas, etc.)
     if (isApiRequest(url)) {
         event.respondWith(
@@ -193,6 +275,12 @@ self.addEventListener('fetch', function (event) {
                 });
             })
         );
+        return;
+    }
+
+    // Iconos / tipografías: cache primero (deben verse offline)
+    if (isFontOrIconRequest(url)) {
+        event.respondWith(cacheFirst(request));
         return;
     }
 

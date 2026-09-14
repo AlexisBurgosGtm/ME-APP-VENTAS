@@ -1,12 +1,67 @@
-let versionapp = 'Mod:14.09.2026.2';
+let versionapp = 'Mod:14.09.2026.4';
 let GlobalServerUrl = '';
 let GlobalUrlServicePedidos = '';
 
+const APPVENTAS_SEDE_KEY = 'appventas_sede';
+const APPVENTAS_LAST_LOGIN_KEY = 'appventas_last_login';
 
-async function almacenarCredenciales(){
-        
-    
-};
+function getCachedSede() {
+    try {
+        return String(localStorage.getItem(APPVENTAS_SEDE_KEY) || '').trim();
+    } catch (e) {
+        return '';
+    }
+}
+
+function setCachedSede(sede) {
+    try {
+        const value = String(sede == null ? '' : sede).trim();
+        if (!value || value === 'offline' || value === 'error' || value.startsWith('{')) return;
+        localStorage.setItem(APPVENTAS_SEDE_KEY, value);
+    } catch (e) {}
+}
+
+function getCachedLastLogin() {
+    try {
+        const raw = localStorage.getItem(APPVENTAS_LAST_LOGIN_KEY);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (!data || typeof data !== 'object') return null;
+        return {
+            sucursal: String(data.sucursal || '').trim(),
+            user: String(data.user || '').trim(),
+            pass: String(data.pass || '')
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+async function almacenarCredenciales() {
+    try {
+        const cmb = document.getElementById('cmbSucursal');
+        const txtUsr = document.getElementById('txtUsr');
+        const txtPass = document.getElementById('txtPass');
+        const sucursal = String((cmb && cmb.value) || GlobalCodSucursal || '').trim();
+        const user = String((txtUsr && txtUsr.value) || '').trim();
+        const pass = String((txtPass && txtPass.value) || '');
+        if (sucursal) setCachedSede(sucursal);
+        localStorage.setItem(APPVENTAS_LAST_LOGIN_KEY, JSON.stringify({
+            sucursal,
+            user,
+            pass
+        }));
+    } catch (e) {}
+}
+
+function cargarCredencialesGuardadas() {
+    const cached = getCachedLastLogin();
+    if (!cached) return;
+    const txtUsr = document.getElementById('txtUsr');
+    const txtPass = document.getElementById('txtPass');
+    if (txtUsr && cached.user) txtUsr.value = cached.user;
+    if (txtPass && cached.pass) txtPass.value = cached.pass;
+}
 
 
 let root = document.getElementById('root');

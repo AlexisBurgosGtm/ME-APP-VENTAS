@@ -508,6 +508,54 @@ body.theme-modern-glass .swal2-backdrop-show {
   z-index: 2147483646 !important;
 }
 
+/* Modales Bootstrap + SweetAlert: más rápidas y ligeras */
+body.theme-modern-glass .modal.fade .modal-dialog {
+  transition: transform 0.12s ease-out !important;
+  transform: translate3d(0, -10px, 0);
+}
+
+body.theme-modern-glass .modal.show .modal-dialog {
+  transform: none;
+}
+
+body.theme-modern-glass .modal-backdrop.fade {
+  transition: opacity 0.1s linear !important;
+}
+
+body.theme-modern-glass .modal.fade {
+  transition: opacity 0.1s linear !important;
+}
+
+body.theme-modern-glass .swal2-popup.swal2-show {
+  animation: appventas-swal-in 0.12s ease-out !important;
+}
+
+body.theme-modern-glass .swal2-popup.swal2-hide {
+  animation: appventas-swal-out 0.1s ease-in forwards !important;
+}
+
+@keyframes appventas-swal-in {
+  from { opacity: 0; transform: scale(0.97) translate3d(0, 6px, 0); }
+  to { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
+}
+
+@keyframes appventas-swal-out {
+  from { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
+  to { opacity: 0; transform: scale(0.97) translate3d(0, 4px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.theme-modern-glass .modal.fade .modal-dialog,
+  body.theme-modern-glass .modal-backdrop.fade,
+  body.theme-modern-glass .modal.fade,
+  body.theme-modern-glass .swal2-popup.swal2-show,
+  body.theme-modern-glass .swal2-popup.swal2-hide {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
 body.theme-modern-glass .swal2-title,
 body.theme-modern-glass .swal2-html-container {
   color: var(--text-main);
@@ -1432,8 +1480,10 @@ body.theme-modern-glass .modal-backdrop.factura-qty-backdrop {
   z-index: 2060 !important;
   opacity: 1 !important;
   background: rgba(15, 23, 42, 0.42) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* blur pesado en móvil puede congelar al abrir/cerrar cantidad */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  pointer-events: auto;
 }
 
 /* Modal cantidad producto */
@@ -1463,8 +1513,8 @@ body.theme-modern-glass .factura-qty-modal-content {
 body.theme-modern-glass .factura-qty-modal.show ~ .modal-backdrop {
   opacity: 1 !important;
   background-color: rgba(15, 23, 42, 0.28);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 body.theme-modern-glass .factura-search-modal.show ~ .modal-backdrop {

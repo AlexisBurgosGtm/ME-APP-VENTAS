@@ -613,6 +613,13 @@ function getView(){
     }
 
 
+    // Evita modales duplicados (cantidad se mueve a body y queda huérfano al reentrar)
+    ['ModalCantidadProducto', 'ModalBusqueda', 'modalCambiarCantidadProducto'].forEach((id) => {
+        document.querySelectorAll('#' + id).forEach((el) => {
+            if (el && el.parentNode) el.parentNode.removeChild(el);
+        });
+    });
+
     root.innerHTML = view.encabezadoClienteDocumento() 
                 + view.gridTempVenta() 
                 + view.modalBusquedaCliente() 
@@ -815,43 +822,97 @@ function addEventsModalCambioCantidad(){
 
 };
 
+function facturaQtyResetAddButton() {
+    window._facturaAgregandoProducto = false;
+    const btn = document.getElementById('btnAgregarProducto');
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fal fa-check"></i> Agregar';
+    }
+}
+
+function facturaWithTimeout(promise, ms, label) {
+    let timer;
+    return Promise.race([
+        Promise.resolve(promise),
+        new Promise((_, reject) => {
+            timer = setTimeout(() => reject(new Error(label || 'timeout')), ms);
+        })
+    ]).finally(() => clearTimeout(timer));
+}
+
+/** Limpia backdrops huérfanos del modal de cantidad sin romper el de búsqueda. */
+function cleanupFacturaQtyLayer() {
+    document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
+        if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+    });
+
+    const qty = document.getElementById('ModalCantidadProducto');
+    if (qty) {
+        qty.classList.remove('show');
+        qty.style.display = 'none';
+        qty.setAttribute('aria-hidden', 'true');
+        qty.style.removeProperty('z-index');
+        try { $(qty).data('bs.modal', null); } catch (e) {}
+    }
+
+    const openModals = document.querySelectorAll('.modal.show');
+    if (!openModals.length) {
+        document.body.classList.remove('modal-open');
+        document.body.style.paddingRight = '';
+        document.body.style.overflow = '';
+        document.querySelectorAll('.modal-backdrop').forEach((b) => {
+            if (b && b.parentNode) b.parentNode.removeChild(b);
+        });
+        return;
+    }
+
+    document.body.classList.add('modal-open');
+    let backs = document.querySelectorAll('.modal-backdrop');
+    if (!backs.length) {
+        const b = document.createElement('div');
+        b.className = 'modal-backdrop fade show';
+        document.body.appendChild(b);
+        backs = document.querySelectorAll('.modal-backdrop');
+    }
+    // Evita acumular backdrops que bloquean clics
+    if (backs.length > openModals.length) {
+        [...backs].slice(0, backs.length - openModals.length).forEach((b) => {
+            if (b && b.parentNode) b.parentNode.removeChild(b);
+        });
+    }
+}
+
 function showFacturaQtyModal(selector) {
     const el = document.querySelector(selector);
     if (!el) return;
     if (el.parentElement !== document.body) {
         document.body.appendChild(el);
     }
-    window._facturaAgregandoProducto = false;
-    const btnAgregar = document.getElementById('btnAgregarProducto');
-    if (btnAgregar) {
-        btnAgregar.disabled = false;
-        btnAgregar.innerHTML = '<i class="fal fa-check"></i> Agregar';
-    }
+    facturaQtyResetAddButton();
     const $modal = $(el);
     const pinQtyLayer = () => {
+        if (!el.classList.contains('show')) return;
         el.style.setProperty('z-index', '2075', 'important');
         const backs = document.querySelectorAll('.modal-backdrop');
         backs.forEach((backdrop, index) => {
-            backdrop.classList.toggle('factura-qty-backdrop', index === backs.length - 1);
+            const isTop = index === backs.length - 1;
+            backdrop.classList.toggle('factura-qty-backdrop', isTop);
+            if (isTop) {
+                backdrop.style.setProperty('z-index', '2060', 'important');
+            }
         });
     };
     $modal.off('shown.bs.modal.qtyblur hidden.bs.modal.qtyblur');
     $modal.on('shown.bs.modal.qtyblur', pinQtyLayer);
     $modal.on('hidden.bs.modal.qtyblur', () => {
-        document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
-            backdrop.classList.remove('factura-qty-backdrop');
-        });
-        window._facturaAgregandoProducto = false;
-        const btn = document.getElementById('btnAgregarProducto');
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fal fa-check"></i> Agregar';
-        }
+        cleanupFacturaQtyLayer();
+        facturaQtyResetAddButton();
     });
     el.style.setProperty('z-index', '2075', 'important');
-    $modal.modal('show');
-    setTimeout(pinQtyLayer, 0);
-    setTimeout(pinQtyLayer, 80);
+    $modal.modal({ backdrop: true, keyboard: true, show: true });
+    requestAnimationFrame(pinQtyLayer);
+    setTimeout(pinQtyLayer, 50);
 }
 
 function hideFacturaQtyModal(selector) {
@@ -860,20 +921,9 @@ function hideFacturaQtyModal(selector) {
     try {
         $(el).modal('hide');
     } catch (e) {}
-    // Fallback si Bootstrap no cierra el modal (stack con búsqueda de productos)
-    setTimeout(() => {
-        if (!el.classList.contains('show')) return;
-        el.classList.remove('show');
-        el.style.display = 'none';
-        el.setAttribute('aria-hidden', 'true');
-        document.querySelectorAll('.modal-backdrop.factura-qty-backdrop').forEach((backdrop) => {
-            if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
-        });
-        if (!document.querySelector('.modal.show')) {
-            document.body.classList.remove('modal-open');
-            document.body.style.paddingRight = '';
-        }
-    }, 120);
+    // Cierre forzado inmediato: evita UI congelada por backdrop anidado
+    cleanupFacturaQtyLayer();
+    facturaQtyResetAddButton();
 }
 
 function fcnIniciarModalCantidadProductos(){
@@ -884,6 +934,9 @@ function fcnIniciarModalCantidadProductos(){
     let btnCantidadUp = document.getElementById('btnCantidadUp');
     let btnCantidadDown = document.getElementById('btnCantidadDown');
     let txtSubTotal = document.getElementById('txtSubTotal'); //label
+
+    if (!btnAgregarProducto || btnAgregarProducto.dataset.qtyBound === '1') return;
+    btnAgregarProducto.dataset.qtyBound = '1';
 
     btnAgregarProducto.addEventListener('click',()=>{
         if (window._facturaAgregandoProducto) return;
@@ -900,7 +953,25 @@ function fcnIniciarModalCantidadProductos(){
         let totalunidades = (Number(GlobalSelectedEquivale) * Number(GlobalSelectedCantidad));
         let totalexento = GlobalSelectedCantidad * GlobalSelectedExento;
 
-        fcnAgregarProductoVenta(GlobalSelectedCodprod,GlobalSelectedDesprod,GlobalSelectedCodmedida,GlobalSelectedCantidad,GlobalSelectedEquivale,totalunidades,GlobalSelectedCosto,GlobalSelectedPrecio,totalexento);
+        // Safety: nunca dejar el botón/modal trabados
+        const safety = setTimeout(() => {
+            cleanupFacturaQtyLayer();
+            facturaQtyResetAddButton();
+        }, 8000);
+
+        Promise.resolve(
+            fcnAgregarProductoVenta(
+                GlobalSelectedCodprod,
+                GlobalSelectedDesprod,
+                GlobalSelectedCodmedida,
+                GlobalSelectedCantidad,
+                GlobalSelectedEquivale,
+                totalunidades,
+                GlobalSelectedCosto,
+                GlobalSelectedPrecio,
+                totalexento
+            )
+        ).finally(() => clearTimeout(safety));
     });
 
     txtCantidad.addEventListener('click',()=>{txtCantidad.value =''});
@@ -1048,28 +1119,17 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
 
 // agrega el producto a temp_ventas
 async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento){
-    const btn = document.getElementById('btnAgregarProducto');
-    const resetBtn = () => {
-        window._facturaAgregandoProducto = false;
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fal fa-check"></i> Agregar';
-        }
-    };
-
     try {
-        const totaluns = await db_totalunidades_producto(codprod);
+        const totaluns = await facturaWithTimeout(db_totalunidades_producto(codprod), 4000, 'db_totalunidades');
 
         if (Number(GlobalSelectedExistencia) < (Number(totalunidades) + Number(totaluns))) {
             funciones.AvisoError('No puede agregar una cantidad mayor a la existencia');
-            resetBtn();
+            facturaQtyResetAddButton();
             return;
         }
 
-        if (btn) {
-            btn.innerHTML = GlobalLoader;
-            btn.disabled = true;
-        }
+        // Cerrar modal YA: libera la UI aunque IndexedDB tarde
+        hideFacturaQtyModal('#ModalCantidadProducto');
 
         const cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
         const totalcosto = Number(costo) * Number(cantidad);
@@ -1095,18 +1155,18 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
             EXISTENCIA: GlobalSelectedExistencia
         };
 
-        await insertTempVentas(data);
-        hideFacturaQtyModal('#ModalCantidadProducto');
+        await facturaWithTimeout(insertTempVentas(data), 5000, 'insertTempVentas');
         funciones.showToast('Agregado: ' + desprod);
         fcnCargarGridTempVentas('tblGridTempVentas');
         const txbusqueda = document.getElementById('txtBusqueda');
         if (txbusqueda) txbusqueda.value = '';
-        // No reactivar el botón aquí: el modal se cierra; se reactiva al reabrir
-        window._facturaAgregandoProducto = false;
     } catch (error) {
         console.log(error);
+        cleanupFacturaQtyLayer();
         funciones.AvisoError('No se pudo agregar este producto a la venta actual');
-        resetBtn();
+    } finally {
+        facturaQtyResetAddButton();
+        cleanupFacturaQtyLayer();
     }
 };
 
