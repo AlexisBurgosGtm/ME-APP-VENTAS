@@ -77,6 +77,37 @@ body.theme-modern-glass {
   color: #1e40af;
 }
 
+/* Tabs: transición ligera (GPU) — reemplaza jQuery.animate left/right */
+.tab-content > .tab-pane.tabs-slide-prep {
+  backface-visibility: hidden;
+}
+
+.tab-content > .tab-pane.tabs-slide-from-right {
+  opacity: 0;
+  transform: translate3d(10px, 0, 0);
+}
+
+.tab-content > .tab-pane.tabs-slide-from-left {
+  opacity: 0;
+  transform: translate3d(-10px, 0, 0);
+}
+
+.tab-content > .tab-pane.tabs-slide-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition: opacity 0.16s ease-out, transform 0.16s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tab-content > .tab-pane.tabs-slide-from-right,
+  .tab-content > .tab-pane.tabs-slide-from-left,
+  .tab-content > .tab-pane.tabs-slide-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 body.theme-modern-glass.theme-night .header-user-badge {
   background: rgba(148, 163, 184, 0.16);
   border-color: rgba(148, 163, 184, 0.28);

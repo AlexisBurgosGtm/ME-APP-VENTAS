@@ -1474,3 +1474,10 @@ function send_solicitud_cliente(codclie,nitclie,tiponegocio,negocio,nomclie,dirc
     })
 
 }
+
+function InicializarVista(){
+    document.body.classList.remove('login-active');
+    getView();
+    addListeners();
+    if (typeof updateHeaderUserBadge === 'function') updateHeaderUserBadge(GlobalUsuario);
+}

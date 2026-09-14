@@ -990,42 +990,59 @@ let funciones = {
       `
     },
     slideAnimationTabs: ()=>{
-      //inicializa el slide de las tabs en censo
-      $('a[data-toggle="tab"]').on('hide.bs.tab', function (e) {
-          var $old_tab = $($(e.target).attr("href"));
-          var $new_tab = $($(e.relatedTarget).attr("href"));
-  
-          if($new_tab.index() < $old_tab.index()){
-              $old_tab.css('position', 'relative').css("right", "0").show();
-              $old_tab.animate({"right":"-100%"}, 300, function () {
-                  $old_tab.css("right", 0).removeAttr("style");
-              });
-          }
-          else {
-              $old_tab.css('position', 'relative').css("left", "0").show();
-              $old_tab.animate({"left":"-100%"}, 300, function () {
-                  $old_tab.css("left", 0).removeAttr("style");
-              });
-          }
-      });
-  
-      $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
-          var $new_tab = $($(e.target).attr("href"));
-          var $old_tab = $($(e.relatedTarget).attr("href"));
-  
-          if($new_tab.index() > $old_tab.index()){
-              $new_tab.css('position', 'relative').css("right", "-2500px");
-              $new_tab.animate({"right":"0"}, 500);
-          }
-          else {
-              $new_tab.css('position', 'relative').css("left", "-2500px");
-              $new_tab.animate({"left":"0"}, 500);
-          }
-      });
-  
-      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-          // your code on active tab shown
-      });
+      // Una sola vez: CSS transform/opacity (GPU), sin jQuery.animate ni left/right
+      if (funciones._slideTabsBound) return;
+      funciones._slideTabsBound = true;
+
+      const reduceMotion = () =>
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const clearTabAnim = (pane) => {
+        if (!pane) return;
+        pane.classList.remove(
+          'tabs-slide-prep',
+          'tabs-slide-from-left',
+          'tabs-slide-from-right',
+          'tabs-slide-in'
+        );
+        pane.style.willChange = '';
+      };
+
+      $(document)
+        .off('show.bs.tab.slideAnim', 'a[data-toggle="tab"]')
+        .on('show.bs.tab.slideAnim', 'a[data-toggle="tab"]', function (e) {
+          if (reduceMotion()) return;
+
+          const hrefNew = $(e.target).attr('href');
+          const hrefOld = e.relatedTarget ? $(e.relatedTarget).attr('href') : null;
+          const newTab = hrefNew ? document.querySelector(hrefNew) : null;
+          const oldTab = hrefOld ? document.querySelector(hrefOld) : null;
+          if (!newTab) return;
+
+          const fromRight = !oldTab || $(newTab).index() >= $(oldTab).index();
+          clearTabAnim(newTab);
+          newTab.style.willChange = 'transform, opacity';
+          newTab.classList.add('tabs-slide-prep', fromRight ? 'tabs-slide-from-right' : 'tabs-slide-from-left');
+
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              newTab.classList.add('tabs-slide-in');
+              newTab.classList.remove('tabs-slide-from-left', 'tabs-slide-from-right');
+            });
+          });
+
+          const onEnd = (ev) => {
+            if (ev && ev.target !== newTab) return;
+            if (ev && ev.propertyName && ev.propertyName !== 'opacity' && ev.propertyName !== 'transform') return;
+            newTab.removeEventListener('transitionend', onEnd);
+            clearTabAnim(newTab);
+          };
+          newTab.addEventListener('transitionend', onEnd);
+          setTimeout(() => {
+            newTab.removeEventListener('transitionend', onEnd);
+            clearTabAnim(newTab);
+          }, 260);
+        });
     },
     exportTableToExcel: (tableID, filename = '')=>{
       var downloadLink;

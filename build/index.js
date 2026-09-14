@@ -63,11 +63,12 @@ function updateHeaderUserBadge(nombre){
     const name = String(nombre == null ? (typeof GlobalUsuario !== 'undefined' ? GlobalUsuario : '') : nombre).trim();
     if (!name) {
         label.textContent = '';
-        badge.style.display = 'none';
+        badge.style.setProperty('display', 'none', 'important');
         return;
     }
+    document.body.classList.remove('login-active');
     label.textContent = name;
-    badge.style.display = 'inline-flex';
+    badge.style.setProperty('display', 'inline-flex', 'important');
 }
 
 function clearHeaderUserBadge(){
