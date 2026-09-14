@@ -610,11 +610,11 @@ function getView(){
                     </div>
                 </div>`
         }
-    }
-
+    };
 
     // Evita modales duplicados (cantidad se mueve a body y queda huérfano al reentrar)
-    ['ModalCantidadProducto', 'ModalBusqueda', 'modalCambiarCantidadProducto'].forEach((id) => {
+    const orphanFacturaModals = ['ModalCantidadProducto', 'ModalBusqueda', 'modalCambiarCantidadProducto'];
+    orphanFacturaModals.forEach((id) => {
         document.querySelectorAll('#' + id).forEach((el) => {
             if (el && el.parentNode) el.parentNode.removeChild(el);
         });
