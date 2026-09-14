@@ -1,4 +1,4 @@
-function getView(){
+function getViewVentas(){
     let view = {
         encabezadoClienteDocumento :()=>{
             return `
@@ -643,7 +643,7 @@ async function iniciarVistaVentas(nit,nombre,direccion){
     } catch (e) {}
 
     //inicializa la vista
-    getView();
+    getViewVentas();
 
     let lbNomClien = document.getElementById('lbNomClien');
     if (lbNomClien) lbNomClien.innerText = `${nombre || ''} // ${direccion || ''}`;
@@ -1236,21 +1236,24 @@ function fcnEliminarItem(id){
 async function fcnCargarGridTempVentas(idContenedor){
     
     let tabla = document.getElementById(idContenedor);
+    if (!tabla) return;
+
     tabla.innerHTML = GlobalLoader;
 
     let varTotalVenta = 0; let varTotalCosto = 0;
     let varTotalItems =0;
 
     let btnCobrarTotal = document.getElementById('btnCobrar')
-    btnCobrarTotal.disabled = true; //.innerText =  'Terminar';
+    if (btnCobrarTotal) btnCobrarTotal.disabled = true; //.innerText =  'Terminar';
    
-    let coddoc = document.getElementById('cmbCoddoc').value;
+    let cmbCoddocEl = document.getElementById('cmbCoddoc');
+    let coddoc = cmbCoddocEl ? cmbCoddocEl.value : '';
     
     let containerTotalVenta = document.getElementById('txtTotalVenta');
-    containerTotalVenta.innerHTML = '--';
+    if (containerTotalVenta) containerTotalVenta.innerHTML = '--';
 
     let containerTotalItems = document.getElementById('txtTotalItems');
-    containerTotalItems.innerHTML = '--'
+    if (containerTotalItems) containerTotalItems.innerHTML = '--'
 
     try {
         selectTempventas(GlobalUsuario)
@@ -1281,24 +1284,23 @@ async function fcnCargarGridTempVentas(idContenedor){
                             <td class="text-right factura-cart-subtotal">${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</td>
                         </tr>`
            }).join('\n');
+           if (!document.getElementById(idContenedor)) return;
            tabla.innerHTML = data;
            GlobalTotalDocumento = varTotalVenta;
            GlobalTotalCostoDocumento = varTotalCosto;
-           containerTotalVenta.innerHTML = `${funciones.setMoneda(GlobalTotalDocumento,'Q ')}`;
-           if(GlobalTotalDocumento==0){
-                btnCobrarTotal.disabled = true;
-           }else{
-                btnCobrarTotal.disabled = false;
+           if (containerTotalVenta) containerTotalVenta.innerHTML = `${funciones.setMoneda(GlobalTotalDocumento,'Q ')}`;
+           if (btnCobrarTotal) {
+               btnCobrarTotal.disabled = GlobalTotalDocumento == 0;
            }
              //innerHTML = '<h1>Terminar : ' + funciones.setMoneda(GlobalTotalDocumento,'Q ') + '</h1>';
-           containerTotalItems.innerHTML = `${varTotalItems} items`;
+           if (containerTotalItems) containerTotalItems.innerHTML = `${varTotalItems} items`;
         })
     } catch (error) {
         console.log('NO SE LOGRO CARGAR LA LISTA ' + error);
-        tabla.innerHTML = 'No se logró cargar la lista...';
-        containerTotalVenta.innerHTML = '0';
-        btnCobrarTotal.disabled = true; //innerText =  'Terminar';
-        containerTotalItems.innerHTML = `0 items`;
+        if (tabla) tabla.innerHTML = 'No se logró cargar la lista...';
+        if (containerTotalVenta) containerTotalVenta.innerHTML = '0';
+        if (btnCobrarTotal) btnCobrarTotal.disabled = true; //innerText =  'Terminar';
+        if (containerTotalItems) containerTotalItems.innerHTML = `0 items`;
     }
 };
 

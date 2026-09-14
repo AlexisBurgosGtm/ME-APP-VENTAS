@@ -321,41 +321,27 @@ let classNavegar = {
             if (typeof funciones.clearUiBlockers === 'function') funciones.clearUiBlockers();
         } catch (e) {}
 
-        const startVentas = () => {
-            try {
-                detener_efecto();
-            } catch (e) {}
-            GlobalSelectedForm = 'VENTAS';
-            if (typeof iniciarVistaVentas !== 'function') {
-                if (typeof funciones !== 'undefined' && funciones.AvisoError) {
-                    funciones.AvisoError('No se pudo cargar la vista de pedido');
+        funciones.loadScript('./views/vendedor/facturacion.js', 'root')
+            .then(() => {
+                try { detener_efecto(); } catch (e) {}
+                GlobalSelectedForm = 'VENTAS';
+                if (typeof iniciarVistaVentas !== 'function') {
+                    if (typeof funciones !== 'undefined' && funciones.AvisoError) {
+                        funciones.AvisoError('No se pudo cargar la vista de pedido');
+                    }
+                    return;
                 }
-                return;
-            }
-            Promise.resolve(iniciarVistaVentas(nit, nombre, direccion)).catch((err) => {
-                console.log('iniciarVistaVentas error', err);
+                return Promise.resolve(iniciarVistaVentas(nit, nombre, direccion));
+            })
+            .then(() => {
+                try {
+                    window.history.pushState({"page":2}, "facturacion", GlobalUrl + '/facturacion');
+                } catch (e) {}
+            })
+            .catch((err) => {
+                console.log('ventas error', err);
                 if (typeof funciones !== 'undefined' && funciones.AvisoError) {
                     funciones.AvisoError('No se pudo abrir el pedido. Intente de nuevo.');
-                }
-            });
-            try {
-                window.history.pushState({"page":2}, "facturacion", GlobalUrl + '/facturacion');
-            } catch (e) {}
-        };
-
-        // Si ya está cargado, abre de una; igual refresca el script en paralelo
-        if (typeof iniciarVistaVentas === 'function') {
-            startVentas();
-            funciones.loadScript('./views/vendedor/facturacion.js', 'root').catch(() => {});
-            return;
-        }
-
-        funciones.loadScript('./views/vendedor/facturacion.js', 'root')
-            .then(startVentas)
-            .catch((err) => {
-                console.log('load facturacion error', err);
-                if (typeof funciones !== 'undefined' && funciones.AvisoError) {
-                    funciones.AvisoError('No se pudo cargar la vista de pedido');
                 }
             });
     },
