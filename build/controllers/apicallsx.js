@@ -392,21 +392,11 @@ let apigen = {
                             <td>${rows.NEGOCIO} // ${rows.NOMCLIE}
                                 <br>
                                 <div class="row">
-                                    <div class="col-4">
+                                    <div class="col-8">
                                         <small>Cod: ${rows.CODIGO} - St:${stNomStatus}</small>    
                                     </div>
-                                    <div class="col-4">
-                                        
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-danger btn-lg btn-circle hand shadow" 
-                                        onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                            <i class="fal fa-cog"></i>
-                                        </button>
-                                        
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-warning btn-lg btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');">
+                                    <div class="col-4 text-right">
+                                        <button class="btn btn-warning btn-md btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');" title="Editar">
                                             <i class="fal fa-edit"></i>
                                         </button>
                                     </div>
@@ -419,23 +409,22 @@ let apigen = {
                                 <br>
                                 <small>GPS:${rows.LAT},${rows.LONG}</small>
 
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <div>${btnCallCliente}</div>
-                                    <button class="btn btn-info btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                        <i class="fal fa-shopping-cart"></i>Vender
-                                    </button>
-                                </div>
-                                <div class="row">
-                                    <div class="col-2">
-                                        <button class="btn btn-success btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
+                                <div class="mb-1">${btnCallCliente}</div>
+                                <div class="d-flex align-items-center justify-content-between mt-2">
+                                    <div class="d-flex align-items-center" style="gap:0.45rem;">
+                                        <button class="btn btn-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');" title="GPS">
                                             <i class="fal fa-map-marker"></i>
                                         </button>
-                                    </div>
-                                    <div class="col-2">
-                                        <button class="btn btn-warning btn-md btn-circle hand shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                            <i class="fal fa-book"></i>Historial
+                                        <button class="btn btn-sm hand shadow cliente-btn-historial" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
+                                            <i class="fal fa-book"></i> Historial
+                                        </button>
+                                        <button class="btn btn-sm hand shadow cliente-btn-visita" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');" title="Registrar visita">
+                                            <i class="fal fa-cog"></i> Visita
                                         </button>
                                     </div>
+                                    <button class="btn btn-success btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                        <i class="fal fa-shopping-cart"></i> Vender
+                                    </button>
                                 </div>
 
                             </td>
@@ -455,21 +444,11 @@ let apigen = {
                                     <td>${rows.NEGOCIO} // ${rows.NOMCLIE}
                                         <br>
                                         <div class="row">
-                                            <div class="col-4">
+                                            <div class="col-8">
                                                 <small>Cod: ${rows.CODIGO} - St:${stNomStatus}</small>    
                                             </div>
-                                            <div class="col-4">
-                                               
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="btn btn-danger btn-lg btn-circle hand shadow" 
-                                                onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                                    <i class="fal fa-cog"></i>
-                                                </button>
-                                                
-                                            </div>
-                                            <div class="col-2">
-                                                <button class="btn btn-warning btn-lg btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');">
+                                            <div class="col-4 text-right">
+                                                <button class="btn btn-warning btn-md btn-circle hand shadow" onclick="getEditCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.REFERENCIA}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}','${rows.TIPONEGOCIO}','${rows.NEGOCIO}');" title="Editar">
                                                     <i class="fal fa-edit"></i>
                                                 </button>
                                             </div>
@@ -483,23 +462,22 @@ let apigen = {
                                         <br>
                                         <small>GPS:${rows.LAT},${rows.LONG}</small>
 
-                                        <div class="d-flex align-items-center justify-content-between mb-1">
-                                            <div>${btnCallCliente}</div>
-                                            <button class="btn btn-info btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                                <i class="fal fa-shopping-cart"></i>Vender
-                                            </button>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-2">
-                                                <button class="btn btn-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
+                                        <div class="mb-1">${btnCallCliente}</div>
+                                        <div class="d-flex align-items-center justify-content-between mt-2">
+                                            <div class="d-flex align-items-center" style="gap:0.45rem;">
+                                                <button class="btn btn-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');" title="GPS">
                                                     <i class="fal fa-map-marker"></i>
                                                 </button>
-                                            </div>  
-                                            <div class="col-2">
-                                                <button class="btn btn-warning  btn-md btn-circle hand shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                                    <i class="fal fa-book"></i>
-                                                </button>   
+                                                <button class="btn btn-sm hand shadow cliente-btn-historial" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
+                                                    <i class="fal fa-book"></i> Historial
+                                                </button>
+                                                <button class="btn btn-sm hand shadow cliente-btn-visita" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');" title="Registrar visita">
+                                                    <i class="fal fa-cog"></i> Visita
+                                                </button>
                                             </div>
+                                            <button class="btn btn-success btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                                <i class="fal fa-shopping-cart"></i> Vender
+                                            </button>
                                         </div>
                                     </td>
                                 `
@@ -605,24 +583,22 @@ let apigen = {
                                 <br>
                                 <small class="text-info">Ref:${rows.REFERENCIA}</small>
                                 
-                                <div class="d-flex align-items-center justify-content-between mb-1">
-                                    <div>${btnCallCliente}</div>
-                                    <button class="btn btn-info btn-sm shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                        <i class="fal fa-shopping-cart"></i>Vender
-                                    </button>
-                                </div>
-                                <div class="row">
-                                    <div class="col-2">
-                                        <button class="btn btn-outline-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');">
+                                <div class="mb-1">${btnCallCliente}</div>
+                                <div class="d-flex align-items-center justify-content-between mt-2">
+                                    <div class="d-flex align-items-center" style="gap:0.45rem;">
+                                        <button class="btn btn-primary btn-md btn-circle hand shadow" onclick="funciones.gotoGoogleMaps('${rows.LAT}','${rows.LONG}');" title="GPS">
                                             <i class="fal fa-map-marker"></i>
                                         </button>
-                                    </div>
-                                                                            
-                                    <div class="col-2">
-                                        <button class="btn btn-outline-warning btn-md btn-circle hand shadow" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
-                                            <i class="fal fa-book"></i>
+                                        <button class="btn btn-sm hand shadow cliente-btn-historial" onclick="getHistorialCliente('${rows.CODIGO}','${rows.NIT}','${rows.NOMCLIE}');">
+                                            <i class="fal fa-book"></i> Historial
+                                        </button>
+                                        <button class="btn btn-sm hand shadow cliente-btn-visita" onclick="getMenuCliente2('${rows.CODIGO}','${rows.NEGOCIO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');" title="Registrar visita">
+                                            <i class="fal fa-cog"></i> Visita
                                         </button>
                                     </div>
+                                    <button class="btn btn-success btn-sm hand shadow" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
+                                        <i class="fal fa-shopping-cart"></i> Vender
+                                    </button>
                                 </div>
                                 
                             </td>

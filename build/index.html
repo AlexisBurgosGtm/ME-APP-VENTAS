@@ -523,106 +523,70 @@
         </div>
 
 
-        <!-- FICHA DEL CLIENTE -->
-        <div class="modal fade js-modal-settings modal-backdrop-transparent" tabindex="-1" role="dialog" aria-hidden="true" 
-            id="modal_perfil_cliente">
-            <div class="modal-dialog modal-dialog-right modal-lg">
-                <div class="modal-content">
-                  
-                    <div class="modal-body p-2">
-
-                        <div class="card col-12 card-rounded shadow">
-                            <div class="card-body p-2">
-
-                                <div class="form-group">
-                                    <label for="">Cliente:</label>
-                                    <h5 id="lbProfileNomclie" class="text-danger">CONSUMIDOR FINAL</h5>
-                                    <h5 id="lbProfileNegocio" class="text-secondary">TIENDA LA BENDICION</h5>
-                                    <small id="lbProfileDirclie">Calle principal, Zacapa, Zacapa</small>
-                                </div>
-                               
-                                <div class="row hand" id="btnProfileVenta">
-                                    <div class="col-3">
-                                        <button class="btn btn-outline-success btn-circle btn-xl hand shadow">
-                                            <i class="fal fa-shopping-cart"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col-9">
-                                        <br>
-                                        <b class="text-left h2 negrita text-success">NUEVA VENTA</b>
-                                    </div>
-                                </div>
-                                <hr>
-
-                                <div class="row hand"  id="btnProfileCerrado">
-                                    <div class="col-3">
-                                         <button class="btn btn-outline-warning btn-circle btn-xl hand shadow">
-                                            <i class="fal fa-warehouse"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col-9">
-                                        <br>
-                                        <b class="text-left h2 negrita text-warning">TIENDA CERRADA</b>                                       
-                                    </div>
-                                </div>
-                                <hr>
-
-                                <div class="row hand"  id="btnProfileDinero">
-                                    <div class="col-3">
-                                        <button class="btn btn-outline-secondary btn-circle btn-xl hand shadow">
-                                            <i class="fal fa-dollar-sign"></i>
-                                        </button>        
-                                    </div>
-                                    <div class="col-9">
-                                        <br>
-                                        <b class="text-left h2 negrita text-secondary">NO TIENE DINERO</b>                                        
-                                    </div>
-                                </div>
-                                <hr>
-
-                                <div class="row hand"  id="btnProfileBloqueado">
-                                    <div class="col-3">
-                                        <button class="btn btn-outline-info btn-circle btn-xl hand shadow">
-                                            <i class="fal fa-truck"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col-9">
-                                        <br>
-                                        <b class="text-left h2 negrita text-info">PASO BLOQUEADO</b>
-                                    </div>
-                                </div>
-                                <hr>
-
-                                <div class="row hand"  id="btnProfileProducto">
-                                    <div class="col-3">
-                                        <button class="btn btn-outline-primary btn-circle btn-xl hand shadow">
-                                            <i class="fal fa-box"></i>
-                                        </button>
-                                    </div>
-                                    <div class="col-9">
-                                        <br>
-                                        <b class="text-left h2 negrita text-primary">TIENE PRODUCTO</b>
-                                    </div>
-                                </div>
-                                <hr>
-
-                            </div>
+        <!-- FICHA DEL CLIENTE / REGISTRO DE VISITA -->
+        <div class="modal fade visita-profile-modal" tabindex="-1" role="dialog" aria-hidden="true" id="modal_perfil_cliente">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+                <div class="modal-content visita-profile-modal-content">
+                    <div class="modal-header border-0 pb-0 visita-profile-header">
+                        <div>
+                            <div class="visita-profile-eyebrow">Registrar visita</div>
+                            <h5 id="lbProfileNomclie" class="visita-profile-name mb-0">CONSUMIDOR FINAL</h5>
+                            <div id="lbProfileNegocio" class="visita-profile-negocio">TIENDA</div>
+                            <small id="lbProfileDirclie" class="visita-profile-dir">Dirección</small>
                         </div>
-                   
-                        
-                        <div class="row">
-                            <div class="col-6">
-                                <button class="btn btn-secondary btn-bottom-l btn-xl btn-circle hand shadow" data-dismiss="modal">
-                                    <i class="fal fa-arrow-left"></i>
-                                </button>
-                            </div>
-                            <div class="col-6" id="container_btn_ubicacion">
-                               
-                            </div>
-                        </div>
-                     
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                            <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                        </button>
                     </div>
-                   
+
+                    <div class="modal-body pt-2">
+                        <button type="button" class="visita-profile-option visita-opt-venta" id="btnProfileVenta">
+                            <span class="visita-profile-option-icon"><i class="fal fa-shopping-cart"></i></span>
+                            <span class="visita-profile-option-text">
+                                <strong>Nueva venta</strong>
+                                <small>Abrir pedido para este cliente</small>
+                            </span>
+                        </button>
+
+                        <button type="button" class="visita-profile-option visita-opt-cerrado" id="btnProfileCerrado">
+                            <span class="visita-profile-option-icon"><i class="fal fa-warehouse"></i></span>
+                            <span class="visita-profile-option-text">
+                                <strong>Tienda cerrada</strong>
+                                <small>Registrar motivo de visita</small>
+                            </span>
+                        </button>
+
+                        <button type="button" class="visita-profile-option visita-opt-dinero" id="btnProfileDinero">
+                            <span class="visita-profile-option-icon"><i class="fal fa-dollar-sign"></i></span>
+                            <span class="visita-profile-option-text">
+                                <strong>No tiene dinero</strong>
+                                <small>Registrar motivo de visita</small>
+                            </span>
+                        </button>
+
+                        <button type="button" class="visita-profile-option visita-opt-bloqueado" id="btnProfileBloqueado">
+                            <span class="visita-profile-option-icon"><i class="fal fa-truck"></i></span>
+                            <span class="visita-profile-option-text">
+                                <strong>Paso bloqueado</strong>
+                                <small>Registrar motivo de visita</small>
+                            </span>
+                        </button>
+
+                        <button type="button" class="visita-profile-option visita-opt-producto" id="btnProfileProducto">
+                            <span class="visita-profile-option-icon"><i class="fal fa-box"></i></span>
+                            <span class="visita-profile-option-text">
+                                <strong>Tiene producto</strong>
+                                <small>Registrar motivo de visita</small>
+                            </span>
+                        </button>
+                    </div>
+
+                    <div class="modal-footer border-0 pt-0 visita-profile-footer">
+                        <button type="button" class="btn btn-outline-secondary btn-round" data-dismiss="modal">
+                            <i class="fal fa-arrow-left"></i> Cerrar
+                        </button>
+                        <div id="container_btn_ubicacion"></div>
+                    </div>
                 </div>
             </div>
         </div>

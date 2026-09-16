@@ -107,13 +107,12 @@ function get_ficha_cliente(codigo,nit,negocio,nombre,direccion,telefono,lat,long
     
 
     //crea el boton para ubicarlo en google maps
-    document.getElementById('container_btn_ubicacion').innerHTML = '';
     document.getElementById('container_btn_ubicacion').innerHTML = `
-                            <button 
-                                class="btn btn-outline-primary btn-bottom-r btn-xl btn-circle hand shadow"
+                            <button type="button"
+                                class="btn btn-outline-primary btn-round hand shadow"
                                 onclick="funciones.gotoGoogleMaps('${lat}','${long}')">
-                                    <i class="fal fa-map-marker"></i>
-                            </button> 
+                                    <i class="fal fa-map-marker"></i> GPS
+                            </button>
                             `;
 
 

@@ -491,22 +491,17 @@ function getViewVentas(){
                                     <br>
             
                                     <div class="row">
-                                        <div class="col-5">
-                                            <button class="btn btn-outline-secondary btn-lg  btn-pills btn-block waves-effect waves-themed" data-dismiss="modal" id="btnEntregaCancelar">
+                                        <div class="col-6">
+                                            <button class="btn btn-danger btn-lg btn-block waves-effect waves-themed" data-dismiss="modal" id="btnEntregaCancelar">
                                                 <i class="fal fa-ban mr-1"></i>
                                                 Cancelar
                                             </button>                                
                                         </div>
-            
-                                        <div class="col-1"></div>
-            
-                                        <div class="col-5">
-                                            <button class="btn btn-outline-success btn-lg btn-pills btn-block waves-effect waves-themed" id="btnFinalizarPedido">
+                                        <div class="col-6">
+                                            <button class="btn btn-success btn-lg btn-block waves-effect waves-themed" id="btnFinalizarPedido">
                                                 <i class="fal fa-paper-plane mr-1"></i>Enviar
                                             </button>
                                         </div>
-                                        
-                                        
                                     </div>
                             
                             </div>
