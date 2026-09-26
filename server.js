@@ -109,8 +109,9 @@ app.get("/login",function(req,res){
 
 app.get("/test_service",function(req,res){
 
+  let sucursal = process.env.SUCURSAL.replace('ME-','');
   const lineasAgenda = [
-    `el servicio de ${process.env.SUCURSAL} está activo`
+    `el servicio de ${sucursal} está activo`
   ];
 
   // Une el arreglo de líneas en un solo texto separado por puntos
