@@ -110,9 +110,7 @@ app.get("/login",function(req,res){
 app.get("/test_service",function(req,res){
 
   const lineasAgenda = [
-    "Tienes una reunión de equipo a las 9 de la mañana",
-    "Recordatorio para revisar la base de datos a las 2 de la tarde",
-    "Comprar café al salir de la oficina"
+    `el servicio de ${process.env.SUCURSAL} está activo`
   ];
 
   // Une el arreglo de líneas en un solo texto separado por puntos
